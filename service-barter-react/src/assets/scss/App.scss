@@ -1,12 +1,25 @@
-$bg-color: yellow;
-$border-color: red;
+body {
+  margin: 0;
+}
 
 .app {
-  font-family: helvetica, arial, sans-serif;
-  padding: 2em;
-  border: 5px solid $border-color;
+  display: grid;
+  grid-template: auto 1fr auto / minmax(150px, 25%) auto;
+  height: 100vh;
+}
 
-  p {
-    background-color: $bg-color;
-  }
+.header {
+  grid-column: 1 / 4;
+}
+
+.sidebar {
+  grid-column: 1 / 2;
+}
+
+.content {
+  grid-column: 2 / 4;
+}
+
+.footer {
+  grid-column: 1 / 4;
 }
