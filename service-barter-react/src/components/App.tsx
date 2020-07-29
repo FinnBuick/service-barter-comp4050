@@ -6,15 +6,30 @@ import { Footer } from './footer/footer'
 import { Content } from './content/content'
 import "./../assets/scss/App.scss";
 
-class App extends React.Component<Record<string, unknown>, undefined> {
-  public render() {
+class App extends React.Component<Record<string, unknown>, { sidebarOpen: boolean }> {
+  setSidebarOpen = (open: boolean) => {
+    this.setState({ sidebarOpen: open })
+  }
+
+  toggleSidebar = () => {
+    this.setState({ sidebarOpen: !this.state.sidebarOpen })
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { sidebarOpen: false };
+  }
+
+  render() {
     return (
       <div className="app">
         <div className="header">
-          <Header/>
+          <Header toggleSidebar={this.toggleSidebar}/>
         </div>
         <div className="sidebar">
-          <Sidebar/>
+          <Sidebar
+            open={this.state.sidebarOpen}
+            setOpen={this.setSidebarOpen}/>
         </div>
         <div className="content">
           <Content/>
