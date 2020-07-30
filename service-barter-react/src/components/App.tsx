@@ -4,7 +4,7 @@ import { Sidebar } from './sidebar/sidebar'
 import { Header } from './header/header'
 import { Footer } from './footer/footer'
 import { Content } from './content/content'
-import "./../assets/scss/App.scss";
+import styles from "./App.scss";
 
 class App extends React.Component<Record<string, unknown>, { sidebarOpen: boolean }> {
   setSidebarOpen = (open: boolean) => {
@@ -22,19 +22,17 @@ class App extends React.Component<Record<string, unknown>, { sidebarOpen: boolea
 
   render() {
     return (
-      <div className="app">
-        <div className="header">
+      <div className={styles.app}>
+        <Sidebar
+          open={this.state.sidebarOpen}
+          setOpen={this.setSidebarOpen}/>
+        <div className={styles.header}>
           <Header toggleSidebar={this.toggleSidebar}/>
         </div>
-        <div className="sidebar">
-          <Sidebar
-            open={this.state.sidebarOpen}
-            setOpen={this.setSidebarOpen}/>
-        </div>
-        <div className="content">
+        <div className={styles.content}>
           <Content/>
         </div>
-        <div className="footer">
+        <div className={styles.footer}>
           <Footer/>
         </div>
       </div>

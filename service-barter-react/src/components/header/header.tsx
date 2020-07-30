@@ -7,7 +7,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import './header.scss';
+import styles from './header.scss';
 
 export const Header = React.memo(({
   toggleSidebar: toggleDrawer,
@@ -30,28 +30,23 @@ export const Header = React.memo(({
       <Toolbar>
         <IconButton
           edge="start"
-          className="menuButton"
+          className={styles.menuButton}
           color="inherit"
-          aria-label="menu"
           onClick={toggleDrawer}
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" className="title">
+        <Typography variant="h6" className={styles.title}>
           Service barter
         </Typography>
         <div>
           <IconButton
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
             onClick={handleMenu}
             color="inherit"
           >
             <AccountCircle />
           </IconButton>
           <Menu
-            id="menu-appbar"
             anchorEl={anchorEl}
             anchorOrigin={{
               vertical: 'top',

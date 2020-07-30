@@ -20,15 +20,18 @@ module.exports = {
         use: ['babel-loader', 'awesome-typescript-loader'],
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', { loader: 'css-loader', options: { importLoaders: 1 } }],
-      },
-      {
         test: /\.(scss|sass)$/,
-        loaders: [
+        use: [
           'style-loader',
-          { loader: 'css-loader', options: { importLoaders: 1 } },
-          'sass-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                localIdentName: '[name]_[local]_[hash:base64:5]',
+              },
+            }
+          },
+          'sass-loader', 
         ],
       },
       {

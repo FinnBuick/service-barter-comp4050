@@ -12,12 +12,11 @@ body {
   grid-column: 1 / 4;
 }
 
-.sidebar {
-  grid-column: 1 / 2;
-}
-
 .content {
-  grid-column: 2 / 4;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  grid-column: 1 / 4;
 }
 
 .footer {

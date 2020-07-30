@@ -11,7 +11,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import MessageIcon from '@material-ui/icons/Message';
 import StoreIcon from '@material-ui/icons/Store';
 import classNames from "classnames"
-import './sidebar.scss';
+import styles from './sidebar.scss';
 
 export const Sidebar = React.memo(({
   open,
@@ -26,7 +26,7 @@ export const Sidebar = React.memo(({
     <Drawer open={open}> 
       {/* anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}> */}
       <div
-        className={classNames("list", {
+        className={classNames(styles.list, {
           // ["fullList"]: anchor === 'top' || anchor === 'bottom',
         })}
         role="presentation"

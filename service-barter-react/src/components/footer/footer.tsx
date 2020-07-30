@@ -1,8 +1,8 @@
 import * as React from "react";
-import './footer.scss';
+import styles from './footer.scss';
 
 export const Footer = React.memo(() => (
-  <div className="footer">
+  <div className={styles.footer}>
     footer
   </div>
 ));
