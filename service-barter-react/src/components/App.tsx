@@ -1,19 +1,22 @@
 import * as React from "react";
 import { hot } from "react-hot-loader";
-import { Sidebar } from './sidebar/sidebar'
-import { Header } from './header/header'
-import { Footer } from './footer/footer'
-import { Content } from './content/content'
+import { Sidebar } from "./sidebar/sidebar";
+import { Header } from "./header/header";
+import { Footer } from "./footer/footer";
+import { Content } from "./content/content";
 import styles from "./App.scss";
 
-class App extends React.Component<Record<string, unknown>, { sidebarOpen: boolean }> {
+class App extends React.Component<
+  Record<string, unknown>,
+  { sidebarOpen: boolean }
+> {
   setSidebarOpen = (open: boolean) => {
-    this.setState({ sidebarOpen: open })
-  }
+    this.setState({ sidebarOpen: open });
+  };
 
   toggleSidebar = () => {
-    this.setState({ sidebarOpen: !this.state.sidebarOpen })
-  }
+    this.setState({ sidebarOpen: !this.state.sidebarOpen });
+  };
 
   constructor(props) {
     super(props);
@@ -23,17 +26,15 @@ class App extends React.Component<Record<string, unknown>, { sidebarOpen: boolea
   render() {
     return (
       <div className={styles.app}>
-        <Sidebar
-          open={this.state.sidebarOpen}
-          setOpen={this.setSidebarOpen}/>
+        <Sidebar open={this.state.sidebarOpen} setOpen={this.setSidebarOpen} />
         <div className={styles.header}>
-          <Header toggleSidebar={this.toggleSidebar}/>
+          <Header toggleSidebar={this.toggleSidebar} />
         </div>
         <div className={styles.content}>
-          <Content/>
+          <Content />
         </div>
         <div className={styles.footer}>
-          <Footer/>
+          <Footer />
         </div>
       </div>
     );
