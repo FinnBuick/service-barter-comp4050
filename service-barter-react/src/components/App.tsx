@@ -1,12 +1,13 @@
 import * as React from "react";
 import { hot } from "react-hot-loader";
-import { Sidebar } from "./sidebar/sidebar";
-import { Header } from "./header/header";
-import { Footer } from "./footer/footer";
+import { Route, Switch } from "react-router-dom";
+
 import styles from "./App.scss";
-import { Route, Switch } from 'react-router-dom';
+import { Footer } from "./footer/footer";
+import { Header } from "./header/header";
 import { Home } from "./home/home";
 import { NoMatch } from "./nomatch/nomatch";
+import { Sidebar } from "./sidebar/sidebar";
 
 class App extends React.Component<
   Record<string, unknown>,
@@ -34,7 +35,7 @@ class App extends React.Component<
         </div>
         <div className={styles.content}>
           <Switch>
-            <Route exact path='/' >
+            <Route exact path="/">
               <Home />
             </Route>
 
