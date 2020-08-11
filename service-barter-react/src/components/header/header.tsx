@@ -1,13 +1,15 @@
-import AppBar from "@material-ui/core/AppBar";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MenuIcon from "@material-ui/icons/Menu";
 import * as React from "react";
 import { Link } from "react-router-dom";
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
 import styles from "./header.scss";
 
@@ -36,30 +38,45 @@ export const Header = React.memo(
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={styles.title}>
-            Service barter
+            Service Barter
           </Typography>
+          <div className={styles.search}>
+            <div className={styles.searchIcon}>
+              <SearchIcon />
+            </div>
+            <InputBase
+              placeholder="Search…"
+              classes={{
+                root: styles.inputRoot,
+                input: styles.inputInput,
+              }}
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </div>
           <div>
-            <IconButton onClick={handleMenu} color="inherit">
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={open}
-              onClose={handleClose}
-            >
-              <MenuItem component={Link} to="/profile" onClick={handleClose}>
-                Profile
+            <div>
+              <IconButton onClick={handleMenu} color="inherit">
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={open}
+                onClose={handleClose}
+              >
+                <MenuItem component={Link} to="/profile" onClick={handleClose}>
+                  Profile
               </MenuItem>
-            </Menu>
+              </Menu>
+            </div>
           </div>
         </Toolbar>
       </AppBar>

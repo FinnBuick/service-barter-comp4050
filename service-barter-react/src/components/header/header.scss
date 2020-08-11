@@ -1,7 +1,48 @@
+$headerColor: #3f51b5;
+
 .menuButton {
-    margin-right: 16px,
+    margin-right: 16px;
+    padding: 0;
 }
 
 .title {
-    flex-grow: 1,
+    flex-grow: 1;
+    white-space: nowrap;
+}
+
+.search {
+    position: relative;
+    border-radius: 5px;
+    color: black;
+    background-color: lighten($headerColor, 30%);
+    margin-right: 20%;
+    margin-left: 80px;
+    width: 100%;
+    height: 40px;
+    transition: background-color 0.5s ease;
+}
+
+.search:hover {
+    background-color: lighten($headerColor, 50%);
+}
+
+.searchIcon {
+    color: black;
+    height: 100%;
+    position: absolute;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 10px;
+}
+
+.inputRoot {
+    color: inherit;
+}
+
+.inputInput {
+    padding: 10px;
+    padding-left: 50px;
+    width: 100%;
 }
