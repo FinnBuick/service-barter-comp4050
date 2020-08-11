@@ -6,7 +6,9 @@ import styles from "./App.scss";
 import { Footer } from "./footer/footer";
 import { Header } from "./header/header";
 import { Home } from "./home/home";
+import { Messaging } from "./messaging/messaging";
 import { NoMatch } from "./nomatch/nomatch";
+import { Profile } from "./profile/profile";
 import { Sidebar } from "./sidebar/sidebar";
 
 class App extends React.Component<
@@ -37,6 +39,14 @@ class App extends React.Component<
           <Switch>
             <Route exact path="/">
               <Home />
+            </Route>
+
+            <Route path="/messaging">
+              <Messaging />
+            </Route>
+
+            <Route path="/profile">
+              <Profile />
             </Route>
 
             <Route path="*">

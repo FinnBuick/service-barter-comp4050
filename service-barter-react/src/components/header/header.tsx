@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 import styles from "./header.scss";
 
@@ -55,8 +56,9 @@ export const Header = React.memo(
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem component={Link} to="/profile" onClick={handleClose}>
+                Profile
+              </MenuItem>
             </Menu>
           </div>
         </Toolbar>
