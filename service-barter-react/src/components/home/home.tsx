@@ -4,8 +4,6 @@ import * as React from "react";
 
 import styles from "./home.scss";
 
-const reactLogo = require("./../../assets/img/react_logo.svg");
-
 export const Home = React.memo(() => (
   <div className={styles.content}>
     <div className={styles.contentTitle}>
@@ -18,6 +16,14 @@ export const Home = React.memo(() => (
           Sign up
         </Button>
       </div>
+    </div>
+    <div className={styles.contentBody}>
+      <Typography>
+        List of recent favours (In your area)
+      </Typography>
+      <Typography>
+        List of recent favours history
+      </Typography>
     </div>
   </div>
 ));
