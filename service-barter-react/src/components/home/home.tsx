@@ -1,9 +1,9 @@
 import * as React from "react";
-import styles from './content.scss';
+import styles from './home.scss';
 
 const reactLogo = require("./../../assets/img/react_logo.svg");
 
-export const Content = React.memo(() => (
+export const Home = React.memo(() => (
   <div className={styles.content}>
     <h1>Hello World!</h1>
     <p>Foo to the barz</p>

@@ -3,8 +3,10 @@ import { hot } from "react-hot-loader";
 import { Sidebar } from "./sidebar/sidebar";
 import { Header } from "./header/header";
 import { Footer } from "./footer/footer";
-import { Content } from "./content/content";
 import styles from "./App.scss";
+import { Route, Switch } from 'react-router-dom';
+import { Home } from "./home/home";
+import { NoMatch } from "./nomatch/nomatch";
 
 class App extends React.Component<
   Record<string, unknown>,
@@ -31,7 +33,15 @@ class App extends React.Component<
           <Header toggleSidebar={this.toggleSidebar} />
         </div>
         <div className={styles.content}>
-          <Content />
+          <Switch>
+            <Route exact path='/' >
+              <Home />
+            </Route>
+
+            <Route path="*">
+              <NoMatch />
+            </Route>
+          </Switch>
         </div>
         <div className={styles.footer}>
           <Footer />
