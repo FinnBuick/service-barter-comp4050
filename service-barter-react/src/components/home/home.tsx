@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import * as React from "react";
 
@@ -8,16 +9,11 @@ const reactLogo = require("./../../assets/img/react_logo.svg");
 export const Home = React.memo(() => (
   <div className={styles.content}>
     <div className={styles.contentTitle}>
-      <h1>SERVICE BARTER COMP4050</h1>
-      <p>Short subtle description of the website</p>
+      <Typography variant="h3">Service Barter</Typography>
+      <Typography variant="body1">
+        Short subtle description of the website
+      </Typography>
       <div className={styles.rootButton}>
-        <Button
-          variant="contained"
-          color="primary"
-          style={{ marginRight: "10px" }}
-        >
-          Login
-        </Button>
         <Button variant="contained" color="primary">
           Sign up
         </Button>
