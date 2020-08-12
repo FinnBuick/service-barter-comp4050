@@ -1,7 +1,7 @@
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
 import * as React from "react";
 
 import styles from "./home.scss";
@@ -32,9 +32,7 @@ export const Home = React.memo(() => (
           ))}
         </Grid>
       </Grid>
-      <Typography variant="h5">
-        List of recent favour history
-      </Typography>
+      <Typography variant="h5">List of recent favour history</Typography>
     </div>
   </div>
 ));

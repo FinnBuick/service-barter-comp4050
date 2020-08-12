@@ -1,20 +1,20 @@
 .content {
-    width: 100%;
     padding: 8px;
+    width: 100%;
 }
 
 .contentTitle {
-    max-width: 900px;
     border: solid 1px;
+    margin: 20px auto 0;
+    max-width: 900px;
     padding: 20px;
-    margin: 20px auto 0 auto;
 }
 
 .contentBody {
-    padding: 20px;
+    margin: 20px auto 0;
     max-width: 900px;
     padding: 20px;
-    margin: 20px auto 0 auto;
+    padding: 20px;
 }
 
 .rootButton {
@@ -23,13 +23,13 @@
 }
 
 .grid {
-    width: 900px;
     height: 200px;
+    width: 900px;
 }
 
 .paper {
-    height: 140;
-    width: 100;
+    height: 140px;
+    width: 100px;
 }
 
 .control {

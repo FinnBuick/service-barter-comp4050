@@ -26,6 +26,7 @@ module.exports = {
     // Fine tune rules
     rules: {
         "@typescript-eslint/no-var-requires": 0,
+        "@typescript-eslint/explicit-function-return-type": "off",
         "react/display-name": 0,
         "simple-import-sort/sort": "error"
     },
