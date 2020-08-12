@@ -1,4 +1,38 @@
 .content {
+    width: 100%;
+    padding: 16px;
+
+    display: grid;
+    grid-template-columns: minmax(200px, 25%) 1fr;
+}
+
+.roomsWrapper {
+    margin-right: 8px;
+}
+
+.room {
     padding: 8px;
+    margin-top: 8px;
+}
+
+.createRoomButton {
+    margin-top: 16px;
+}
+
+.messagesWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.messages {
+    flex: 1 1 auto;
+}
+
+.message {
+    padding: 8px;
+    margin-top: 8px;
+}
+
+.input {
     width: 100%;
 }

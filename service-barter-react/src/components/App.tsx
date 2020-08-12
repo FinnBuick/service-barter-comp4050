@@ -1,3 +1,6 @@
+import "firebase/database";
+
+import * as firebase from "firebase/app";
 import * as React from "react";
 import { hot } from "react-hot-loader";
 import { Route, Switch } from "react-router-dom";
@@ -10,6 +13,13 @@ import { Messaging } from "./messaging/messaging";
 import { NoMatch } from "./nomatch/nomatch";
 import { Profile } from "./profile/profile";
 import { Sidebar } from "./sidebar/sidebar";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCkyJ2dzp6O64T-dZS5hsJlV94S7A0y5oc",
+  authDomain: "service-barter-comp4050.firebaseapp.com",
+  databaseURL: "https://service-barter-comp4050.firebaseio.com",
+  projectId: "service-barter-comp4050",
+};
 
 class App extends React.Component<
   Record<string, unknown>,
@@ -26,6 +36,8 @@ class App extends React.Component<
   constructor(props) {
     super(props);
     this.state = { sidebarOpen: false };
+
+    firebase.initializeApp(firebaseConfig);
   }
 
   render() {
