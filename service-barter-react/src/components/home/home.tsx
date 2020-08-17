@@ -23,9 +23,9 @@ export const Home = React.memo(() => (
       <Typography variant="h5">
         List of recent favours (In your area)
       </Typography>
-      <Grid container spacing={2} className={styles.grid}>
+      <Grid container className={styles.grid}>
         <Grid container justify="center">
-          {[0, 1, 2].map((value) => (
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((value) => (
             <Grid key={value} item>
               <Paper elevation={3} className={styles.paper} />
             </Grid>
@@ -33,6 +33,15 @@ export const Home = React.memo(() => (
         </Grid>
       </Grid>
       <Typography variant="h5">List of recent favour history</Typography>
+      <Grid container className={styles.grid}>
+        <Grid container justify="center">
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((value) => (
+            <Grid key={value} item>
+              <Paper elevation={3} className={styles.paper} />
+            </Grid>
+          ))}
+        </Grid>
+      </Grid>
     </div>
   </div>
 ));
