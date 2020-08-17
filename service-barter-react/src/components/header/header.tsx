@@ -109,7 +109,9 @@ export const Header = React.memo(
                           id="menu-list-grow"
                           onKeyDown={handleListKeyDown}
                         >
-                          <MenuItem onClick={handleClose}>Profile</MenuItem>
+                          <MenuItem component={Link} to="/profile">
+                            Profile
+                          </MenuItem>
                           <MenuItem onClick={handleClose}>My account</MenuItem>
                           <MenuItem onClick={handleClose}>Logout</MenuItem>
                         </MenuList>
