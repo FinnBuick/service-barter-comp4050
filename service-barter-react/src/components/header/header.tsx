@@ -1,8 +1,13 @@
 import AppBar from "@material-ui/core/AppBar";
+import Button from "@material-ui/core/Button";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
 import IconButton from "@material-ui/core/IconButton";
 import InputBase from "@material-ui/core/InputBase";
-import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import MenuList from "@material-ui/core/MenuList";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -15,16 +20,37 @@ import styles from "./header.scss";
 
 export const Header = React.memo(
   ({ toggleSidebar: toggleDrawer }: { toggleSidebar: () => void }) => {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
+    const [open, setOpen] = React.useState(false);
+    const anchorRef = React.useRef(null);
 
-    const handleMenu = (event) => {
-      setAnchorEl(event.currentTarget);
+    const handleToggle = () => {
+      setOpen((prevOpen) => !prevOpen);
     };
 
-    const handleClose = () => {
-      setAnchorEl(null);
+    const handleClose = (event) => {
+      if (anchorRef.current && anchorRef.current.contains(event.target)) {
+        return;
+      }
+
+      setOpen(false);
     };
+
+    function handleListKeyDown(event) {
+      if (event.key === "Tab") {
+        event.preventDefault();
+        setOpen(false);
+      }
+    }
+
+    // return focus to the button when we transitioned from !open -> open
+    const prevOpen = React.useRef(open);
+    React.useEffect(() => {
+      if (prevOpen.current === true && open === false) {
+        anchorRef.current.focus();
+      }
+
+      prevOpen.current = open;
+    }, [open]);
 
     return (
       <AppBar position="static">
@@ -54,28 +80,44 @@ export const Header = React.memo(
             />
           </div>
           <div>
-            <div>
-              <IconButton onClick={handleMenu} color="inherit">
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
+            <div className={styles.accountIcon}>
+              <AccountCircle
+                ref={anchorRef}
+                aria-controls={open ? "menu-list-grow" : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+              ></AccountCircle>
+              <Popper
                 open={open}
-                onClose={handleClose}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                transition
+                disablePortal
               >
-                <MenuItem component={Link} to="/profile" onClick={handleClose}>
-                  Profile
-                </MenuItem>
-              </Menu>
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === "bottom" ? "center top" : "center bottom",
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList
+                          autoFocusItem={open}
+                          id="menu-list-grow"
+                          onKeyDown={handleListKeyDown}
+                        >
+                          <MenuItem onClick={handleClose}>Profile</MenuItem>
+                          <MenuItem onClick={handleClose}>My account</MenuItem>
+                          <MenuItem onClick={handleClose}>Logout</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
             </div>
           </div>
         </Toolbar>
