@@ -3,10 +3,11 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import HomeIcon from "@material-ui/icons/Home";
 import MessageIcon from "@material-ui/icons/Message";
 import StoreIcon from "@material-ui/icons/Store";
-import classNames from "classnames";
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 import styles from "./sidebar.scss";
 
@@ -16,23 +17,26 @@ export const Sidebar = React.memo(
 
     return (
       <Drawer open={open}>
-        {/* anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}> */}
         <div
-          className={classNames(styles.list, {
-            // ["fullList"]: anchor === 'top' || anchor === 'bottom',
-          })}
+          className={styles.list}
           role="presentation"
           onClick={closeDrawer}
           onKeyDown={closeDrawer}
         >
           <List>
-            <ListItem button>
+            <ListItem button component={Link} to="/">
+              <ListItemIcon>
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText primary="Home" />
+            </ListItem>
+            <ListItem button component={Link} to="/messaging">
               <ListItemIcon>
                 <MessageIcon />
               </ListItemIcon>
               <ListItemText primary="Messaging" />
             </ListItem>
-            <ListItem button>
+            <ListItem button component={Link} to="/store">
               <ListItemIcon>
                 <StoreIcon />
               </ListItemIcon>

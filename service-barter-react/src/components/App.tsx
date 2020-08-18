@@ -13,6 +13,7 @@ import { Messaging } from "./messaging/messaging";
 import { NoMatch } from "./nomatch/nomatch";
 import { Profile } from "./profile/profile";
 import { Sidebar } from "./sidebar/sidebar";
+import { UserProvider } from "./user/user_provider";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCkyJ2dzp6O64T-dZS5hsJlV94S7A0y5oc",
@@ -42,34 +43,39 @@ class App extends React.Component<
 
   render() {
     return (
-      <div className={styles.app}>
-        <Sidebar open={this.state.sidebarOpen} setOpen={this.setSidebarOpen} />
-        <div className={styles.header}>
-          <Header toggleSidebar={this.toggleSidebar} />
-        </div>
-        <div className={styles.content}>
-          <Switch>
-            <Route exact path="/">
-              <Home />
-            </Route>
+      <UserProvider>
+        <div className={styles.app}>
+          <Sidebar
+            open={this.state.sidebarOpen}
+            setOpen={this.setSidebarOpen}
+          />
+          <div className={styles.header}>
+            <Header toggleSidebar={this.toggleSidebar} />
+          </div>
+          <div className={styles.content}>
+            <Switch>
+              <Route exact path="/">
+                <Home />
+              </Route>
 
-            <Route path="/messaging">
-              <Messaging />
-            </Route>
+              <Route path="/messaging">
+                <Messaging />
+              </Route>
 
-            <Route path="/profile">
-              <Profile />
-            </Route>
+              <Route path="/profile">
+                <Profile />
+              </Route>
 
-            <Route path="*">
-              <NoMatch />
-            </Route>
-          </Switch>
+              <Route path="*">
+                <NoMatch />
+              </Route>
+            </Switch>
+          </div>
+          <div className={styles.footer}>
+            <Footer />
+          </div>
         </div>
-        <div className={styles.footer}>
-          <Footer />
-        </div>
-      </div>
+      </UserProvider>
     );
   }
 }

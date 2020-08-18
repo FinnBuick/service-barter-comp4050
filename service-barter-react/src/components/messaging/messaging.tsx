@@ -6,7 +6,9 @@ import Typography from "@material-ui/core/Typography";
 import ForwardIcon from "@material-ui/icons/Forward";
 import * as firebase from "firebase";
 import * as React from "react";
+import { Redirect } from "react-router-dom";
 
+import { UserContext } from "../user/user_provider";
 import styles from "./messaging.scss";
 
 type Room = {
@@ -33,6 +35,8 @@ export class Messaging extends React.Component<
     userRooms: UserRooms[];
   }
 > {
+  static contextType = UserContext;
+
   private RoomCard = React.memo(({ room }: { room: UserRooms }) => {
     const onClick = () => this.newRoomSelected(room.id);
     return (
@@ -47,8 +51,8 @@ export class Messaging extends React.Component<
   private database?: firebase.database.Database;
   private roomListener?: any;
 
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = {
       userRooms: [],
       room: undefined,
@@ -57,11 +61,14 @@ export class Messaging extends React.Component<
 
   componentDidMount() {
     this.database = firebase.database();
-
     this.getUserRooms();
   }
 
   render() {
+    if (this.context?.fetched && !this.context?.loggedIn) {
+      return <Redirect to="/login" />;
+    }
+
     return (
       <div className={styles.content}>
         <div className={styles.roomsWrapper}>
@@ -111,7 +118,7 @@ export class Messaging extends React.Component<
   }
 
   getUserRooms() {
-    const username = "james";
+    const username = this.context.user;
     this.database.ref(`/users/${username}/rooms`).on("value", (snapshot) => {
       if (snapshot.exists()) {
         this.setState((state) => ({
@@ -151,7 +158,7 @@ export class Messaging extends React.Component<
       messages: [],
     });
 
-    const username = "james";
+    const username = this.context.user;
     this.database.ref(`/users/${username}/rooms`).push().set({
       id: roomRef.key,
       name: username,
@@ -161,7 +168,7 @@ export class Messaging extends React.Component<
 
   sendMessage = (e) => {
     if (e.key === undefined || e.key === "Enter") {
-      const username = "james";
+      const username = this.context.user;
       this.database.ref(`/rooms/${this.state.room.id}/messages`).push().set({
         user: username,
         userAvatar: "",
