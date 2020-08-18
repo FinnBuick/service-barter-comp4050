@@ -1,3 +1,32 @@
 .content {
     padding: 8px;
+    width: 100%;
+}
+
+.profile {
+    border: solid 2px;
+    border-color: #09f;
+    border-radius: 15px;
+    margin: 20px auto 0;
+    max-width: 900px;
+    padding: 20px;
+}
+
+.settingButtons {
+    display: inline-block;
+    float: right;
+    margin-left: 30px;
+}
+
+.profileBody {
+    margin-left: 30px;
+    margin-top: 30px;
+}
+
+.info {
+    display: inline-block;
+}
+
+.infoBox {
+    padding: 20px;
 }
