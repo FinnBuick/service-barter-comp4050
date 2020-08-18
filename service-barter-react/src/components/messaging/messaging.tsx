@@ -32,7 +32,7 @@ export class Messaging extends React.Component<
   Record<string, unknown>,
   {
     room?: Room;
-    userRooms: UserRooms[];
+    userRooms?: UserRooms[];
   }
 > {
   static contextType = UserContext;
@@ -49,14 +49,16 @@ export class Messaging extends React.Component<
   });
 
   private database?: firebase.database.Database;
+  private userContext: any;
   private roomListener?: any;
 
   constructor(props, context) {
     super(props, context);
     this.state = {
-      userRooms: [],
+      userRooms: undefined,
       room: undefined,
     };
+    this.userContext = context;
   }
 
   componentDidMount() {
@@ -64,8 +66,15 @@ export class Messaging extends React.Component<
     this.getUserRooms();
   }
 
+  componentDidUpdate() {
+    if (this.userContext != this.context) {
+      this.userContext = this.context;
+      this.getUserRooms();
+    }
+  }
+
   render() {
-    if (this.context?.fetched && !this.context?.loggedIn) {
+    if (this.userContext?.fetched && !this.userContext?.loggedIn) {
       return <Redirect to="/login" />;
     }
 
@@ -73,8 +82,10 @@ export class Messaging extends React.Component<
       <div className={styles.content}>
         <div className={styles.roomsWrapper}>
           <Typography>Rooms</Typography>
-          {this.state.userRooms.length === 0 ? (
+          {this.state.userRooms == null ? (
             <CircularProgress />
+          ) : this.state.userRooms.length === 0 ? (
+            <Typography>There are no rooms, start by creating one!</Typography>
           ) : (
             <>
               {this.state.userRooms.map((room) => (
@@ -118,7 +129,7 @@ export class Messaging extends React.Component<
   }
 
   getUserRooms() {
-    const username = this.context.user;
+    const username = this.userContext.user;
     this.database.ref(`/users/${username}/rooms`).on("value", (snapshot) => {
       if (snapshot.exists()) {
         this.setState((state) => ({
@@ -158,7 +169,7 @@ export class Messaging extends React.Component<
       messages: [],
     });
 
-    const username = this.context.user;
+    const username = this.userContext.user;
     this.database.ref(`/users/${username}/rooms`).push().set({
       id: roomRef.key,
       name: username,
@@ -168,7 +179,7 @@ export class Messaging extends React.Component<
 
   sendMessage = (e) => {
     if (e.key === undefined || e.key === "Enter") {
-      const username = this.context.user;
+      const username = this.userContext.user;
       this.database.ref(`/rooms/${this.state.room.id}/messages`).push().set({
         user: username,
         userAvatar: "",
