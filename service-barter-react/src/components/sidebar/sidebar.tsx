@@ -16,7 +16,7 @@ export const Sidebar = React.memo(
     const closeDrawer = () => setOpen(false);
 
     return (
-      <Drawer open={open}>
+      <Drawer open={open} ModalProps={{ onBackdropClick: closeDrawer }}>
         <div
           className={styles.list}
           role="presentation"
