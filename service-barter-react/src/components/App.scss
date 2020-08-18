@@ -6,6 +6,7 @@ body {
     display: grid;
     grid-template: auto 1fr auto / auto;
     height: 100vh;
+    overflow: hidden;
 }
 
 .header {
@@ -16,7 +17,7 @@ body {
     display: flex;
     grid-column: 1 / 4;
     justify-content: center;
-    width: 100%;
+    overflow: hidden;
 }
 
 .footer {

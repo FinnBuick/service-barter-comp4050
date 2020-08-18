@@ -1,20 +1,28 @@
 .content {
-    padding: 8px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 24px;
+    margin-right: 24px;
+    max-width: 900px;
+    min-width: 0;
+    overflow: hidden;
+
     width: 100%;
 }
 
 .contentTitle {
     border: solid 1px;
+    box-sizing: border-box;
     margin: 20px auto 0;
-    max-width: 900px;
     padding: 20px;
+    width: 100%;
 }
 
 .contentBody {
-    margin: 20px auto 0;
-    max-width: 900px;
     padding: 20px;
-    padding: 20px;
+    width: 100%;
 }
 
 .rootButton {
