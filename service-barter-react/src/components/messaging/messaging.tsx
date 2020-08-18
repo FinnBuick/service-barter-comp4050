@@ -91,16 +91,16 @@ export class Messaging extends React.Component<
               {this.state.userRooms.map((room) => (
                 <this.RoomCard key={room.id} room={room} />
               ))}
-              <Button
-                variant="contained"
-                color="primary"
-                className={styles.createRoomButton}
-                onClick={this.createRoom}
-              >
-                Create room
-              </Button>
             </>
           )}
+          <Button
+            variant="contained"
+            color="primary"
+            className={styles.createRoomButton}
+            onClick={this.createRoom}
+          >
+            Create room
+          </Button>
         </div>
         <div className={styles.messagesWrapper}>
           <Typography>Messages</Typography>
@@ -135,6 +135,11 @@ export class Messaging extends React.Component<
         this.setState((state) => ({
           ...state,
           userRooms: Object.values(snapshot.val()),
+        }));
+      } else {
+        this.setState((state) => ({
+          ...state,
+          userRooms: [],
         }));
       }
     });
