@@ -79,6 +79,16 @@ export const Header = React.memo(
               inputProps={{ "aria-label": "search" }}
             />
           </div>
+
+          <div className={styles.loggedOutBtnGroup}>
+            <Button className={styles.loggedOutBtn} variant="contained">
+              Sign Up
+            </Button>
+            <Button className={styles.loggedOutBtn} variant="contained">
+              Login
+            </Button>
+          </div>
+
           <div>
             <div className={styles.accountIcon}>
               <AccountCircle
