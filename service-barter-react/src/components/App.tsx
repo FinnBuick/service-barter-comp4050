@@ -14,6 +14,7 @@ import { NoMatch } from "./nomatch/nomatch";
 import { Profile } from "./profile/profile";
 import { Sidebar } from "./sidebar/sidebar";
 import { UserProvider } from "./user/user_provider";
+import { Signup } from "./signup/signup";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCkyJ2dzp6O64T-dZS5hsJlV94S7A0y5oc",
@@ -66,14 +67,17 @@ class App extends React.Component<
                 <Profile />
               </Route>
 
-              <Route path="*">
-                <NoMatch />
-              </Route>
-            </Switch>
-          </div>
-          <div className={styles.footer}>
-            <Footer />
-          </div>
+            <Route path="*">
+              <NoMatch />
+            </Route>
+
+            <Route path="/signup">
+              <Signup />
+            </Route>
+          </Switch>
+        </div>
+        <div className={styles.footer}>
+          <Footer />
         </div>
       </UserProvider>
     );

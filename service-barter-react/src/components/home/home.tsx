@@ -3,6 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 import styles from "./home.scss";
 
@@ -14,7 +15,12 @@ export const Home = React.memo(() => (
         Short subtle description of the website
       </Typography>
       <div className={styles.rootButton}>
-        <Button variant="contained" color="primary">
+        <Button
+          component={Link}
+          to="/signup"
+          variant="contained"
+          color="primary"
+        >
           Sign up
         </Button>
       </div>
