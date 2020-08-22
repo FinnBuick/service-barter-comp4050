@@ -67,12 +67,12 @@ class App extends React.Component<
                 <Profile />
               </Route>
 
-              <Route path="*">
-                <NoMatch />
-              </Route>
-
               <Route path="/signup">
                 <Signup />
+              </Route>
+
+              <Route path="*">
+                <NoMatch />
               </Route>
             </Switch>
           </div>
