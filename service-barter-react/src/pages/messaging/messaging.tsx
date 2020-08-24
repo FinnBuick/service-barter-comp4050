@@ -8,7 +8,7 @@ import * as firebase from "firebase";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 
-import { UserContext } from "../user/user_provider";
+import { UserContext } from "../../components/user/user_provider";
 import styles from "./messaging.scss";
 
 type Room = {

@@ -1,0 +1,22 @@
+.content {
+
+    display: grid;
+    grid-template-columns: minmax(200px, 20%) 1fr;
+    padding: 16px;
+    width: 100%;
+}
+
+.groupsWrapper {
+    margin-right: 30px;
+}
+
+.groupButtons {
+    display: block;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.cardsWrapper {
+    display: flex;
+    flex-direction: column;
+}

@@ -82,10 +82,7 @@ export const Header = React.memo(
 
           <div className={styles.loggedOutBtnGroup}>
             <Button className={styles.loggedOutBtn} variant="contained">
-              Sign Up
-            </Button>
-            <Button className={styles.loggedOutBtn} variant="contained">
-              Login
+              Sign in
             </Button>
           </div>
 

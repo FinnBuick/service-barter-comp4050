@@ -6,16 +6,16 @@ import { hot } from "react-hot-loader";
 import { Route, Switch } from "react-router-dom";
 
 import styles from "./App.scss";
-import { Footer } from "./footer/footer";
-import { Header } from "./header/header";
-import { Home } from "./home/home";
-import { Messaging } from "./messaging/messaging";
-import { Marketplace } from "./marketplace/marketplace";
-import { NoMatch } from "./nomatch/nomatch";
-import { Profile } from "./profile/profile";
-import { Sidebar } from "./sidebar/sidebar";
-import { Signup } from "./signup/signup";
-import { UserProvider } from "./user/user_provider";
+import { Footer } from "./components/footer/footer";
+import { Header } from "./components/header/header";
+import { Sidebar } from "./components/sidebar/sidebar";
+import { Signup } from "./components/signup/signup";
+import { UserProvider } from "./components/user/user_provider";
+import { Home } from "./pages/home/home";
+import { Marketplace } from "./pages/marketplace/marketplace";
+import { Messaging } from "./pages/messaging/messaging";
+import { NoMatch } from "./pages/nomatch/nomatch";
+import { Profile } from "./pages/profile/profile";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCkyJ2dzp6O64T-dZS5hsJlV94S7A0y5oc",
