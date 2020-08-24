@@ -9,13 +9,13 @@ import styles from "./App.scss";
 import { Footer } from "./components/footer/footer";
 import { Header } from "./components/header/header";
 import { Sidebar } from "./components/sidebar/sidebar";
-import { Signup } from "./components/signup/signup";
 import { UserProvider } from "./components/user/user_provider";
 import { Home } from "./pages/home/home";
 import { Marketplace } from "./pages/marketplace/marketplace";
 import { Messaging } from "./pages/messaging/messaging";
 import { NoMatch } from "./pages/nomatch/nomatch";
 import { Profile } from "./pages/profile/profile";
+import { Signin } from "./pages/signin/signin";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCkyJ2dzp6O64T-dZS5hsJlV94S7A0y5oc",
@@ -28,6 +28,8 @@ class App extends React.Component<
   Record<string, unknown>,
   { sidebarOpen: boolean }
 > {
+  unregisterAuthObserver = null;
+
   setSidebarOpen = (open: boolean) => {
     this.setState({ sidebarOpen: open });
   };
@@ -60,6 +62,10 @@ class App extends React.Component<
                 <Home />
               </Route>
 
+              <Route exact path="/home">
+                <Home />
+              </Route>
+
               <Route path="/messaging">
                 <Messaging />
               </Route>
@@ -68,8 +74,8 @@ class App extends React.Component<
                 <Profile />
               </Route>
 
-              <Route path="/signup">
-                <Signup />
+              <Route path="/signin">
+                <Signin />
               </Route>
 
               <Route path="/marketplace">

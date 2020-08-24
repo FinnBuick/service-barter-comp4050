@@ -16,12 +16,15 @@ import SearchIcon from "@material-ui/icons/Search";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
+import { UserContext } from "../user/user_provider";
 import styles from "./header.scss";
 
 export const Header = React.memo(
   ({ toggleSidebar: toggleDrawer }: { toggleSidebar: () => void }) => {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
+
+    const userContext = React.useContext(UserContext);
 
     const handleToggle = () => {
       setOpen((prevOpen) => !prevOpen);
@@ -80,11 +83,18 @@ export const Header = React.memo(
             />
           </div>
 
-          <div className={styles.loggedOutBtnGroup}>
-            <Button className={styles.loggedOutBtn} variant="contained">
-              Sign in
-            </Button>
-          </div>
+          {!userContext.loggedIn && (
+            <div className={styles.loggedOutBtnGroup}>
+              <Button
+                className={styles.loggedOutBtn}
+                component={Link}
+                to="/signin"
+                variant="contained"
+              >
+                Sign in
+              </Button>
+            </div>
+          )}
 
           <div>
             <div className={styles.accountIcon}>
@@ -93,7 +103,7 @@ export const Header = React.memo(
                 aria-controls={open ? "menu-list-grow" : undefined}
                 aria-haspopup="true"
                 onClick={handleToggle}
-              ></AccountCircle>
+              />
               <Popper
                 open={open}
                 anchorEl={anchorRef.current}
