@@ -83,7 +83,10 @@ export class Messaging extends React.Component<
         <div className={styles.roomsWrapper}>
           <Typography>Rooms</Typography>
           {this.state.userRooms == null ? (
-            <CircularProgress />
+            <>
+              <CircularProgress />
+              <br />
+            </>
           ) : this.state.userRooms.length === 0 ? (
             <Typography>There are no rooms, start by creating one!</Typography>
           ) : (
