@@ -10,6 +10,7 @@ import { Footer } from "./footer/footer";
 import { Header } from "./header/header";
 import { Home } from "./home/home";
 import { Messaging } from "./messaging/messaging";
+import { Marketplace } from "./marketplace/marketplace";
 import { NoMatch } from "./nomatch/nomatch";
 import { Profile } from "./profile/profile";
 import { Sidebar } from "./sidebar/sidebar";
@@ -69,6 +70,10 @@ class App extends React.Component<
 
               <Route path="/signup">
                 <Signup />
+              </Route>
+
+              <Route path="/marketplace">
+                <Marketplace />
               </Route>
 
               <Route path="*">
