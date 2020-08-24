@@ -2,6 +2,7 @@ import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import RoomIcon from "@material-ui/icons/Room";
+import * as firebase from "firebase";
 import * as React from "react";
 
 import styles from "./profile.scss";
@@ -23,27 +24,24 @@ export const Profile = React.memo(() => (
       </Typography>
       <RoomIcon />
       <div className={styles.settingButtons}>
-        <Button
-          variant="contained"
-          color="primary"
-          style={{ marginRight: "10px" }}
-        >
-          Reset Password
-        </Button>
         <Button variant="contained" color="primary">
-          Edit profile
+          Reset Password
         </Button>
       </div>
       <div className={styles.profileBody}>
-        <div className={styles.info}>
-          <Typography variant="h6">Email address:</Typography>
-          <Typography variant="h6" style={{ color: "#0066ff" }}>
-            randomemail@students.mq.edu.au
-          </Typography>
-          <Typography variant="h6">Username:</Typography>
-          <Typography variant="h6" style={{ color: "#0066ff" }}>
-            Mqusername1234
-          </Typography>
+        <div>
+          <div style={{ display: "inline-block" }}>
+            <Typography variant="h6">Email address:</Typography>
+            <Typography variant="h6">Username:</Typography>
+          </div>
+          <div style={{ display: "inline-block", marginLeft: "20px" }}>
+            <Typography variant="h6" style={{ color: "#0066ff" }}>
+              randomemail@students.mq.edu.au
+            </Typography>
+            <Typography variant="h6" style={{ color: "#0066ff" }}>
+              Mqusername1234
+            </Typography>
+          </div>
         </div>
         <Paper elevation={6} style={{ marginTop: "50px" }}>
           <div className={styles.infoBox}>
