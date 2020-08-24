@@ -11,7 +11,6 @@ import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import * as React from "react";
@@ -113,7 +112,7 @@ export const Header = React.memo(
                   ref={anchorRef}
                   aria-controls={open ? "menu-list-grow" : undefined}
                   aria-haspopup="true"
-                  src={userContext.user.photoUrl || "invalid"}
+                  src={userContext.user.photoURL || "invalid"}
                   alt={userContext.user.displayName}
                   onClick={handleToggle}
                 />
