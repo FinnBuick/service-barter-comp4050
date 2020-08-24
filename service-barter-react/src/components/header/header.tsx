@@ -1,3 +1,4 @@
+import { Avatar } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -98,12 +99,16 @@ export const Header = React.memo(
 
           <div>
             <div className={styles.accountIcon}>
-              <AccountCircle
-                ref={anchorRef}
-                aria-controls={open ? "menu-list-grow" : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-              />
+              {userContext.loggedIn && (
+                <Avatar
+                  ref={anchorRef}
+                  aria-controls={open ? "menu-list-grow" : undefined}
+                  aria-haspopup="true"
+                  src={userContext.user.photoUrl || "invalid"}
+                  alt={userContext.user.displayName}
+                  onClick={handleToggle}
+                />
+              )}
               <Popper
                 open={open}
                 anchorEl={anchorRef.current}

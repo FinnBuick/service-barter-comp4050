@@ -76,7 +76,7 @@ export class Messaging extends React.Component<
   }
 
   render() {
-    if (!this.userContext?.fetched && !this.userContext?.loggedIn) {
+    if (this.userContext?.fetched && !this.userContext?.loggedIn) {
       return <Redirect to="/signin" />;
     }
 
@@ -110,7 +110,7 @@ export class Messaging extends React.Component<
         <div className={styles.messagesWrapper}>
           <Typography>Messages</Typography>
           <div className={styles.messages}>
-            {this.state.room === undefined ? (
+            {this.state.room == null ? (
               <CircularProgress />
             ) : this.state.room.id === "empty" ? (
               <Typography>No messages yet</Typography>
@@ -135,6 +135,7 @@ export class Messaging extends React.Component<
     );
   }
 
+  //TODO(jridey): Select last picked room
   getUserRooms() {
     const username = this.userContext.user.displayName;
     this.database.ref(`/users/${username}/rooms`).on("value", (snapshot) => {
@@ -142,6 +143,11 @@ export class Messaging extends React.Component<
         this.setState((state) => ({
           ...state,
           userRooms: Object.values(snapshot.val()),
+          room: {
+            id: "empty",
+            messages: [],
+            typing: [],
+          },
         }));
       } else {
         this.setState((state) => ({

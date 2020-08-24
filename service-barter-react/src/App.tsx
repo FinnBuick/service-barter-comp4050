@@ -28,8 +28,6 @@ class App extends React.Component<
   Record<string, unknown>,
   { sidebarOpen: boolean }
 > {
-  unregisterAuthObserver = null;
-
   setSidebarOpen = (open: boolean) => {
     this.setState({ sidebarOpen: open });
   };
