@@ -13,6 +13,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
+import firebase from "firebase";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
@@ -38,12 +39,20 @@ export const Header = React.memo(
       setOpen(false);
     };
 
-    function handleListKeyDown(event) {
+    const handleListKeyDown = (event) => {
       if (event.key === "Tab") {
         event.preventDefault();
         setOpen(false);
       }
-    }
+    };
+
+    const logout = () =>
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          location.reload();
+        });
 
     // return focus to the button when we transitioned from !open -> open
     const prevOpen = React.useRef(open);
@@ -139,11 +148,15 @@ export const Header = React.memo(
                           id="menu-list-grow"
                           onKeyDown={handleListKeyDown}
                         >
-                          <MenuItem component={Link} to="/profile">
+                          <MenuItem
+                            component={Link}
+                            to="/profile"
+                            onClick={handleClose}
+                          >
                             Profile
                           </MenuItem>
                           <MenuItem onClick={handleClose}>My account</MenuItem>
-                          <MenuItem onClick={handleClose}>Logout</MenuItem>
+                          <MenuItem onClick={logout}>Logout</MenuItem>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>
