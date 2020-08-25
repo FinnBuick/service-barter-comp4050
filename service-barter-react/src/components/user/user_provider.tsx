@@ -23,13 +23,21 @@ export const UserProvider = React.memo(
 
     React.useEffect(
       () =>
-        firebase.auth().onAuthStateChanged((user) =>
+        firebase.auth().onAuthStateChanged((user) => {
+          firebase.firestore().collection("users").doc(user.uid).set(
+            {
+              photoURL: user.photoURL,
+              displayName: user.displayName,
+            },
+            { merge: true },
+          );
+
           setUser({
             user,
             fetched: true,
             loggedIn: !!user,
-          }),
-        ),
+          });
+        }),
       [],
     );
 

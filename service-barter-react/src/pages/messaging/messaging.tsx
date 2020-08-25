@@ -155,8 +155,8 @@ export class Messaging extends React.Component<
 
   //TODO(jridey): Select last picked room
   getUserRooms() {
-    const username = this.userContext.user.displayName;
-    this.database.ref(`/users/${username}/rooms`).on("value", (snapshot) => {
+    const user = this.userContext.user;
+    this.database.ref(`/users/${user.uid}/rooms`).on("value", (snapshot) => {
       if (snapshot.exists()) {
         this.setState((state) => ({
           ...state,
@@ -210,10 +210,10 @@ export class Messaging extends React.Component<
       messages: [],
     });
 
-    const username = this.userContext.user.displayName;
-    this.database.ref(`/users/${username}/rooms`).push().set({
+    const user = this.userContext.user;
+    this.database.ref(`/users/${user.uid}/rooms`).push().set({
       id: roomRef.key,
-      name: username,
+      name: user.displayName,
       avatar: "",
     });
   };
