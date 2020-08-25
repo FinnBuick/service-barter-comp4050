@@ -48,19 +48,25 @@ export class Marketplace extends React.Component {
   render() {
     return (
       <div className={styles.content}>
-        <div className={styles.groupsWrapper}>
+        <div className={styles.buttonsWrapper}>
+          <div>
+            <Button className={styles.buttons} variant="contained">
+              + Add New Favour
+            </Button>
+          </div>
+          <br />
           <Typography>Groups</Typography>
           <div>
-            <Button className={styles.groupButtons} variant="contained">
+            <Button className={styles.buttons} variant="contained">
               All Groups
             </Button>
-            <Button className={styles.groupButtons} variant="contained">
+            <Button className={styles.buttons} variant="contained">
               Group A
             </Button>
-            <Button className={styles.groupButtons} variant="contained">
+            <Button className={styles.buttons} variant="contained">
               Group B
             </Button>
-            <Button className={styles.groupButtons} variant="contained">
+            <Button className={styles.buttons} variant="contained">
               Group C
             </Button>
           </div>
