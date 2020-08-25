@@ -44,6 +44,7 @@ export const Profile = React.memo(() => (
           <Typography variant="h6" style={{ color: "#0066ff" }}>
             Mqusername1234
           </Typography>
+          <Typography variant="h6">Favour points: 0</Typography>
         </div>
         <Paper elevation={6} style={{ marginTop: "50px" }}>
           <div className={styles.infoBox}>
