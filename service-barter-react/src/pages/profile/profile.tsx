@@ -12,9 +12,7 @@ export const Profile = React.memo(() => {
 
   return (
     <div className={styles.content}>
-      {!userContext.loggedIn ? (
-        <Typography variant="h3">Invalid access</Typography>
-      ) : (
+      {userContext.user && (
         <div className={styles.profile}>
           <Typography
             variant="h5"
@@ -38,15 +36,11 @@ export const Profile = React.memo(() => {
             <div>
               <div style={{ display: "inline-block" }}>
                 <Typography variant="h6">Email address</Typography>
-                <Typography variant="h6">Username</Typography>
                 <Typography variant="h6">Favour points</Typography>
               </div>
               <div style={{ display: "inline-block", marginLeft: "30px" }}>
                 <Typography variant="h6" style={{ color: "#0066ff" }}>
                   randomemail@students.mq.edu.au
-                </Typography>
-                <Typography variant="h6" style={{ color: "#0066ff" }}>
-                  Mqusername1234
                 </Typography>
                 <Typography variant="h6" style={{ color: "#0066ff" }}>
                   0
