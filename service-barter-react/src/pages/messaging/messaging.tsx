@@ -4,6 +4,7 @@ import Card from "@material-ui/core/Card";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import ForwardIcon from "@material-ui/icons/Forward";
+import classnames from "classnames";
 import * as firebase from "firebase";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
@@ -15,8 +16,8 @@ import styles from "./messaging.scss";
 type Room = {
   id: string;
   messages: {
-    user: string;
-    userAvatar: string;
+    userId: string;
+    userName: string;
     timestamp: string;
     message: string;
   }[];
@@ -126,7 +127,14 @@ export class Messaging extends React.Component<
               <Typography>No messages yet</Typography>
             ) : (
               this.state.room.messages.map((message) => (
-                <Card key={message.timestamp} className={styles.message}>
+                <Card
+                  key={message.timestamp}
+                  className={classnames(
+                    styles.message,
+                    message.userId === this.userContext.user.uid && styles.me,
+                    message.userId !== this.userContext.user.uid && styles.you,
+                  )}
+                >
                   <Typography>{message.message}</Typography>
                 </Card>
               ))
@@ -228,10 +236,10 @@ export class Messaging extends React.Component<
 
   sendMessage = (e) => {
     if (e.key === undefined || e.key === "Enter") {
-      const username = this.userContext.user.displayName;
+      const user = this.userContext.user;
       this.database.ref(`/rooms/${this.state.room.id}/messages`).push().set({
-        user: username,
-        userAvatar: "",
+        userId: user.uid,
+        userName: user.displayName,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         message: e.target.value,
       });

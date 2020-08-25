@@ -32,6 +32,17 @@
 .message {
     margin-top: 8px;
     padding: 8px;
+    width: 25%;
+}
+
+.message.me {
+    background-color: #7ef77e;
+    margin-left: auto; 
+}
+
+.message.you {
+    background-color: #89c1fb;
+    margin-right: auto; 
 }
 
 .input {
