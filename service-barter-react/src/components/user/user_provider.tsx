@@ -29,6 +29,8 @@ export const UserProvider = React.memo(
               {
                 photoURL: user.photoURL,
                 displayName: user.displayName,
+                email: user.email,
+                favourPoint: 0,
               },
               { merge: true },
             );
