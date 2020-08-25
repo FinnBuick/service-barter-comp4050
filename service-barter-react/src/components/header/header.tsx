@@ -102,15 +102,6 @@ export const Header = React.memo(
               >
                 Sign in
               </Button>
-              <Button
-                className={styles.loggedOutBtn}
-                component={Link}
-                to="/profile"
-                variant="contained"
-                style={{ marginLeft: "10px" }}
-              >
-                Profile
-              </Button>
             </div>
           )}
 
