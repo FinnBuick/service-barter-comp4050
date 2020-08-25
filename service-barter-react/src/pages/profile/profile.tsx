@@ -10,6 +10,13 @@ import styles from "./profile.scss";
 export const Profile = React.memo(() => {
   const userContext = React.useContext(UserContext);
 
+  const resetPassword = () =>
+    firebase
+      .auth()
+      .sendPasswordResetEmail(firebase.auth().currentUser.email)
+      .then(() => {
+        location.reload();
+      });
   return (
     <div className={styles.content}>
       {userContext.user && (
@@ -28,7 +35,7 @@ export const Profile = React.memo(() => {
           </Typography>
           <RoomIcon />
           <div className={styles.settingButtons}>
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={resetPassword}>
               Reset Password
             </Button>
           </div>
