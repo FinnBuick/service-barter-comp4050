@@ -31,18 +31,21 @@ export const Profile = React.memo(() => (
       <div className={styles.profileBody}>
         <div>
           <div style={{ display: "inline-block" }}>
-            <Typography variant="h6">Email address:</Typography>
-            <Typography variant="h6">Username:</Typography>
+            <Typography variant="h6">Email address</Typography>
+            <Typography variant="h6">Username</Typography>
+            <Typography variant="h6">Favour points</Typography>
           </div>
-          <div style={{ display: "inline-block", marginLeft: "20px" }}>
+          <div style={{ display: "inline-block", marginLeft: "30px" }}>
             <Typography variant="h6" style={{ color: "#0066ff" }}>
               randomemail@students.mq.edu.au
             </Typography>
             <Typography variant="h6" style={{ color: "#0066ff" }}>
               Mqusername1234
             </Typography>
+            <Typography variant="h6" style={{ color: "#0066ff" }}>
+              0
+            </Typography>
           </div>
-          <Typography variant="h6">Favour points: 0</Typography>
         </div>
         <Paper elevation={6} style={{ marginTop: "50px" }}>
           <div className={styles.infoBox}>
