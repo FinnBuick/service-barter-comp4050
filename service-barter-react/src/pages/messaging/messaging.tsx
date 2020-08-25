@@ -54,9 +54,6 @@ export class Messaging extends React.Component<
   private userContext: any;
   private roomListener?: any;
 
-  private handleDialogClose = () =>
-    this.setState((state) => ({ ...state, dialogOpen: false }));
-
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -77,12 +74,14 @@ export class Messaging extends React.Component<
   componentDidUpdate() {
     if (this.userContext != this.context) {
       this.userContext = this.context;
-      this.getUserRooms();
+      if (this.userContext.loggedIn) {
+        this.getUserRooms();
+      }
     }
   }
 
   render() {
-    if (this.userContext?.fetched && !this.userContext?.loggedIn) {
+    if (this.context?.fetched && !this.context?.loggedIn) {
       return <Redirect to="/signin" />;
     }
 
@@ -114,8 +113,8 @@ export class Messaging extends React.Component<
           </Button>
           <UserPicker
             open={this.state.dialogOpen}
-            handleClose={this.handleDialogClose}
-            onUserClick={(user) => console.log(`Clicked ${user}`)}
+            handleClose={this.closeUserDialog}
+            onUserClick={this.userSelected}
           />
         </div>
         <div className={styles.messagesWrapper}>
@@ -146,11 +145,16 @@ export class Messaging extends React.Component<
     );
   }
 
-  openUserDialog = () => {
-    this.setState((state) => ({
-      ...state,
-      dialogOpen: true,
-    }));
+  private openUserDialog = () =>
+    this.setState((state) => ({ ...state, dialogOpen: true }));
+
+  private closeUserDialog = () =>
+    this.setState((state) => ({ ...state, dialogOpen: false }));
+
+  private userSelected = (user) => {
+    this.closeUserDialog();
+
+    this.createRoom(user);
   };
 
   //TODO(jridey): Select last picked room
@@ -202,7 +206,7 @@ export class Messaging extends React.Component<
     });
   };
 
-  createRoom = () => {
+  createRoom = (otherUser) => {
     const roomRef = this.database.ref().child("/rooms").push();
     roomRef.set({
       id: roomRef.key,
@@ -211,11 +215,15 @@ export class Messaging extends React.Component<
     });
 
     const user = this.userContext.user;
-    this.database.ref(`/users/${user.uid}/rooms`).push().set({
+    const roomName = `${user.displayName}, ${otherUser.displayName}`;
+    const room = {
       id: roomRef.key,
-      name: user.displayName,
+      name: roomName,
       avatar: "",
-    });
+    };
+
+    this.database.ref(`/users/${user.uid}/rooms`).push().set(room);
+    this.database.ref(`/users/${otherUser.uid}/rooms`).push().set(room);
   };
 
   sendMessage = (e) => {

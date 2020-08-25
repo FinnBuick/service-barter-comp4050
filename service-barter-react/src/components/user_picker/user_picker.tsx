@@ -47,8 +47,8 @@ export const UserPicker = React.memo(
         .then((users) => {
           setUsers(
             users.docs
-              .map((doc) => ({ id: doc.id, ...doc.data() }))
-              .filter((user) => user.id !== userContext.user?.uid),
+              .map((doc) => ({ uid: doc.id, ...doc.data() }))
+              .filter((user) => user.uid !== userContext.user?.uid),
           );
         });
     }, [userContext]);
