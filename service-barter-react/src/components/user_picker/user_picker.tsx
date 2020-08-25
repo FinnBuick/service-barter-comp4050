@@ -10,6 +10,8 @@ import {
 import * as firebase from "firebase";
 import * as React from "react";
 
+import { UserContext } from "../user/user_provider";
+
 export const UserPicker = React.memo(
   ({
     open,
@@ -35,13 +37,21 @@ export const UserPicker = React.memo(
 
     const [users, setUsers] = React.useState([]);
 
+    const userContext = React.useContext(UserContext);
+
     React.useEffect(() => {
-      setUsers([
-        {
-          displayName: "James Ridey",
-        },
-      ]);
-    }, []);
+      firebase
+        .firestore()
+        .collection("users")
+        .get()
+        .then((users) => {
+          setUsers(
+            users.docs
+              .map((doc) => ({ id: doc.id, ...doc.data() }))
+              .filter((user) => user.id !== userContext.user?.uid),
+          );
+        });
+    }, [userContext]);
 
     return (
       <Dialog onClose={handleClose} open={open}>
