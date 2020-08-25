@@ -1,7 +1,13 @@
 import firebase from "firebase";
 import * as React from "react";
 
-export const UserContext = React.createContext({
+type UserContextProps = {
+  user?: firebase.User;
+  fetched: boolean;
+  loggedIn: boolean;
+};
+
+export const UserContext = React.createContext<UserContextProps>({
   user: null,
   fetched: false,
   loggedIn: false,

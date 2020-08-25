@@ -8,6 +8,7 @@ import * as firebase from "firebase";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 
+import { UserPicker } from "../../components/user_picker/user_picker";
 import { UserContext } from "../../components/user/user_provider";
 import styles from "./messaging.scss";
 
@@ -31,6 +32,7 @@ type UserRooms = {
 export class Messaging extends React.Component<
   Record<string, unknown>,
   {
+    dialogOpen: boolean;
     room?: Room;
     userRooms?: UserRooms[];
   }
@@ -52,9 +54,13 @@ export class Messaging extends React.Component<
   private userContext: any;
   private roomListener?: any;
 
+  private handleDialogClose = () =>
+    this.setState((state) => ({ ...state, dialogOpen: false }));
+
   constructor(props, context) {
     super(props, context);
     this.state = {
+      dialogOpen: false,
       userRooms: undefined,
       room: undefined,
     };
@@ -102,10 +108,15 @@ export class Messaging extends React.Component<
             variant="contained"
             color="primary"
             className={styles.createRoomButton}
-            onClick={this.createRoom}
+            onClick={this.openUserDialog}
           >
             Create room
           </Button>
+          <UserPicker
+            open={this.state.dialogOpen}
+            handleClose={this.handleDialogClose}
+            onUserClick={(user) => console.log(`Clicked ${user}`)}
+          />
         </div>
         <div className={styles.messagesWrapper}>
           <Typography>Messages</Typography>
@@ -134,6 +145,13 @@ export class Messaging extends React.Component<
       </div>
     );
   }
+
+  openUserDialog = () => {
+    this.setState((state) => ({
+      ...state,
+      dialogOpen: true,
+    }));
+  };
 
   //TODO(jridey): Select last picked room
   getUserRooms() {
