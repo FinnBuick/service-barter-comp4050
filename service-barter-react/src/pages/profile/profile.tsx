@@ -18,7 +18,7 @@ export const Profile = React.memo(() => {
             variant="h5"
             style={{ display: "inline-block", marginLeft: "30px" }}
           >
-            James Ivan
+            {userContext.user.displayName}
           </Typography>
           <Typography
             variant="subtitle2"
@@ -40,7 +40,7 @@ export const Profile = React.memo(() => {
               </div>
               <div style={{ display: "inline-block", marginLeft: "30px" }}>
                 <Typography variant="h6" style={{ color: "#0066ff" }}>
-                  randomemail@students.mq.edu.au
+                  {userContext.user.email}
                 </Typography>
                 <Typography variant="h6" style={{ color: "#0066ff" }}>
                   0
