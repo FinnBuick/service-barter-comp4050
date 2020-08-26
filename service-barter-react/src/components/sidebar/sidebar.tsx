@@ -36,7 +36,7 @@ export const Sidebar = React.memo(
               </ListItemIcon>
               <ListItemText primary="Messaging" />
             </ListItem>
-            <ListItem button component={Link} to="/store">
+            <ListItem button component={Link} to="/marketplace">
               <ListItemIcon>
                 <StoreIcon />
               </ListItemIcon>
