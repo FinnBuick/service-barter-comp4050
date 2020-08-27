@@ -40,7 +40,7 @@ export const Sidebar = React.memo(
               <ListItemIcon>
                 <StoreIcon />
               </ListItemIcon>
-              <ListItemText primary="Store" />
+              <ListItemText primary="Marketplace" />
             </ListItem>
           </List>
         </div>
