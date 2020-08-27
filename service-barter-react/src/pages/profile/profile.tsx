@@ -2,6 +2,7 @@ import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import RoomIcon from "@material-ui/icons/Room";
+import * as firebase from "firebase";
 import * as React from "react";
 
 import { UserContext } from "../../components/user/user_provider";
