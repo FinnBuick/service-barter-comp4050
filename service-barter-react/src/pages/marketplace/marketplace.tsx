@@ -81,12 +81,11 @@ export class Marketplace extends React.Component {
         <div className={styles.cardsWrapper}>
           <Typography>Cards</Typography>
           <Grid container spacing={2}>
-            <Grid item md={3}>
-              <this.FavourCard
-                title={"Favour 1"}
-                description={"Description 1"}
-              />
-            </Grid>
+            {this.favours.map((favour) => (
+              <Grid key={favour.title} item md={3}>
+                <this.FavourCard title={favour.title} />
+              </Grid>
+            ))}
           </Grid>
         </div>
       </div>
