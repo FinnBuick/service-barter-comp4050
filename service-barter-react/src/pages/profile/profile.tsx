@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import RoomIcon from "@material-ui/icons/Room";
 import * as firebase from "firebase";
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 import { UserContext } from "../../components/user/user_provider";
 import styles from "./profile.scss";
@@ -36,6 +37,15 @@ export const Profile = React.memo(() => {
           </Typography>
           <RoomIcon />
           <div className={styles.settingButtons}>
+            <Button
+              variant="contained"
+              color="primary"
+              component={Link}
+              to="/editProfile"
+              style={{ marginRight: "10px" }}
+            >
+              Edit profile
+            </Button>
             <Button variant="contained" color="primary" onClick={resetPassword}>
               Reset Password
             </Button>

@@ -31,6 +31,7 @@ export const UserProvider = React.memo(
                 displayName: user.displayName,
                 email: user.email,
                 favourPoint: 0,
+                address: "Macquarie Park, NSW Australia",
                 skillList: [],
               },
               { merge: true },

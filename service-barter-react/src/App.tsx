@@ -14,6 +14,7 @@ import { Home } from "./pages/home/home";
 import { Marketplace } from "./pages/marketplace/marketplace";
 import { Messaging } from "./pages/messaging/messaging";
 import { NoMatch } from "./pages/nomatch/nomatch";
+import { EditProfile } from "./pages/profile/editProfile";
 import { Profile } from "./pages/profile/profile";
 import { Signin } from "./pages/signin/signin";
 
@@ -70,6 +71,10 @@ class App extends React.Component<
 
               <Route path="/profile">
                 <Profile />
+              </Route>
+
+              <Route path="/editProfile">
+                <EditProfile />
               </Route>
 
               <Route path="/signin">
