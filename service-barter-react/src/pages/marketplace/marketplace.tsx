@@ -12,7 +12,12 @@ import * as React from "react";
 import styles from "./marketplace.scss";
 
 export class Marketplace extends React.Component {
-  private FavourCard = React.memo(() => {
+  favours = [
+    { title: "title", description: "" },
+    { title: "title", description: "" },
+    { title: "title", description: "" },
+  ];
+  FavourCard = (props) => {
     return (
       <Paper>
         <Card>
@@ -22,7 +27,7 @@ export class Marketplace extends React.Component {
                 A
               </Avatar>
             }
-            title="Title"
+            title={props.title}
             subheader="September 14, 2016"
           />
           <CardContent>
@@ -34,7 +39,7 @@ export class Marketplace extends React.Component {
               Location
             </Typography>
             <Typography variant="body2" component="p">
-              Description
+              {props.description}
             </Typography>
           </CardContent>
           <CardActions>
@@ -43,7 +48,8 @@ export class Marketplace extends React.Component {
         </Card>
       </Paper>
     );
-  });
+  };
+  MemoFavourCard = React.memo(this.FavourCard);
 
   render() {
     return (
@@ -76,7 +82,10 @@ export class Marketplace extends React.Component {
           <Typography>Cards</Typography>
           <Grid container spacing={2}>
             <Grid item md={3}>
-              <this.FavourCard />
+              <this.FavourCard
+                title={"Favour 1"}
+                description={"Description 1"}
+              />
             </Grid>
           </Grid>
         </div>
