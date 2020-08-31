@@ -31,6 +31,7 @@ export const UserProvider = React.memo(
                 displayName: user.displayName,
                 email: user.email,
                 favourPoint: 0,
+                skillList: [],
               },
               { merge: true },
             );
