@@ -11,18 +11,6 @@ import styles from "./profile.scss";
 
 export const Profile = React.memo(() => {
   const userContext = React.useContext(UserContext);
-  const [userData, setUserData] = React.useState(null);
-
-  if (userContext.user) {
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(userContext.user.uid)
-      .get()
-      .then((doc) => {
-        setUserData(doc.data());
-      });
-  }
 
   const resetPassword = () =>
     firebase
@@ -34,7 +22,7 @@ export const Profile = React.memo(() => {
 
   return (
     <div className={styles.content}>
-      {userContext.user && userData && (
+      {userContext.user && (
         <div className={styles.profile}>
           <Typography
             variant="h5"
@@ -46,7 +34,7 @@ export const Profile = React.memo(() => {
             variant="subtitle2"
             style={{ display: "inline-block", marginLeft: "20px" }}
           >
-            {userData.address}
+            {userContext.user.address}
           </Typography>
           <RoomIcon />
           <div className={styles.settingButtons}>

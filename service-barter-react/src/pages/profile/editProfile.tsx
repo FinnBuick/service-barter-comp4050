@@ -1,5 +1,5 @@
 import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import RoomIcon from "@material-ui/icons/Room";
 import * as firebase from "firebase";
@@ -11,6 +11,31 @@ import styles from "./profile.scss";
 
 export const EditProfile = React.memo(() => {
   const userContext = React.useContext(UserContext);
+  const [newData, setNewData] = React.useState({
+    name: null,
+    address: null,
+    email: null,
+  });
+
+  if (userContext.user && newData.name === null) {
+    setNewData({
+      name: userContext.user.displayName,
+      address: userContext.user.address,
+      email: userContext.user.email,
+    });
+  }
+
+  const onChange = (e) => {
+    setNewData({ ...newData, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = () => {
+    firebase.firestore().collection("users").doc(userContext.user.uid).update({
+      displayName: newData.name,
+      address: newData.address,
+      email: newData.email,
+    });
+  };
 
   return (
     <div className={styles.content}>
@@ -26,7 +51,7 @@ export const EditProfile = React.memo(() => {
             variant="subtitle2"
             style={{ display: "inline-block", marginLeft: "20px" }}
           >
-            Macquarie Park, NSW Australia
+            {userContext.user.address}
           </Typography>
           <RoomIcon />
           <div className={styles.settingButtons}>
@@ -34,6 +59,9 @@ export const EditProfile = React.memo(() => {
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
+              onClick={onSubmit}
+              component={Link}
+              to="/profile"
             >
               Change Profile
             </Button>
@@ -48,15 +76,32 @@ export const EditProfile = React.memo(() => {
           </div>
           <div className={styles.profileBody}>
             <div style={{ display: "inline-block" }}>
+              <Typography variant="h6">Name</Typography>
+              <Typography variant="h6">Address</Typography>
               <Typography variant="h6">Email address</Typography>
               <Typography variant="h6">Favour points</Typography>
             </div>
-            <div style={{ display: "inline-block", marginLeft: "30px" }}>
+            <div style={{ display: "inline-block", marginLeft: "50px" }}>
+              <TextField
+                name="name"
+                defaultValue={userContext.user.displayName}
+                style={{ display: "block" }}
+                onChange={(e) => onChange(e)}
+              />
+              <TextField
+                name="address"
+                defaultValue={userContext.user.address}
+                style={{ display: "block" }}
+                onChange={(e) => onChange(e)}
+              />
+              <TextField
+                name="email"
+                defaultValue={userContext.user.email}
+                style={{ display: "block" }}
+                onChange={(e) => onChange(e)}
+              />
               <Typography variant="h6" style={{ color: "#0066ff" }}>
-                {userContext.user.email}
-              </Typography>
-              <Typography variant="h6" style={{ color: "#0066ff" }}>
-                0
+                {userContext.user.favourPoint}
               </Typography>
             </div>
           </div>
