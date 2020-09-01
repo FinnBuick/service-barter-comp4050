@@ -6,6 +6,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import Grid from "@material-ui/core/Grid";
+import Modal from "@material-ui/core/Modal";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
@@ -39,6 +40,7 @@ export class Marketplace extends React.Component<
   {
     favourList: Favour[];
     userMapping: Map<string, User>;
+    openModal: boolean;
   }
 > {
   static contextType = UserContext;
@@ -50,9 +52,33 @@ export class Marketplace extends React.Component<
     this.state = {
       favourList: undefined,
       userMapping: new Map(),
+      openModal: false,
     };
     this.userContext = context;
   }
+
+  handleClose = () => {
+    this.setState({ openModal: false });
+  };
+
+  private learnMoreModal = () => (
+    <Modal
+      className={styles.learnModal}
+      open={this.state.openModal}
+      onClose={this.handleClose}
+      aria-labelledby="simple-modal-title"
+      aria-describedby="simple-modal-description"
+    >
+      <Paper className={styles.modalPaper}>
+        <Typography variant="h5" id="simple-modal-title">
+          Test favour
+        </Typography>
+        <Typography variant="body2" id="simple-modal-description">
+          Test description
+        </Typography>
+      </Paper>
+    </Modal>
+  );
 
   private formatDate = (date: Date) => (
     <>
@@ -87,7 +113,12 @@ export class Marketplace extends React.Component<
             <Typography variant="body2" component="p"></Typography>
           </CardContent>
           <CardActions>
-            <Button size="small">Learn More</Button>
+            <Button
+              size="small"
+              onClick={() => this.setState({ openModal: true })}
+            >
+              Learn More
+            </Button>
           </CardActions>
         </Card>
       </Paper>
@@ -165,6 +196,7 @@ export class Marketplace extends React.Component<
                         favour={favour}
                         user={this.state.userMapping.get(favour.ownerUid)}
                       />
+                      <this.learnMoreModal />
                     </Grid>
                   ))}
                 </>
