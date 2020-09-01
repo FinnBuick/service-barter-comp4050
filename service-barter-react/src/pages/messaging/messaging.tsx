@@ -293,7 +293,7 @@ export class Messaging extends React.Component<
     });
   };
 
-  createRoom = (otherUser: firebase.User) => {
+  createRoom = (otherUser: User) => {
     const roomRef = this.database.ref().child("/rooms").push();
     const roomId = roomRef.key;
     const user = this.userContext.user;

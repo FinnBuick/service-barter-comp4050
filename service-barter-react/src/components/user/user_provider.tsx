@@ -1,8 +1,18 @@
 import firebase from "firebase";
 import * as React from "react";
 
+export type User = {
+  uid: string;
+  photoURL: string;
+  displayName: string;
+  email: string;
+  favourPoint: number;
+  address: string;
+  skillList: string[];
+};
+
 export type UserContextProps = {
-  user?: firebase.User;
+  user?: User;
   fetched: boolean;
   loggedIn: boolean;
 };
@@ -24,22 +34,27 @@ export const UserProvider = React.memo(
     React.useEffect(
       () =>
         firebase.auth().onAuthStateChanged((user) => {
+          let newUser = null;
           if (user) {
-            firebase.firestore().collection("users").doc(user.uid).set(
-              {
-                photoURL: user.photoURL,
-                displayName: user.displayName,
-                email: user.email,
-                favourPoint: 0,
-                address: "Macquarie Park, NSW Australia",
-                skillList: [],
-              },
-              { merge: true },
-            );
+            newUser = {
+              uid: user.uid,
+              photoURL: user.photoURL,
+              displayName: user.displayName,
+              email: user.email,
+              favourPoint: 0,
+              address: "Macquarie Park, NSW Australia",
+              skillList: [],
+            } as User;
+
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(user.uid)
+              .set(newUser, { merge: true });
           }
 
           setUser({
-            user,
+            user: newUser,
             fetched: true,
             loggedIn: !!user,
           });

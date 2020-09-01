@@ -61,7 +61,7 @@ export const Profile = React.memo(() => {
                   {userContext.user.email}
                 </Typography>
                 <Typography variant="h6" style={{ color: "#0066ff" }}>
-                  0
+                  {userContext.user.favourPoint}
                 </Typography>
               </div>
             </div>
