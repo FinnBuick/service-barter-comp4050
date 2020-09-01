@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { CircularProgress } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -12,67 +13,67 @@ import * as firebase from "firebase";
 import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
-import { UserContext } from "../../components/user/user_provider";
+import {
+  UserContext,
+  UserContextProps,
+} from "../../components/user/user_provider";
 import styles from "./marketplace.scss";
 
-type Favours = {
+type Favour = {
   id: string;
   title: string;
+  cost: number;
 };
+
 export class Marketplace extends React.Component<
   unknown,
   {
-    id: undefined;
-    favourList: Favours[];
+    favourList: Favour[];
   }
 > {
   static contextType = UserContext;
-  private database?: firebase.database.Database;
-  private userContext: any;
-  private favourListener?: any;
+  private favoursDb?: firebase.firestore.CollectionReference;
+  private userContext: UserContextProps;
 
   constructor(props, context) {
     super(props, context);
     this.state = {
-      id: undefined,
       favourList: undefined,
     };
     this.userContext = context;
   }
 
-  private FavourCard = React.memo(({ favour }: { favour: Favours }) => {
-    return (
-      <Paper>
-        <Card>
-          <CardHeader
-            avatar={
-              <Avatar aria-label="recipe" className={styles.avatar}>
-                A
-              </Avatar>
-            }
-            title={favour.title}
-            subheader="September 14, 2016"
-          />
-          <CardContent>
-            <Typography
-              variant="body2"
-              className={styles.pos}
-              color="textSecondary"
-            >
-              Location
-            </Typography>
-            <Typography variant="body2" component="p"></Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-      </Paper>
-    );
-  });
+  private FavourCard = React.memo(({ favour }: { favour: Favour }) => (
+    <Paper>
+      <Card>
+        <CardHeader
+          avatar={
+            <Avatar aria-label="recipe" className={styles.avatar}>
+              A
+            </Avatar>
+          }
+          title={favour.title}
+          subheader="September 14, 2016"
+        />
+        <CardContent>
+          <Typography
+            variant="body2"
+            className={styles.pos}
+            color="textSecondary"
+          >
+            Location
+          </Typography>
+          <Typography variant="body2" component="p"></Typography>
+        </CardContent>
+        <CardActions>
+          <Button size="small">Learn More</Button>
+        </CardActions>
+      </Card>
+    </Paper>
+  ));
 
   componentDidMount() {
-    this.database = firebase.database();
+    this.favoursDb = firebase.firestore().collection("favours");
     if (this.userContext.loggedIn) {
       this.getFavours();
     }
@@ -86,6 +87,7 @@ export class Marketplace extends React.Component<
       }
     }
   }
+
   render() {
     return (
       <div className={styles.content}>
@@ -147,38 +149,32 @@ export class Marketplace extends React.Component<
 
   getFavours() {
     const user = this.userContext.user;
-    this.database.ref(`/users/${user.uid}/favours`).on("value", (snapshot) => {
-      if (snapshot.exists()) {
+    this.favoursDb
+      .doc(user.uid)
+      .collection("favourList")
+      .get()
+      .then((value) => {
         this.setState((state) => ({
           ...state,
-          id: undefined,
-          favourList: Object.values(snapshot.val()),
+          favourList: value.docs.map((doc) => doc.data() as Favour),
         }));
-      } else {
-        this.setState((state) => ({
-          ...state,
-          id: undefined,
-          favourList: [],
-        }));
-      }
-    });
+      });
   }
 
   createFavour = () => {
-    const favourRef = this.database.ref().child("/favours").push();
-    favourRef.set({
-      id: favourRef.key,
-      favourList: [],
-    });
+    const favour = {
+      title: "Test favour",
+      cost: 100,
+    } as Favour;
 
     const user = this.userContext.user;
-    console.log(user);
-    const favourName = `${"word"}${"word"}`;
-    const favour = {
-      id: favourRef.key,
-      name: favourName,
-    };
+    const doc = this.favoursDb.doc(user.uid);
 
-    this.database.ref(`/users/${user.uid}/favours`).push().set(favour);
+    doc.collection("favourList").add(favour);
+
+    this.setState((state) => ({
+      ...state,
+      favourList: [...this.state.favourList, favour],
+    }));
   };
 }
