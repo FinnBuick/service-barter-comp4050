@@ -11,6 +11,18 @@ import styles from "./profile.scss";
 
 export const Profile = React.memo(() => {
   const userContext = React.useContext(UserContext);
+  const [userData, setUserData] = React.useState(null);
+
+  if (userContext.user) {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(userContext.user.uid)
+      .get()
+      .then((doc) => {
+        setUserData(doc.data());
+      });
+  }
 
   const resetPassword = () =>
     firebase
@@ -21,7 +33,7 @@ export const Profile = React.memo(() => {
       });
   return (
     <div className={styles.content}>
-      {userContext.user && (
+      {userContext.user && userData && (
         <div className={styles.profile}>
           <Typography
             variant="h5"
@@ -33,7 +45,7 @@ export const Profile = React.memo(() => {
             variant="subtitle2"
             style={{ display: "inline-block", marginLeft: "20px" }}
           >
-            Macquarie Park, NSW Australia
+            {userData.address}
           </Typography>
           <RoomIcon />
           <div className={styles.settingButtons}>
@@ -61,7 +73,7 @@ export const Profile = React.memo(() => {
                   {userContext.user.email}
                 </Typography>
                 <Typography variant="h6" style={{ color: "#0066ff" }}>
-                  0
+                  {userData.favourPoint}
                 </Typography>
               </div>
             </div>
