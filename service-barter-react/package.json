@@ -71,6 +71,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "classnames": "^2.2.6",
     "eslint-plugin-simple-import-sort": "^5.0.3",
     "firebase": "^7.17.2",
