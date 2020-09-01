@@ -31,6 +31,7 @@ export const Profile = React.memo(() => {
       .then(() => {
         location.reload();
       });
+
   return (
     <div className={styles.content}>
       {userContext.user && userData && (
