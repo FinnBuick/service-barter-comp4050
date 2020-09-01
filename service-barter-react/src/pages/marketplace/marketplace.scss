@@ -10,12 +10,15 @@
 }
 
 .buttons {
-    display: block;
     margin-top: 8px;
     width: 100%;
 }
 
-.cardsWrapper {
+.cards {
     display: flex;
     flex-direction: column;
+}
+
+.cardsWrapper {
+    padding: 4px;
 }

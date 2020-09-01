@@ -9,6 +9,7 @@ import CardHeader from "@material-ui/core/CardHeader";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
+import AddIcon from "@material-ui/icons/Add";
 import * as firebase from "firebase";
 import * as React from "react";
 import RSC from "react-scrollbars-custom";
@@ -22,6 +23,9 @@ import styles from "./marketplace.scss";
 type Favour = {
   id: string;
   title: string;
+  owner: string;
+  ownerPhotoUrl: string;
+  timestamp: firebase.firestore.Timestamp;
   cost: number;
 };
 
@@ -96,9 +100,11 @@ export class Marketplace extends React.Component<
             <Button
               className={styles.buttons}
               variant="contained"
-              onClick={this.createFavour}
+              color="primary"
+              onClick={this.openFavourDialog}
+              startIcon={<AddIcon />}
             >
-              + Add New Favour
+              Add New Favour
             </Button>
           </div>
           <br />
@@ -118,34 +124,40 @@ export class Marketplace extends React.Component<
             </Button>
           </div>
         </div>
-        <div className={styles.cardsWrapper}>
+        <div className={styles.cards}>
           <Typography>Cards</Typography>
-          <RSC id="RSC-Example" style={{ width: "100%", height: "100%" }}>
-            <Grid container spacing={2}>
-              <Grid item md={3}>
-                {this.state.favourList == null ? (
-                  <>
-                    <CircularProgress />
-                    <br />
-                  </>
-                ) : this.state.favourList.length === 0 ? (
+          <RSC noScrollX>
+            <Grid className={styles.cardsWrapper} container spacing={2}>
+              {this.state.favourList == null ? (
+                <Grid item xs={6} sm={4} zeroMinWidth>
+                  <CircularProgress />
+                  <br />
+                </Grid>
+              ) : this.state.favourList.length === 0 ? (
+                <Grid item xs={6} sm={4} zeroMinWidth>
                   <Typography>
                     There are no favours, start by creating one!
                   </Typography>
-                ) : (
-                  <>
-                    {this.state.favourList.map((favour) => (
-                      <this.FavourCard key={favour.id} favour={favour} />
-                    ))}
-                  </>
-                )}
-              </Grid>
+                </Grid>
+              ) : (
+                <>
+                  {this.state.favourList.map((favour) => (
+                    <Grid key={favour.id} item xs={6} sm={4} zeroMinWidth>
+                      <this.FavourCard favour={favour} />
+                    </Grid>
+                  ))}
+                </>
+              )}
             </Grid>
           </RSC>
         </div>
       </div>
     );
   }
+
+  openFavourDialog = () => {
+    this.createFavour("Test favour", 100);
+  };
 
   getFavours() {
     const user = this.userContext.user;
@@ -156,18 +168,23 @@ export class Marketplace extends React.Component<
       .then((value) => {
         this.setState((state) => ({
           ...state,
-          favourList: value.docs.map((doc) => doc.data() as Favour),
+          favourList: value.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as Favour),
+          ),
         }));
       });
   }
 
-  createFavour = () => {
+  createFavour = (title: string, cost: number) => {
+    const user = this.userContext.user;
     const favour = {
-      title: "Test favour",
-      cost: 100,
+      title,
+      owner: user.uid,
+      ownerPhotoUrl: user.photoURL,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      cost,
     } as Favour;
 
-    const user = this.userContext.user;
     const doc = this.favoursDb.doc(user.uid);
 
     doc.collection("favourList").add(favour);
