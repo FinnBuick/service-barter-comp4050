@@ -1,4 +1,4 @@
-import { CardActionArea, CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -10,6 +10,7 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import * as firebase from "firebase";
 import * as React from "react";
+import RSC from "react-scrollbars-custom";
 
 import { UserContext } from "../../components/user/user_provider";
 import styles from "./marketplace.scss";
@@ -117,26 +118,28 @@ export class Marketplace extends React.Component<
         </div>
         <div className={styles.cardsWrapper}>
           <Typography>Cards</Typography>
-          <Grid container spacing={2}>
-            <Grid item md={3}>
-              {this.state.favourList == null ? (
-                <>
-                  <CircularProgress />
-                  <br />
-                </>
-              ) : this.state.favourList.length === 0 ? (
-                <Typography>
-                  There are no favours, start by creating one!
-                </Typography>
-              ) : (
-                <>
-                  {this.state.favourList.map((favour) => (
-                    <this.FavourCard key={favour.id} favour={favour} />
-                  ))}
-                </>
-              )}
+          <RSC id="RSC-Example" style={{ width: "100%", height: "100%" }}>
+            <Grid container spacing={2}>
+              <Grid item md={3}>
+                {this.state.favourList == null ? (
+                  <>
+                    <CircularProgress />
+                    <br />
+                  </>
+                ) : this.state.favourList.length === 0 ? (
+                  <Typography>
+                    There are no favours, start by creating one!
+                  </Typography>
+                ) : (
+                  <>
+                    {this.state.favourList.map((favour) => (
+                      <this.FavourCard key={favour.id} favour={favour} />
+                    ))}
+                  </>
+                )}
+              </Grid>
             </Grid>
-          </Grid>
+          </RSC>
         </div>
       </div>
     );
