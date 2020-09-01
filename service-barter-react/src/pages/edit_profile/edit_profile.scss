@@ -1,0 +1,44 @@
+.content {
+    padding: 8px;
+    width: 100%;
+}
+
+.profile {
+    border: solid 2px;
+    border-color: #09f;
+    border-radius: 15px;
+    margin: 20px auto 0;
+    max-width: 900px;
+    padding: 20px;
+}
+
+.settingButtons {
+    display: inline-block;
+    float: right;
+    margin-left: 30px;
+}
+
+.profileBody {
+    margin-left: 30px;
+    margin-top: 30px;
+}
+
+.infoBox {
+    padding: 20px;
+}
+
+.inputField {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.text {
+    flex: 1 0 135px;
+    margin-right: 16px;
+    max-width: 135px;
+}
+
+.textField {
+    flex: 1 0 500px;
+}

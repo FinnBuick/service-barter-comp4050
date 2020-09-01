@@ -7,7 +7,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 
 import { UserContext } from "../../components/user/user_provider";
-import styles from "./profile.scss";
+import styles from "./edit_profile.scss";
 
 export const EditProfile = React.memo(() => {
   const userContext = React.useContext(UserContext);
@@ -75,34 +75,38 @@ export const EditProfile = React.memo(() => {
             </Button>
           </div>
           <div className={styles.profileBody}>
-            <div style={{ display: "inline-block" }}>
-              <Typography variant="h6">Name</Typography>
-              <Typography variant="h6">Address</Typography>
-              <Typography variant="h6">Email address</Typography>
-              <Typography variant="h6">Favour points</Typography>
-            </div>
-            <div style={{ display: "inline-block", marginLeft: "50px" }}>
+            <div className={styles.inputField}>
+              <Typography className={styles.text} variant="h6">
+                Name
+              </Typography>
               <TextField
+                className={styles.textField}
                 name="name"
                 defaultValue={userContext.user.displayName}
-                style={{ display: "block" }}
                 onChange={(e) => onChange(e)}
               />
+            </div>
+            <div className={styles.inputField}>
+              <Typography className={styles.text} variant="h6">
+                Address
+              </Typography>
               <TextField
+                className={styles.textField}
                 name="address"
                 defaultValue={userContext.user.address}
-                style={{ display: "block" }}
                 onChange={(e) => onChange(e)}
               />
+            </div>
+            <div className={styles.inputField}>
+              <Typography className={styles.text} variant="h6">
+                Email address
+              </Typography>
               <TextField
+                className={styles.textField}
                 name="email"
                 defaultValue={userContext.user.email}
-                style={{ display: "block" }}
                 onChange={(e) => onChange(e)}
               />
-              <Typography variant="h6" style={{ color: "#0066ff" }}>
-                {userContext.user.favourPoint}
-              </Typography>
             </div>
           </div>
         </div>

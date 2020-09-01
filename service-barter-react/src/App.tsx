@@ -10,11 +10,11 @@ import { Footer } from "./components/footer/footer";
 import { Header } from "./components/header/header";
 import { Sidebar } from "./components/sidebar/sidebar";
 import { UserProvider } from "./components/user/user_provider";
+import { EditProfile } from "./pages/edit_profile/edit_profile";
 import { Home } from "./pages/home/home";
 import { Marketplace } from "./pages/marketplace/marketplace";
 import { Messaging } from "./pages/messaging/messaging";
 import { NoMatch } from "./pages/nomatch/nomatch";
-import { EditProfile } from "./pages/profile/editProfile";
 import { Profile } from "./pages/profile/profile";
 import { Signin } from "./pages/signin/signin";
 
