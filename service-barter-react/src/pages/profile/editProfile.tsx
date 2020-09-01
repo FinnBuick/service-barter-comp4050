@@ -29,6 +29,14 @@ export const EditProfile = React.memo(() => {
     setNewData({ ...newData, [e.target.name]: e.target.value });
   };
 
+  const onSubmit = () => {
+    firebase.firestore().collection("users").doc(userContext.user.uid).update({
+      displayName: newData.name,
+      address: newData.address,
+      email: newData.email,
+    });
+  };
+
   return (
     <div className={styles.content}>
       {userContext.user && (
@@ -51,6 +59,9 @@ export const EditProfile = React.memo(() => {
               variant="contained"
               color="primary"
               style={{ marginRight: "10px" }}
+              onClick={onSubmit}
+              component={Link}
+              to="/profile"
             >
               Change Profile
             </Button>
