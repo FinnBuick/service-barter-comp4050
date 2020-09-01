@@ -33,31 +33,37 @@ export const UserProvider = React.memo(
 
     React.useEffect(
       () =>
-        firebase.auth().onAuthStateChanged((user) => {
-          let newUser = null;
-          if (user) {
-            newUser = {
-              uid: user.uid,
-              photoURL: user.photoURL,
-              displayName: user.displayName,
-              email: user.email,
+        firebase.auth().onAuthStateChanged((firebaseUser) => {
+          let user = null;
+          if (firebaseUser) {
+            user = {
+              uid: firebaseUser.uid,
+              photoURL: firebaseUser.photoURL,
+              displayName: firebaseUser.displayName,
+              email: firebaseUser.email,
               favourPoint: 0,
               address: "Macquarie Park, NSW Australia",
               skillList: [],
             } as User;
 
-            firebase
+            const ref = firebase
               .firestore()
               .collection("users")
-              .doc(user.uid)
-              .set(newUser, { merge: true });
-          }
+              .doc(firebaseUser.uid);
+            ref.get().then((value) => {
+              if (value.exists) {
+                user = value.data();
+              } else {
+                ref.set(user, { merge: true });
+              }
 
-          setUser({
-            user: newUser,
-            fetched: true,
-            loggedIn: !!user,
-          });
+              setUser({
+                user,
+                fetched: true,
+                loggedIn: !!firebaseUser,
+              });
+            });
+          }
         }),
       [],
     );

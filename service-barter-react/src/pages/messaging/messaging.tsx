@@ -77,7 +77,7 @@ export class Messaging extends React.Component<
   private userContext: UserContextProps;
   private roomDeleteId: string;
   private roomListener?: any;
-  private inputRef: React.Ref<HTMLInputElement>;
+  private inputRef: React.RefObject<HTMLInputElement>;
 
   constructor(props, context) {
     super(props, context);
@@ -293,7 +293,7 @@ export class Messaging extends React.Component<
     });
   };
 
-  createRoom = (otherUser: User) => {
+  createRoom = (otherUser: firebase.User) => {
     const roomRef = this.database.ref().child("/rooms").push();
     const roomId = roomRef.key;
     const user = this.userContext.user;
