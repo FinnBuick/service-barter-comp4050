@@ -15,6 +15,7 @@ import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
 import {
+  User,
   UserContext,
   UserContextProps,
 } from "../../components/user/user_provider";
@@ -23,10 +24,8 @@ import styles from "./marketplace.scss";
 type Favour = {
   id: string;
   title: string;
-  owner: string;
-  ownerName: string;
-  ownerPhotoUrl: string;
   cost: number;
+  ownerUid: string;
 
   timestamp: firebase.firestore.Timestamp;
   roughLocation: string;
@@ -39,6 +38,7 @@ export class Marketplace extends React.Component<
   unknown,
   {
     favourList: Favour[];
+    userMapping: Map<string, User>;
   }
 > {
   static contextType = UserContext;
@@ -49,6 +49,7 @@ export class Marketplace extends React.Component<
     super(props, context);
     this.state = {
       favourList: undefined,
+      userMapping: new Map(),
     };
     this.userContext = context;
   }
@@ -61,35 +62,37 @@ export class Marketplace extends React.Component<
     </>
   );
 
-  private FavourCard = React.memo(({ favour }: { favour: Favour }) => (
-    <Paper>
-      <Card>
-        <CardHeader
-          avatar={
-            <Avatar
-              src={favour.ownerPhotoUrl || "invalid"}
-              alt={favour.ownerName}
-            />
-          }
-          title={favour.title}
-          subheader={this.formatDate(favour.timestamp.toDate())}
-        />
-        <CardContent>
-          <Typography
-            variant="body2"
-            className={styles.pos}
-            color="textSecondary"
-          >
-            Location: {favour.roughLocation}
-          </Typography>
-          <Typography variant="body2" component="p"></Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="small">Learn More</Button>
-        </CardActions>
-      </Card>
-    </Paper>
-  ));
+  private FavourCard = React.memo(
+    ({ favour, user }: { favour: Favour; user: User }) => (
+      <Paper>
+        <Card>
+          <CardHeader
+            avatar={
+              <Avatar
+                src={user?.photoURL || "invalid"}
+                alt={user?.displayName}
+              />
+            }
+            title={favour.title}
+            subheader={this.formatDate(favour.timestamp.toDate())}
+          />
+          <CardContent>
+            <Typography
+              variant="body2"
+              className={styles.pos}
+              color="textSecondary"
+            >
+              Location: {favour.roughLocation}
+            </Typography>
+            <Typography variant="body2" component="p"></Typography>
+          </CardContent>
+          <CardActions>
+            <Button size="small">Learn More</Button>
+          </CardActions>
+        </Card>
+      </Paper>
+    ),
+  );
 
   componentDidMount() {
     this.favoursDb = firebase.firestore().collection("favours");
@@ -158,7 +161,10 @@ export class Marketplace extends React.Component<
                 <>
                   {this.state.favourList.map((favour) => (
                     <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
-                      <this.FavourCard favour={favour} />
+                      <this.FavourCard
+                        favour={favour}
+                        user={this.state.userMapping.get(favour.ownerUid)}
+                      />
                     </Grid>
                   ))}
                 </>
@@ -185,14 +191,42 @@ export class Marketplace extends React.Component<
       .collection("favourList")
       .get()
       .then((value) => {
+        const favourList = value.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() } as Favour))
+          .sort((f1, f2) =>
+            compareDesc(f1.timestamp.toDate(), f2.timestamp.toDate()),
+          );
+
         this.setState((state) => ({
           ...state,
-          favourList: value.docs
-            .map((doc) => ({ id: doc.id, ...doc.data() } as Favour))
-            .sort((f1, f2) =>
-              compareDesc(f1.timestamp.toDate(), f2.timestamp.toDate()),
-            ),
+          favourList,
         }));
+
+        const getUsersPromises = favourList.map((favour) => {
+          const ownerUid = favour.ownerUid;
+
+          let promise: Promise<void | any> = Promise.resolve();
+          if (!this.state.userMapping.has(ownerUid)) {
+            promise = firebase
+              .firestore()
+              .collection("users")
+              .doc(ownerUid)
+              .get();
+            promise.then((value) => {
+              if (!value.exists) return;
+
+              const user = value.data();
+              this.state.userMapping.set(ownerUid, user);
+            });
+          }
+          return promise;
+        });
+        Promise.all(getUsersPromises).then(() =>
+          this.setState((state) => ({
+            ...state,
+            userMapping: new Map(this.state.userMapping),
+          })),
+        );
       });
   }
 
@@ -200,9 +234,7 @@ export class Marketplace extends React.Component<
     const user = this.userContext.user;
     const favour = {
       title,
-      owner: user.uid,
-      ownerName: user.displayName,
-      ownerPhotoUrl: user.photoURL,
+      ownerUid: user.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       roughLocation: "Macquaire Park",
       actualLocation: location,
