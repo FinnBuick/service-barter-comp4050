@@ -1,7 +1,7 @@
 import firebase from "firebase";
 import * as React from "react";
 
-type UserContextProps = {
+export type UserContextProps = {
   user?: firebase.User;
   fetched: boolean;
   loggedIn: boolean;

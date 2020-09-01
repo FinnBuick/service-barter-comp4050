@@ -1,16 +1,29 @@
-import { CardActionArea, CircularProgress } from "@material-ui/core";
+import {
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
+import List from "@material-ui/core/List";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
+import DeleteIcon from "@material-ui/icons/Delete";
 import ForwardIcon from "@material-ui/icons/Forward";
 import classnames from "classnames";
 import * as firebase from "firebase";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 
+import { ConfirmDialog } from "../../components/confirm_dialog/confirm_dialog";
 import { UserPicker } from "../../components/user_picker/user_picker";
-import { UserContext } from "../../components/user/user_provider";
+import {
+  UserContext,
+  UserContextProps,
+} from "../../components/user/user_provider";
 import styles from "./messaging.scss";
 
 type Room = {
@@ -21,6 +34,7 @@ type Room = {
     timestamp: string;
     message: string;
   }[];
+  users: string[];
   typing: string[];
 };
 
@@ -33,7 +47,8 @@ type UserRooms = {
 export class Messaging extends React.Component<
   Record<string, unknown>,
   {
-    dialogOpen: boolean;
+    userDialogOpen: boolean;
+    deleteDialogOpen: boolean;
     room?: Room;
     userRooms?: UserRooms[];
   }
@@ -42,27 +57,38 @@ export class Messaging extends React.Component<
 
   private RoomCard = React.memo(({ room }: { room: UserRooms }) => {
     const onClick = () => this.newRoomSelected(room.id);
+    const onDeleteClick = () => this.openDeleteDialog(room.id);
+
     return (
-      <Card className={styles.room} onClick={onClick}>
-        <CardActionArea>
-          <Typography>Room: {room.name}</Typography>
-        </CardActionArea>
+      <Card className={styles.room}>
+        <ListItem button onClick={onClick}>
+          <ListItemText primary={room.name} />
+          <ListItemSecondaryAction>
+            <IconButton onClick={onDeleteClick}>
+              <DeleteIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
       </Card>
     );
   });
 
   private database?: firebase.database.Database;
-  private userContext: any;
+  private userContext: UserContextProps;
+  private roomDeleteId: string;
   private roomListener?: any;
+  private inputRef: React.Ref<HTMLInputElement>;
 
   constructor(props, context) {
     super(props, context);
     this.state = {
-      dialogOpen: false,
+      userDialogOpen: false,
+      deleteDialogOpen: false,
       userRooms: undefined,
       room: undefined,
     };
     this.userContext = context;
+    this.inputRef = React.createRef();
   }
 
   componentDidMount() {
@@ -88,6 +114,12 @@ export class Messaging extends React.Component<
 
     return (
       <div className={styles.content}>
+        <ConfirmDialog
+          title="Are you sure you want to delete this room?"
+          open={this.state.deleteDialogOpen}
+          handleClose={this.closeDeleteDialog}
+          onConfirm={this.roomDeleteConfirm}
+        />
         <div className={styles.roomsWrapper}>
           <Typography>Rooms</Typography>
           {this.state.userRooms == null ? (
@@ -98,11 +130,11 @@ export class Messaging extends React.Component<
           ) : this.state.userRooms.length === 0 ? (
             <Typography>There are no rooms, start by creating one!</Typography>
           ) : (
-            <>
+            <List>
               {this.state.userRooms.map((room) => (
                 <this.RoomCard key={room.id} room={room} />
               ))}
-            </>
+            </List>
           )}
           <Button
             variant="contained"
@@ -113,7 +145,7 @@ export class Messaging extends React.Component<
             Create room
           </Button>
           <UserPicker
-            open={this.state.dialogOpen}
+            open={this.state.userDialogOpen}
             handleClose={this.closeUserDialog}
             onUserClick={this.userSelected}
           />
@@ -124,7 +156,7 @@ export class Messaging extends React.Component<
             {this.state.room == null ? (
               <CircularProgress />
             ) : this.state.room.id === "empty" ? (
-              <Typography>No messages yet</Typography>
+              <Typography>Please select a room</Typography>
             ) : (
               this.state.room.messages.map((message) => (
                 <Card
@@ -144,8 +176,15 @@ export class Messaging extends React.Component<
             className={styles.input}
             placeholder="Type a message..."
             onKeyDown={this.sendMessage}
+            inputRef={this.inputRef}
             InputProps={{
-              endAdornment: <ForwardIcon onClick={this.sendMessage} />,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton edge="end" onClick={this.sendMessage}>
+                    <ForwardIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
           />
         </div>
@@ -154,15 +193,28 @@ export class Messaging extends React.Component<
   }
 
   private openUserDialog = () =>
-    this.setState((state) => ({ ...state, dialogOpen: true }));
+    this.setState((state) => ({ ...state, userDialogOpen: true }));
 
   private closeUserDialog = () =>
-    this.setState((state) => ({ ...state, dialogOpen: false }));
+    this.setState((state) => ({ ...state, userDialogOpen: false }));
 
-  private userSelected = (user) => {
+  private userSelected = (user: firebase.User) => {
     this.closeUserDialog();
 
     this.createRoom(user);
+  };
+
+  private openDeleteDialog = (roomId: string) => {
+    this.roomDeleteId = roomId;
+    this.setState((state) => ({ ...state, deleteDialogOpen: true }));
+  };
+
+  private closeDeleteDialog = () =>
+    this.setState((state) => ({ ...state, deleteDialogOpen: false }));
+
+  private roomDeleteConfirm = () => {
+    this.closeDeleteDialog();
+    this.deleteRoomSelected(this.roomDeleteId);
   };
 
   //TODO(jridey): Select last picked room
@@ -176,6 +228,7 @@ export class Messaging extends React.Component<
           room: {
             id: "empty",
             messages: [],
+            users: [],
             typing: [],
           },
         }));
@@ -186,6 +239,7 @@ export class Messaging extends React.Component<
           room: {
             id: "empty",
             messages: [],
+            users: [],
             typing: [],
           },
         }));
@@ -207,6 +261,7 @@ export class Messaging extends React.Component<
           room: {
             id: room.id,
             typing: room.typing,
+            users: room.users,
             messages: Object.values(room.messages || {}),
           },
         }));
@@ -214,24 +269,52 @@ export class Messaging extends React.Component<
     });
   };
 
-  createRoom = (otherUser) => {
-    const roomRef = this.database.ref().child("/rooms").push();
-    roomRef.set({
-      id: roomRef.key,
-      typing: [],
-      messages: [],
-    });
+  deleteRoomSelected = (roomId: string) => {
+    const ref = this.database.ref(`/rooms/${roomId}`);
 
+    ref.once("value").then((value) => {
+      for (const user of value.val().users) {
+        this.database.ref(`/users/${user}/rooms/${roomId}`).remove();
+      }
+
+      ref.off("value", this.roomListener);
+      ref.remove();
+
+      this.setState((state) => ({
+        ...state,
+        userRooms: this.state.userRooms.filter((room) => room.id !== roomId),
+        room: {
+          id: "empty",
+          messages: [],
+          users: [],
+          typing: [],
+        },
+      }));
+    });
+  };
+
+  createRoom = (otherUser: firebase.User) => {
+    const roomRef = this.database.ref().child("/rooms").push();
+    const roomId = roomRef.key;
     const user = this.userContext.user;
+    roomRef.set({
+      id: roomId,
+      messages: [],
+      users: [user.uid, otherUser.uid],
+      typing: [],
+    } as Room);
+
     const roomName = `${user.displayName}, ${otherUser.displayName}`;
     const room = {
-      id: roomRef.key,
+      id: roomId,
       name: roomName,
       avatar: "",
     };
 
-    this.database.ref(`/users/${user.uid}/rooms`).push().set(room);
-    this.database.ref(`/users/${otherUser.uid}/rooms`).push().set(room);
+    this.database.ref(`/users/${user.uid}/rooms/${roomId}`).set(room);
+    this.database.ref(`/users/${otherUser.uid}/rooms/${roomId}`).set(room);
+
+    this.newRoomSelected(roomRef.key);
   };
 
   sendMessage = (e) => {
@@ -241,9 +324,9 @@ export class Messaging extends React.Component<
         userId: user.uid,
         userName: user.displayName,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
-        message: e.target.value,
+        message: this.inputRef.current.value,
       });
-      e.target.value = "";
+      this.inputRef.current.value = "";
     }
   };
 }
