@@ -63,6 +63,14 @@ export const UserProvider = React.memo(
                 loggedIn: !!firebaseUser,
               });
             });
+
+            ref.onSnapshot((doc) => {
+              setUser({
+                user: doc.data(),
+                fetched: true,
+                loggedIn: true,
+              });
+            });
           }
         }),
       [],
