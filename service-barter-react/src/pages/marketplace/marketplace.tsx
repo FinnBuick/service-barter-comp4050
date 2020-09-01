@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { CircularProgress } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -10,6 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
+import { compareDesc, format, formatDistanceToNow } from "date-fns";
 import * as firebase from "firebase";
 import * as React from "react";
 import RSC from "react-scrollbars-custom";
@@ -24,9 +24,15 @@ type Favour = {
   id: string;
   title: string;
   owner: string;
+  ownerName: string;
   ownerPhotoUrl: string;
-  timestamp: firebase.firestore.Timestamp;
   cost: number;
+
+  timestamp: firebase.firestore.Timestamp;
+  roughLocation: string;
+
+  description: string;
+  actualLocation: string;
 };
 
 export class Marketplace extends React.Component<
@@ -47,17 +53,26 @@ export class Marketplace extends React.Component<
     this.userContext = context;
   }
 
+  private formatDate = (date: Date) => (
+    <>
+      {format(date, "eeee, io LLLL")}
+      <br />
+      {formatDistanceToNow(date)} ago
+    </>
+  );
+
   private FavourCard = React.memo(({ favour }: { favour: Favour }) => (
     <Paper>
       <Card>
         <CardHeader
           avatar={
-            <Avatar aria-label="recipe" className={styles.avatar}>
-              A
-            </Avatar>
+            <Avatar
+              src={favour.ownerPhotoUrl || "invalid"}
+              alt={favour.ownerName}
+            />
           }
           title={favour.title}
-          subheader="September 14, 2016"
+          subheader={this.formatDate(favour.timestamp.toDate())}
         />
         <CardContent>
           <Typography
@@ -65,7 +80,7 @@ export class Marketplace extends React.Component<
             className={styles.pos}
             color="textSecondary"
           >
-            Location
+            Location: {favour.roughLocation}
           </Typography>
           <Typography variant="body2" component="p"></Typography>
         </CardContent>
@@ -129,12 +144,12 @@ export class Marketplace extends React.Component<
           <RSC noScrollX>
             <Grid className={styles.cardsWrapper} container spacing={2}>
               {this.state.favourList == null ? (
-                <Grid item xs={6} sm={4} zeroMinWidth>
+                <Grid item xs={6} md={4} zeroMinWidth>
                   <CircularProgress />
                   <br />
                 </Grid>
               ) : this.state.favourList.length === 0 ? (
-                <Grid item xs={6} sm={4} zeroMinWidth>
+                <Grid item xs={6} md={4} zeroMinWidth>
                   <Typography>
                     There are no favours, start by creating one!
                   </Typography>
@@ -142,7 +157,7 @@ export class Marketplace extends React.Component<
               ) : (
                 <>
                   {this.state.favourList.map((favour) => (
-                    <Grid key={favour.id} item xs={6} sm={4} zeroMinWidth>
+                    <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
                       <this.FavourCard favour={favour} />
                     </Grid>
                   ))}
@@ -156,7 +171,11 @@ export class Marketplace extends React.Component<
   }
 
   openFavourDialog = () => {
-    this.createFavour("Test favour", 100);
+    this.createFavour(
+      "Test favour",
+      "40 Macquarie Drive Lane, North Ryde",
+      100,
+    );
   };
 
   getFavours() {
@@ -168,30 +187,35 @@ export class Marketplace extends React.Component<
       .then((value) => {
         this.setState((state) => ({
           ...state,
-          favourList: value.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as Favour),
-          ),
+          favourList: value.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() } as Favour))
+            .sort((f1, f2) =>
+              compareDesc(f1.timestamp.toDate(), f2.timestamp.toDate()),
+            ),
         }));
       });
   }
 
-  createFavour = (title: string, cost: number) => {
+  createFavour = (title: string, location: string, cost: number) => {
     const user = this.userContext.user;
     const favour = {
       title,
       owner: user.uid,
+      ownerName: user.displayName,
       ownerPhotoUrl: user.photoURL,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      roughLocation: "Macquaire Park",
+      actualLocation: location,
       cost,
     } as Favour;
 
     const doc = this.favoursDb.doc(user.uid);
-
     doc.collection("favourList").add(favour);
 
+    favour.timestamp = firebase.firestore.Timestamp.now();
     this.setState((state) => ({
       ...state,
-      favourList: [...this.state.favourList, favour],
+      favourList: [favour, ...this.state.favourList],
     }));
   };
 }
