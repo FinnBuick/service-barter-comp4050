@@ -41,6 +41,8 @@ export class Marketplace extends React.Component<
     favourList: Favour[];
     userMapping: Map<string, User>;
     openModal: boolean;
+    currentTitle: string;
+    currentDescription: string;
   }
 > {
   static contextType = UserContext;
@@ -53,6 +55,8 @@ export class Marketplace extends React.Component<
       favourList: undefined,
       userMapping: new Map(),
       openModal: false,
+      currentTitle: null,
+      currentDescription: null,
     };
     this.userContext = context;
   }
@@ -71,10 +75,10 @@ export class Marketplace extends React.Component<
     >
       <Paper className={styles.modalPaper}>
         <Typography variant="h5" id="simple-modal-title">
-          Test favour
+          {this.state.currentTitle}
         </Typography>
         <Typography variant="body2" id="simple-modal-description">
-          Test description
+          {this.state.currentDescription}
         </Typography>
       </Paper>
     </Modal>
@@ -115,7 +119,13 @@ export class Marketplace extends React.Component<
           <CardActions>
             <Button
               size="small"
-              onClick={() => this.setState({ openModal: true })}
+              onClick={() =>
+                this.setState({
+                  currentTitle: favour.title,
+                  currentDescription: favour.description,
+                  openModal: true,
+                })
+              }
             >
               Learn More
             </Button>
@@ -269,6 +279,7 @@ export class Marketplace extends React.Component<
       ownerUid: user.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       roughLocation: "Macquaire Park",
+      description: "Detailed description to be shown",
       actualLocation: location,
       cost,
     } as Favour;
