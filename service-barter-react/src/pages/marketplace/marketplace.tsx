@@ -48,11 +48,10 @@ export class Marketplace extends React.Component<
   static contextType = UserContext;
   private favoursDb?: firebase.firestore.CollectionReference;
   private userContext: UserContextProps;
-
   constructor(props, context) {
     super(props, context);
     this.state = {
-      favourList: undefined,
+      favourList: [],
       userMapping: new Map(),
       openModal: false,
       currentTitle: null,
@@ -136,8 +135,13 @@ export class Marketplace extends React.Component<
   );
 
   componentDidMount() {
+    console.log("Component Did Mount");
     this.favoursDb = firebase.firestore().collection("favours");
     if (this.userContext.loggedIn) {
+      console.log("UserContext:");
+      console.log(this.userContext);
+      console.log("Firebase Auth");
+      console.log(firebase.auth().currentUser);
       this.getFavours();
     }
   }
@@ -227,7 +231,9 @@ export class Marketplace extends React.Component<
   };
 
   getFavours() {
-    const user = this.userContext.user;
+    const user = firebase.auth().currentUser;
+    console.log("User ID:");
+    console.log(user.uid);
     this.favoursDb
       .doc(user.uid)
       .collection("favourList")
