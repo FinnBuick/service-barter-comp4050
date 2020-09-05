@@ -106,6 +106,18 @@ export class Marketplace extends React.Component<
           style={{ marginTop: "20px" }}
           fullWidth
         />
+        <div style={{ marginTop: "10px", textAlign: "center" }}>
+          <Button variant="contained" color="primary">
+            Upload
+          </Button>
+          <Button
+            variant="contained"
+            style={{ marginLeft: "5%" }}
+            onClick={this.favourDialogClose}
+          >
+            Cancel
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
