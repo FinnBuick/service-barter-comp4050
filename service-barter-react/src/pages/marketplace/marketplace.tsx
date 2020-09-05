@@ -135,13 +135,8 @@ export class Marketplace extends React.Component<
   );
 
   componentDidMount() {
-    console.log("Component Did Mount");
     this.favoursDb = firebase.firestore().collection("favours");
     if (this.userContext.loggedIn) {
-      console.log("UserContext:");
-      console.log(this.userContext);
-      console.log("Firebase Auth");
-      console.log(firebase.auth().currentUser);
       this.getFavours();
     }
   }
@@ -232,8 +227,6 @@ export class Marketplace extends React.Component<
 
   getFavours() {
     const user = firebase.auth().currentUser;
-    console.log("User ID:");
-    console.log(user.uid);
     this.favoursDb
       .doc(user.uid)
       .collection("favourList")
@@ -279,7 +272,7 @@ export class Marketplace extends React.Component<
   }
 
   createFavour = (title: string, location: string, cost: number) => {
-    const user = this.userContext.user;
+    const user = firebase.auth().currentUser;
     const favour = {
       title,
       ownerUid: user.uid,
