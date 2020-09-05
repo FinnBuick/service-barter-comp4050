@@ -5,11 +5,15 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import Grid from "@material-ui/core/Grid";
-import Modal from "@material-ui/core/Modal";
 import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
+import CancelIcon from "@material-ui/icons/Cancel";
 import { compareDesc, format, formatDistanceToNow } from "date-fns";
 import * as firebase from "firebase";
 import * as React from "react";
@@ -40,7 +44,8 @@ export class Marketplace extends React.Component<
   {
     favourList: Favour[];
     userMapping: Map<string, User>;
-    openModal: boolean;
+    openFavourDialog: boolean;
+    openLearnDialog: boolean;
     currentTitle: string;
     currentDescription: string;
   }
@@ -53,35 +58,95 @@ export class Marketplace extends React.Component<
     this.state = {
       favourList: [],
       userMapping: new Map(),
-      openModal: false,
+      openFavourDialog: false,
+      openLearnDialog: false,
       currentTitle: null,
       currentDescription: null,
     };
     this.userContext = context;
   }
 
-  handleClose = () => {
-    this.setState({ openModal: false });
-  };
-
-  private learnMoreModal = () => (
-    <Modal
-      className={styles.learnModal}
-      open={this.state.openModal}
-      onClose={this.handleClose}
-      aria-labelledby="simple-modal-title"
+  private favourDialog = () => (
+    // this.openFavourDialog
+    <Dialog
+      className={styles.dialogs}
+      open={this.state.openFavourDialog}
+      onClose={this.favourDialogClose}
+      disableBackdropClick={true}
       aria-describedby="simple-modal-description"
     >
-      <Paper className={styles.modalPaper}>
-        <Typography variant="h5" id="simple-modal-title">
-          {this.state.currentTitle}
-        </Typography>
+      <DialogTitle>
+        Add New Favour
+        <CancelIcon
+          style={{ float: "right" }}
+          onClick={this.favourDialogClose}
+        />
+      </DialogTitle>
+      <DialogContent>
+        <TextField autoFocus margin="dense" label="Title" required fullWidth />
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Location"
+          required
+          fullWidth
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Favour points"
+          required
+          fullWidth
+        />
+        <TextField
+          label="Favour Description"
+          multiline
+          rows={10}
+          variant="outlined"
+          style={{ marginTop: "20px" }}
+          fullWidth
+        />
+      </DialogContent>
+    </Dialog>
+  );
+
+  favourDialogClose = () => {
+    this.setState({ openFavourDialog: false });
+  };
+
+  openFavourDialog = () => {
+    this.createFavour(
+      "Test favour",
+      "40 Macquarie Drive Lane, North Ryde",
+      100,
+    );
+  };
+
+  private learnMoreDialog = () => (
+    <Dialog
+      className={styles.dialogs}
+      open={this.state.openLearnDialog}
+      onClose={this.learnDialogClose}
+      aria-describedby="simple-modal-description"
+    >
+      <DialogTitle>
+        {this.state.currentTitle}
+        <CancelIcon
+          style={{ float: "right" }}
+          onClick={this.learnDialogClose}
+        />
+      </DialogTitle>
+      <DialogContent>
         <Typography variant="body2" id="simple-modal-description">
           {this.state.currentDescription}
         </Typography>
-      </Paper>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
+
+  learnDialogClose = () => {
+    this.setState({ openLearnDialog: false });
+  };
 
   private formatDate = (date: Date) => (
     <>
@@ -122,7 +187,7 @@ export class Marketplace extends React.Component<
                 this.setState({
                   currentTitle: favour.title,
                   currentDescription: favour.description,
-                  openModal: true,
+                  openLearnDialog: true,
                 })
               }
             >
@@ -159,11 +224,12 @@ export class Marketplace extends React.Component<
               className={styles.buttons}
               variant="contained"
               color="primary"
-              onClick={this.openFavourDialog}
+              onClick={() => this.setState({ openFavourDialog: true })}
               startIcon={<AddIcon />}
             >
               Add New Favour
             </Button>
+            <this.favourDialog />
           </div>
           <br />
           <Typography>Groups</Typography>
@@ -205,7 +271,7 @@ export class Marketplace extends React.Component<
                         favour={favour}
                         user={this.state.userMapping.get(favour.ownerUid)}
                       />
-                      <this.learnMoreModal />
+                      <this.learnMoreDialog />
                     </Grid>
                   ))}
                 </>
@@ -216,14 +282,6 @@ export class Marketplace extends React.Component<
       </div>
     );
   }
-
-  openFavourDialog = () => {
-    this.createFavour(
-      "Test favour",
-      "40 Macquarie Drive Lane, North Ryde",
-      100,
-    );
-  };
 
   getFavours() {
     const user = firebase.auth().currentUser;
