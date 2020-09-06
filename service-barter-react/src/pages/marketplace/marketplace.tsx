@@ -7,6 +7,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -39,10 +40,19 @@ type Favour = {
   actualLocation: string;
 };
 
+type newFavour = {
+  title: string;
+  cost: number;
+  street: string;
+  suburb: string;
+  description: string;
+};
+
 export class Marketplace extends React.Component<
   unknown,
   {
     favourList: Favour[];
+    newFavour: newFavour;
     userMapping: Map<string, User>;
     openFavourDialog: boolean;
     openLearnDialog: boolean;
@@ -57,6 +67,13 @@ export class Marketplace extends React.Component<
     super(props, context);
     this.state = {
       favourList: [],
+      newFavour: {
+        title: "",
+        cost: 0,
+        street: "",
+        suburb: "",
+        description: "",
+      },
       userMapping: new Map(),
       openFavourDialog: false,
       openLearnDialog: false,
@@ -67,7 +84,6 @@ export class Marketplace extends React.Component<
   }
 
   private favourDialog = () => (
-    // this.openFavourDialog
     <Dialog
       className={styles.dialogs}
       open={this.state.openFavourDialog}
@@ -83,18 +99,56 @@ export class Marketplace extends React.Component<
         />
       </DialogTitle>
       <DialogContent>
-        <TextField autoFocus margin="dense" label="Title" required fullWidth />
+        <DialogContentText>
+          Please fill out all required fields.
+        </DialogContentText>
         <TextField
           autoFocus
           margin="dense"
-          label="Location"
+          label="Title"
+          onChange={(e) =>
+            this.setState({
+              newFavour: { ...this.state.newFavour, title: e.target.value },
+            })
+          }
           required
           fullWidth
         />
         <TextField
-          autoFocus
           margin="dense"
-          label="Favour points"
+          label="Street Address"
+          onChange={(e) =>
+            this.setState({
+              newFavour: { ...this.state.newFavour, street: e.target.value },
+            })
+          }
+          required
+          fullWidth
+        />
+        <TextField
+          margin="dense"
+          label="Suburb"
+          onChange={(e) =>
+            this.setState({
+              newFavour: { ...this.state.newFavour, suburb: e.target.value },
+            })
+          }
+          required
+          fullWidth
+        />
+        <TextField
+          type="Number"
+          margin="dense"
+          label="Favour cost"
+          defaultValue="0"
+          onChange={(e) =>
+            this.setState({
+              newFavour: {
+                ...this.state.newFavour,
+                cost: Number(e.target.value),
+              },
+            })
+          }
           required
           fullWidth
         />
@@ -103,11 +157,31 @@ export class Marketplace extends React.Component<
           multiline
           rows={10}
           variant="outlined"
+          onChange={(e) =>
+            this.setState({
+              newFavour: {
+                ...this.state.newFavour,
+                description: e.target.value,
+              },
+            })
+          }
           style={{ marginTop: "20px" }}
           fullWidth
         />
         <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <Button variant="contained" color="primary">
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={
+              this.state.newFavour.title === "" ||
+              this.state.newFavour.street === "" ||
+              this.state.newFavour.suburb === ""
+            }
+            onClick={() => {
+              this.createFavour();
+              this.favourDialogClose();
+            }}
+          >
             Upload
           </Button>
           <Button
@@ -124,14 +198,6 @@ export class Marketplace extends React.Component<
 
   favourDialogClose = () => {
     this.setState({ openFavourDialog: false });
-  };
-
-  openFavourDialog = () => {
-    this.createFavour(
-      "Test favour",
-      "40 Macquarie Drive Lane, North Ryde",
-      100,
-    );
   };
 
   private learnMoreDialog = () => (
@@ -341,16 +407,17 @@ export class Marketplace extends React.Component<
       });
   }
 
-  createFavour = (title: string, location: string, cost: number) => {
+  createFavour = () => {
     const user = firebase.auth().currentUser;
     const favour = {
-      title,
+      title: this.state.newFavour.title,
       ownerUid: user.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      roughLocation: "Macquaire Park",
-      description: "Detailed description to be shown",
-      actualLocation: location,
-      cost,
+      roughLocation: this.state.newFavour.suburb,
+      description: this.state.newFavour.description,
+      actualLocation:
+        this.state.newFavour.street + ", " + this.state.newFavour.suburb,
+      cost: this.state.newFavour.cost,
     } as Favour;
 
     const doc = this.favoursDb.doc(user.uid);
