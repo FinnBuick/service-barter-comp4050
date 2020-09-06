@@ -56,8 +56,7 @@ export class Marketplace extends React.Component<
     userMapping: Map<string, User>;
     openFavourDialog: boolean;
     openLearnDialog: boolean;
-    currentTitle: string;
-    currentDescription: string;
+    currentFavour: Favour;
   }
 > {
   static contextType = UserContext;
@@ -74,22 +73,19 @@ export class Marketplace extends React.Component<
         suburb: "",
         description: "",
       },
+      currentFavour: undefined,
       userMapping: new Map(),
       openFavourDialog: false,
       openLearnDialog: false,
-      currentTitle: null,
-      currentDescription: null,
     };
     this.userContext = context;
   }
 
   private favourDialog = () => (
     <Dialog
-      className={styles.dialogs}
       open={this.state.openFavourDialog}
       onClose={this.favourDialogClose}
       disableBackdropClick={true}
-      aria-describedby="simple-modal-description"
     >
       <DialogTitle>
         Add New Favour
@@ -200,27 +196,61 @@ export class Marketplace extends React.Component<
     this.setState({ openFavourDialog: false });
   };
 
-  private learnMoreDialog = () => (
-    <Dialog
-      className={styles.dialogs}
-      open={this.state.openLearnDialog}
-      onClose={this.learnDialogClose}
-      aria-describedby="simple-modal-description"
-    >
-      <DialogTitle>
-        {this.state.currentTitle}
-        <CancelIcon
-          style={{ float: "right" }}
-          onClick={this.learnDialogClose}
-        />
-      </DialogTitle>
-      <DialogContent>
-        <Typography variant="body2" id="simple-modal-description">
-          {this.state.currentDescription}
-        </Typography>
-      </DialogContent>
-    </Dialog>
-  );
+  private learnMoreDialog = () =>
+    this.state.currentFavour ? (
+      <Dialog
+        open={this.state.openLearnDialog}
+        onClose={this.learnDialogClose}
+        fullWidth
+      >
+        <DialogTitle>
+          {this.state.currentFavour.title}
+          <CancelIcon
+            style={{ float: "right" }}
+            onClick={this.learnDialogClose}
+          />
+          <DialogContentText>
+            {this.formatDate(this.state.currentFavour.timestamp.toDate())}
+          </DialogContentText>
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            <div style={{ display: "inline-block" }}>
+              <Typography variant="body1">Location</Typography>
+              <Typography variant="body1">Cost</Typography>
+            </div>
+            <div style={{ display: "inline-block", marginLeft: "5%" }}>
+              <Typography variant="body1" color="primary">
+                {this.state.currentFavour.actualLocation}
+              </Typography>
+              <Typography variant="body1" color="primary">
+                {this.state.currentFavour.cost} Flavour points
+              </Typography>
+            </div>
+          </div>
+          <Typography variant="body1" style={{ marginTop: "3%" }}>
+            Description
+          </Typography>
+          <Typography variant="subtitle1">
+            {this.state.currentFavour.description}
+          </Typography>
+        </DialogContent>
+      </Dialog>
+    ) : (
+      <Dialog
+        open={this.state.openLearnDialog}
+        onClose={this.learnDialogClose}
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography>Data not found.</Typography>
+          <CancelIcon
+            style={{ float: "right" }}
+            onClick={this.learnDialogClose}
+          />
+        </DialogTitle>
+      </Dialog>
+    );
 
   learnDialogClose = () => {
     this.setState({ openLearnDialog: false });
@@ -263,8 +293,14 @@ export class Marketplace extends React.Component<
               size="small"
               onClick={() =>
                 this.setState({
-                  currentTitle: favour.title,
-                  currentDescription: favour.description,
+                  currentFavour: {
+                    ...this.state.currentFavour,
+                    title: favour.title,
+                    description: favour.description,
+                    cost: favour.cost,
+                    timestamp: favour.timestamp,
+                    actualLocation: favour.actualLocation,
+                  },
                   openLearnDialog: true,
                 })
               }
