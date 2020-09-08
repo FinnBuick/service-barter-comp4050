@@ -137,6 +137,7 @@ export class Marketplace extends React.Component<
           margin="dense"
           label="Favour cost"
           defaultValue="0"
+          value={this.state.newFavour.cost}
           onChange={(e) =>
             this.setState({
               newFavour: {
