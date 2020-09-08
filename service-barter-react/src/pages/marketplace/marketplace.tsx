@@ -234,6 +234,13 @@ export class Marketplace extends React.Component<
           <Typography variant="subtitle1">
             {this.state.currentFavour.description}
           </Typography>
+          <Button
+            variant="outlined"
+            color="primary"
+            style={{ marginTop: "5%" }}
+          >
+            Accept
+          </Button>
         </DialogContent>
       </Dialog>
     ) : (
