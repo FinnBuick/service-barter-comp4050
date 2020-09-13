@@ -2,9 +2,11 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import RoomIcon from "@material-ui/icons/Room";
+import { log } from "console";
 import * as firebase from "firebase";
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { WithContext as ReactTags } from "react-tag-input";
 
 import { UserContext } from "../../components/user/user_provider";
 import styles from "./edit_profile.scss";
@@ -15,6 +17,7 @@ export const EditProfile = React.memo(() => {
     name: null,
     address: null,
     email: null,
+    skillList: null,
   });
 
   if (userContext.user && newData.name === null) {
@@ -22,6 +25,7 @@ export const EditProfile = React.memo(() => {
       name: userContext.user.displayName,
       address: userContext.user.address,
       email: userContext.user.email,
+      skillList: userContext.user.skillList,
     });
   }
 
@@ -34,6 +38,20 @@ export const EditProfile = React.memo(() => {
       displayName: newData.name,
       address: newData.address,
       email: newData.email,
+      skillList: newData.skillList,
+    });
+  };
+
+  /* Tag input logic */
+  const handleAddition = (tag) => {
+    setNewData({ ...newData, skillList: [...newData.skillList, tag.text] });
+  };
+
+  const handleDelete = (tag) => {
+    const skillList = userContext.user.skillList;
+    setNewData({
+      ...newData,
+      skillList: skillList.filter((skill) => skill !== tag.text),
     });
   };
 
@@ -106,6 +124,24 @@ export const EditProfile = React.memo(() => {
                 name="email"
                 defaultValue={userContext.user.email}
                 onChange={(e) => onChange(e)}
+              />
+            </div>
+            <div className={styles.inputField}>
+              <Typography className={styles.text} variant="h6">
+                Skills
+              </Typography>
+              <ReactTags
+                name="skillList"
+                tags={userContext.user.skillList.map((skill, i) => {
+                  const container = {};
+
+                  container["id"] = i.toString();
+                  container["text"] = skill;
+
+                  return container;
+                })}
+                handleAddition={handleAddition}
+                handleDelete={handleDelete}
               />
             </div>
           </div>
