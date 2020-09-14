@@ -28,6 +28,7 @@ module.exports = {
             options: {
               modules: {
                 localIdentName: '[name]_[local]_[hash:base64:5]',
+                auto: (resourcePath) => !resourcePath.endsWith('global.scss'),
               },
             }
           },

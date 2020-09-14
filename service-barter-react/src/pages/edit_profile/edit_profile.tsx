@@ -12,45 +12,51 @@ import styles from "./edit_profile.scss";
 
 export const EditProfile = React.memo(() => {
   const userContext = React.useContext(UserContext);
-  const [newData, setNewData] = React.useState({
-    name: null,
-    address: null,
-    email: null,
-    skillList: null,
+  const [newUserData, setNewUserData] = React.useState({
+    name: "",
+    address: "",
+    email: "",
+    skillList: [],
   });
 
-  if (userContext.user && newData.name === null) {
-    setNewData({
+  React.useEffect(() => {
+    if (!userContext.user) {
+      return;
+    }
+
+    setNewUserData({
       name: userContext.user.displayName,
       address: userContext.user.address,
       email: userContext.user.email,
       skillList: userContext.user.skillList,
     });
-  }
+  }, [userContext]);
 
   const onChange = (e) => {
-    setNewData({ ...newData, [e.target.name]: e.target.value });
+    setNewUserData({ ...newUserData, [e.target.name]: e.target.value });
   };
 
   const onSubmit = () => {
     firebase.firestore().collection("users").doc(userContext.user.uid).update({
-      displayName: newData.name,
-      address: newData.address,
-      email: newData.email,
-      skillList: newData.skillList,
+      displayName: newUserData.name,
+      address: newUserData.address,
+      email: newUserData.email,
+      skillList: newUserData.skillList,
     });
   };
 
   /* Tag input logic */
-  const handleAddition = (tag) => {
-    setNewData({ ...newData, skillList: [...newData.skillList, tag.text] });
+  const handleTagAddition = (tag) => {
+    setNewUserData({
+      ...newUserData,
+      skillList: [...newUserData.skillList, tag.text],
+    });
   };
 
-  const handleDelete = (tag) => {
-    const skillList = userContext.user.skillList;
-    setNewData({
-      ...newData,
-      skillList: skillList.filter((skill) => skill !== tag.text),
+  const handleTagDelete = (tag) => {
+    setNewUserData({
+      ...newUserData,
+      skillList: newUserData.skillList.filter((skill) => skill !== tag.text),
     });
   };
 
@@ -131,16 +137,24 @@ export const EditProfile = React.memo(() => {
               </Typography>
               <ReactTags
                 name="skillList"
-                tags={userContext.user.skillList.map((skill, i) => {
-                  const container = {};
-
-                  container["id"] = i.toString();
-                  container["text"] = skill;
-
-                  return container;
+                classNames={{
+                  tags: styles.tags,
+                  tagInput: `${styles.tagInput} MuiInputBase-root MuiInput-underline`,
+                  tagInputField: `${styles.tagInputField} MuiInputBase-input`,
+                  selected: styles.selected,
+                  tag: `${styles.tag} MuiTypography-subtitle2`,
+                  remove: styles.remove,
+                  suggestions: styles.suggestions,
+                  activeSuggestion: styles.activeSuggestion,
+                }}
+                tags={newUserData.skillList.map((skill, i) => {
+                  return {
+                    id: `${i}`,
+                    text: skill,
+                  };
                 })}
-                handleAddition={handleAddition}
-                handleDelete={handleDelete}
+                handleAddition={handleTagAddition}
+                handleDelete={handleTagDelete}
               />
             </div>
           </div>
