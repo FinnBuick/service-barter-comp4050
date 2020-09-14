@@ -93,7 +93,7 @@ export const Profile = React.memo(() => {
                   </Typography>
                   <Typography variant="h6" style={{ color: "#0066ff" }}>
                     {userContext.user.skillList.length > 0 ? (
-                      userContext.user.skillList
+                      userContext.user.skillList.join(", ")
                     ) : (
                       <div>None</div>
                     )}
