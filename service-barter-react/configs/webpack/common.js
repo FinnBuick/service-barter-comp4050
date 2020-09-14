@@ -1,6 +1,6 @@
 // shared config (dev and prod)
-const {resolve} = require('path');
-const {CheckerPlugin} = require('awesome-typescript-loader');
+const { resolve } = require('path');
+const { CheckerPlugin } = require('awesome-typescript-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
               },
             }
           },
-          'sass-loader', 
+          'sass-loader',
         ],
       },
       {
@@ -45,7 +45,7 @@ module.exports = {
   },
   plugins: [
     new CheckerPlugin(),
-    new HtmlWebpackPlugin({template: 'index.html.ejs',}),
+    new HtmlWebpackPlugin({ template: 'index.html.ejs', }),
   ],
   externals: {
     'react': 'React',
