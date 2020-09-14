@@ -79,9 +79,12 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "node-sass": "^4.14.1",
+    "react-dnd": "8.0.3",
+    "react-dnd-html5-backend": "8.0.2",
     "react-firebaseui": "^4.1.0",
     "react-router-dom": "^5.2.0",
     "react-scrollbars-custom": "^4.0.25",
+    "react-tag-input": "^6.4.3",
     "sass-loader": "^9.0.2",
     "stylelint": "^13.6.1",
     "stylelint-config-sass-guidelines": "^7.0.0"

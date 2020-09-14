@@ -5,35 +5,58 @@ import RoomIcon from "@material-ui/icons/Room";
 import * as firebase from "firebase";
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { WithContext as ReactTags } from "react-tag-input";
 
 import { UserContext } from "../../components/user/user_provider";
 import styles from "./edit_profile.scss";
 
 export const EditProfile = React.memo(() => {
   const userContext = React.useContext(UserContext);
-  const [newData, setNewData] = React.useState({
-    name: null,
-    address: null,
-    email: null,
+  const [newUserData, setNewUserData] = React.useState({
+    name: "",
+    address: "",
+    email: "",
+    skillList: [],
   });
 
-  if (userContext.user && newData.name === null) {
-    setNewData({
+  React.useEffect(() => {
+    if (!userContext.user) {
+      return;
+    }
+
+    setNewUserData({
       name: userContext.user.displayName,
       address: userContext.user.address,
       email: userContext.user.email,
+      skillList: userContext.user.skillList,
     });
-  }
+  }, [userContext]);
 
   const onChange = (e) => {
-    setNewData({ ...newData, [e.target.name]: e.target.value });
+    setNewUserData({ ...newUserData, [e.target.name]: e.target.value });
   };
 
   const onSubmit = () => {
     firebase.firestore().collection("users").doc(userContext.user.uid).update({
-      displayName: newData.name,
-      address: newData.address,
-      email: newData.email,
+      displayName: newUserData.name,
+      address: newUserData.address,
+      email: newUserData.email,
+      skillList: newUserData.skillList,
+    });
+  };
+
+  /* Tag input logic */
+  const handleTagAddition = (tag) => {
+    setNewUserData({
+      ...newUserData,
+      skillList: [...newUserData.skillList, tag.text],
+    });
+  };
+
+  const handleTagDelete = (tag) => {
+    setNewUserData({
+      ...newUserData,
+      skillList: newUserData.skillList.filter((skill) => skill !== tag.text),
     });
   };
 
@@ -106,6 +129,32 @@ export const EditProfile = React.memo(() => {
                 name="email"
                 defaultValue={userContext.user.email}
                 onChange={(e) => onChange(e)}
+              />
+            </div>
+            <div className={styles.inputField}>
+              <Typography className={styles.text} variant="h6">
+                Skills
+              </Typography>
+              <ReactTags
+                name="skillList"
+                classNames={{
+                  tags: styles.tags,
+                  tagInput: `${styles.tagInput} MuiInputBase-root MuiInput-underline`,
+                  tagInputField: `${styles.tagInputField} MuiInputBase-input`,
+                  selected: styles.selected,
+                  tag: `${styles.tag} MuiTypography-subtitle2`,
+                  remove: styles.remove,
+                  suggestions: styles.suggestions,
+                  activeSuggestion: styles.activeSuggestion,
+                }}
+                tags={newUserData.skillList.map((skill, i) => {
+                  return {
+                    id: `${i}`,
+                    text: skill,
+                  };
+                })}
+                handleAddition={handleTagAddition}
+                handleDelete={handleTagDelete}
               />
             </div>
           </div>
