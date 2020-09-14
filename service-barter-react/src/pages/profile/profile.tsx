@@ -1,3 +1,4 @@
+import { Divider } from "@material-ui/core";
 import { Snackbar } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
@@ -91,7 +92,11 @@ export const Profile = React.memo(() => {
                     {userContext.user.favourPoint}
                   </Typography>
                   <Typography variant="h6" style={{ color: "#0066ff" }}>
-                    {userContext.user.skillList.join(", ")}
+                    {userContext.user.skillList.length > 0 ? (
+                      userContext.user.skillList
+                    ) : (
+                      <div>None</div>
+                    )}
                   </Typography>
                 </div>
               </div>
