@@ -1,6 +1,5 @@
-import { compareDesc, format, formatDistanceToNow } from "date-fns";
+import { compareDesc } from "date-fns";
 import firebase from "firebase";
-import * as React from "react";
 
 import { User } from "../../components/user/user_provider";
 
@@ -15,7 +14,7 @@ export type Favour = {
   actualLocation: string;
 };
 
-export type newFavour = {
+export type NewFavour = {
   title: string;
   cost: number;
   street: string;
@@ -25,23 +24,15 @@ export type newFavour = {
 
 export class FavourService {
   private favoursDb?: firebase.firestore.CollectionReference;
-  private user = firebase.auth().currentUser;
-  newFavour = {
-    title: "",
-    cost: 0,
-    street: "",
-    suburb: "",
-    description: "",
-  };
-  userMapping = new Map();
+  private userMapping = new Map<string, User>();
 
   constructor() {
     this.favoursDb = firebase.firestore().collection("favours");
   }
 
-  getFavours = () => {
-    this.favoursDb
-      .doc(this.user.uid)
+  public getFavours(userUid: string): Promise<(Favour & { owner: User })[]> {
+    return this.favoursDb
+      .doc(userUid)
       .collection("favourList")
       .get()
       .then((value) => {
@@ -50,11 +41,6 @@ export class FavourService {
           .sort((f1, f2) =>
             compareDesc(f1.timestamp.toDate(), f2.timestamp.toDate()),
           );
-
-        this.setState((state) => ({
-          ...state,
-          favourList,
-        }));
 
         const getUsersPromises = favourList.map((favour) => {
           const ownerUid = favour.ownerUid;
@@ -69,38 +55,36 @@ export class FavourService {
             promise.then((value) => {
               if (!value.exists) return;
               const user = value.data();
-              this.state.userMapping.set(ownerUid, user);
+              this.userMapping.set(ownerUid, user);
             });
           }
           return promise;
         });
-        Promise.all(getUsersPromises).then(() =>
-          this.setState((state) => ({
-            ...state,
-            userMapping: new Map(this.state.userMapping),
-          })),
-        );
-      });
-  };
 
-  createFavour = () => {
+        return Promise.all(getUsersPromises).then(() => {
+          return favourList.map((v) => ({
+            ...v,
+            owner: this.userMapping.get(v.ownerUid),
+          }));
+        });
+      });
+  }
+
+  public createFavour(newFavour: NewFavour, ownerUid: string): Favour {
     const favour = {
-      title: this.newFavour.title,
-      ownerUid: this.user.uid,
+      title: newFavour.title,
+      ownerUid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      roughLocation: this.newFavour.suburb,
-      description: this.newFavour.description,
-      actualLocation: this.newFavour.street + ", " + this.newFavour.suburb,
-      cost: this.newFavour.cost,
+      roughLocation: newFavour.suburb,
+      description: newFavour.description,
+      actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
+      cost: newFavour.cost,
     } as Favour;
 
-    const doc = this.favoursDb.doc(this.user.uid);
+    const doc = this.favoursDb.doc(ownerUid);
     doc.collection("favourList").add(favour);
 
     favour.timestamp = firebase.firestore.Timestamp.now();
-    this.setState((state) => ({
-      ...state,
-      favourList: [favour, ...this.state.favourList],
-    }));
-  };
+    return favour;
+  }
 }
