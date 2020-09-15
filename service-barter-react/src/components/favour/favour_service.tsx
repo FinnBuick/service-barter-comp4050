@@ -83,6 +83,8 @@ export class FavourService {
     const doc = this.favoursDb.doc(ownerUid);
     doc.collection("favourList").add(favour);
 
+    // Generate a fake random id, will eventually get replace by Firebase.
+    favour.id = Date.now().toString();
     favour.timestamp = firebase.firestore.Timestamp.now();
     return favour;
   }
