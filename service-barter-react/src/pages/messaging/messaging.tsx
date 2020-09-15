@@ -77,6 +77,7 @@ export class Messaging extends React.Component<
   private database?: firebase.database.Database;
   private userContext: UserContextProps;
   private roomDeleteId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private roomListener?: any;
   private inputRef: React.RefObject<HTMLInputElement>;
 

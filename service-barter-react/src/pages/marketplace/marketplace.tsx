@@ -190,7 +190,7 @@ export class Marketplace extends React.Component<
     </Dialog>
   );
 
-  favourDialogClose = () => {
+  private favourDialogClose = () => {
     this.setState({ openFavourDialog: false });
   };
 
@@ -257,7 +257,7 @@ export class Marketplace extends React.Component<
       </Dialog>
     );
 
-  learnDialogClose = () => {
+  private learnDialogClose = () => {
     this.setState({ openLearnDialog: false });
   };
 

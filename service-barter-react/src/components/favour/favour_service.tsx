@@ -45,20 +45,19 @@ export class FavourService {
         const getUsersPromises = favourList.map((favour) => {
           const ownerUid = favour.ownerUid;
 
-          let promise: Promise<void | any> = Promise.resolve();
           if (!this.userMapping.has(ownerUid)) {
-            promise = firebase
+            return firebase
               .firestore()
               .collection("users")
               .doc(ownerUid)
-              .get();
-            promise.then((value) => {
-              if (!value.exists) return;
-              const user = value.data();
-              this.userMapping.set(ownerUid, user);
-            });
+              .get()
+              .then((value) => {
+                if (!value.exists) return;
+                const user = value.data() as User;
+                this.userMapping.set(ownerUid, user);
+              });
           }
-          return promise;
+          return Promise.resolve();
         });
 
         return Promise.all(getUsersPromises).then(() => {

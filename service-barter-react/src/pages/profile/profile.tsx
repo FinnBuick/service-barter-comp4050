@@ -1,4 +1,3 @@
-import { Divider } from "@material-ui/core";
 import { Snackbar } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
