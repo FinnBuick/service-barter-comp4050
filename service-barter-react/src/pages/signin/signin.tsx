@@ -6,12 +6,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import CancelIcon from "@material-ui/icons/Cancel";
-import MuiAlert from "@material-ui/lab/Alert";
+"import MuiAlert from \"@material-ui/lab/Alert\";";
 import firebase from "firebase";
 import * as React from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
-import { UserContext } from "../../components/user/user_provider";
+"import { UserContext } from \"../../components/user/user_provider\";";
 import styles from "./signin.scss";
 
 const uiConfig = {
@@ -24,59 +24,58 @@ const uiConfig = {
   tosUrl: "http://example.com/tos",
   privacyPolicyUrl: "http://example.com/privacy",
 };
-const userContext = React.useContext(UserContext);
+"const userContext = React.useContext(UserContext);";
 
-const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-const resetPassword = (form) =>
-  firebase
-    .auth()
-    .sendPasswordResetEmail(form.email.value)
-    .then(() => {
-      setSnackbarOpen(true);
-    });
-const handleSnackbarClose = () => setSnackbarOpen(false);
-const openPasswordResetDialog = false;
-const passwordResetDialogClose = () => {
-  this.setState({ openFavourDialog: false });
-};
-const passwordResetDialog = () => (
-  <Dialog
-    className={styles.dialogs}
-    open={openPasswordResetDialog}
-    onClose={passwordResetDialogClose}
-    disableBackdropClick={true}
-    aria-describedby="simple-modal-description"
-  >
-    <DialogTitle>
-      Place your email here
-      <CancelIcon
-        style={{ float: "right" }}
-        onClick={passwordResetDialogClose}
-      />
-    </DialogTitle>
-    <DialogContent>
-      <form>
-        <TextField
-          autoFocus
-          margin="dense"
-          name="subEmail"
-          required
-          fullWidth
-        />
-        <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <Button variant="contained" color="primary" onClick={this.form}>
-            Send Email
-          </Button>
-        </div>
-      </form>
-    </DialogContent>
-  </Dialog>
-);
-export const Signin = React.memo(() => (
-  <div className={styles.content}>
-    <Typography className={styles.signInTitle} variant="h2" align="center">
-      Sign-in
-    </Typography>
-    <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
-  </div>
-));
+"const [snackbarOpen, setSnackbarOpen] = React.useState(false);";
+"const handleSnackbarClose = () => setSnackbarOpen(false);";
+export const Signin = React.memo(() => {
+  const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const resetPassword = (email) =>
+    firebase.auth().sendPasswordResetEmail(email);
+
+  return (
+    <div className={styles.content}>
+      <Typography className={styles.signInTitle} variant="h2" align="center">
+        Sign-in
+      </Typography>
+      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+      <Button variant="contained" color="primary" onClick={handleClickOpen}>
+        Reset Password
+      </Button>
+      <Dialog
+        className={styles.dialogs}
+        open={open}
+        onClose={handleClose}
+        disableBackdropClick={true}
+        aria-describedby="simple-modal-description"
+      >
+        <DialogTitle>
+          Place your email here
+          <CancelIcon style={{ float: "right" }} onClick={handleClose} />
+        </DialogTitle>
+        <DialogContent>
+          <form>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="email"
+              required
+              fullWidth
+            />
+            <div style={{ marginTop: "10px", textAlign: "center" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => resetPassword(this.form.email.value)}
+              >
+                Send Email
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+});
