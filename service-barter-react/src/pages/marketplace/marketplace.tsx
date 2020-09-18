@@ -5,20 +5,21 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
-import CancelIcon from "@material-ui/icons/Cancel";
-import { compareDesc, format, formatDistanceToNow } from "date-fns";
-import * as firebase from "firebase";
+import { format, formatDistanceToNow } from "date-fns";
 import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
+import { CreateFavourDialog } from "../../components/create_favour_dialog/create_favour_dialog";
+import {
+  Favour,
+  FavourService,
+  NewFavour,
+} from "../../components/favour/favour_service";
+import { LearnMoreDialog } from "../../components/learn_more_dialog/learn_more_dialog";
 import {
   User,
   UserContext,
@@ -26,147 +27,37 @@ import {
 } from "../../components/user/user_provider";
 import styles from "./marketplace.scss";
 
-type Favour = {
-  id: string;
-  title: string;
-  cost: number;
-  ownerUid: string;
-
-  timestamp: firebase.firestore.Timestamp;
-  roughLocation: string;
-
-  description: string;
-  actualLocation: string;
-};
-
 export class Marketplace extends React.Component<
   unknown,
   {
-    favourList: Favour[];
-    userMapping: Map<string, User>;
     openFavourDialog: boolean;
     openLearnDialog: boolean;
-    currentTitle: string;
-    currentDescription: string;
+    newFavour: NewFavour;
+    selectedFavour: Favour;
+    favourList: (Favour & { owner: User })[];
   }
 > {
   static contextType = UserContext;
-  private favoursDb?: firebase.firestore.CollectionReference;
+
+  private favourServicer = new FavourService();
   private userContext: UserContextProps;
   constructor(props, context) {
     super(props, context);
     this.state = {
       favourList: [],
-      userMapping: new Map(),
+      newFavour: {
+        title: "",
+        cost: 0,
+        street: "",
+        suburb: "",
+        description: "",
+      },
+      selectedFavour: undefined,
       openFavourDialog: false,
       openLearnDialog: false,
-      currentTitle: null,
-      currentDescription: null,
     };
     this.userContext = context;
   }
-
-  private favourDialog = () => (
-    // this.openFavourDialog
-    <Dialog
-      className={styles.dialogs}
-      open={this.state.openFavourDialog}
-      onClose={this.favourDialogClose}
-      disableBackdropClick={true}
-      aria-describedby="simple-modal-description"
-    >
-      <DialogTitle>
-        Add New Favour
-        <CancelIcon
-          style={{ float: "right" }}
-          onClick={this.favourDialogClose}
-        />
-      </DialogTitle>
-      <DialogContent>
-        <TextField autoFocus margin="dense" label="Title" required fullWidth />
-        <TextField
-          autoFocus
-          margin="dense"
-          label="Location"
-          required
-          fullWidth
-        />
-        <TextField
-          autoFocus
-          margin="dense"
-          label="Favour points"
-          required
-          fullWidth
-        />
-        <TextField
-          label="Favour Description"
-          multiline
-          rows={10}
-          variant="outlined"
-          style={{ marginTop: "20px" }}
-          fullWidth
-        />
-        <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <Button variant="contained" color="primary">
-            Upload
-          </Button>
-          <Button
-            variant="contained"
-            style={{ marginLeft: "5%" }}
-            onClick={this.favourDialogClose}
-          >
-            Cancel
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-
-  favourDialogClose = () => {
-    this.setState({ openFavourDialog: false });
-  };
-
-  openFavourDialog = () => {
-    this.createFavour(
-      "Test favour",
-      "40 Macquarie Drive Lane, North Ryde",
-      100,
-    );
-  };
-
-  private learnMoreDialog = () => (
-    <Dialog
-      className={styles.dialogs}
-      open={this.state.openLearnDialog}
-      onClose={this.learnDialogClose}
-      aria-describedby="simple-modal-description"
-    >
-      <DialogTitle>
-        {this.state.currentTitle}
-        <CancelIcon
-          style={{ float: "right" }}
-          onClick={this.learnDialogClose}
-        />
-      </DialogTitle>
-      <DialogContent>
-        <Typography variant="body2" id="simple-modal-description">
-          {this.state.currentDescription}
-        </Typography>
-      </DialogContent>
-    </Dialog>
-  );
-
-  learnDialogClose = () => {
-    this.setState({ openLearnDialog: false });
-  };
-
-  private formatDate = (date: Date) => (
-    <>
-      {format(date, "eeee, io LLLL")}
-      <br />
-      {formatDistanceToNow(date)} ago
-    </>
-  );
 
   private FavourCard = React.memo(
     ({ favour, user }: { favour: Favour; user: User }) => (
@@ -180,7 +71,7 @@ export class Marketplace extends React.Component<
               />
             }
             title={favour.title}
-            subheader={this.formatDate(favour.timestamp.toDate())}
+            subheader={formatDate(favour.timestamp.toDate())}
           />
           <CardContent>
             <Typography
@@ -197,8 +88,7 @@ export class Marketplace extends React.Component<
               size="small"
               onClick={() =>
                 this.setState({
-                  currentTitle: favour.title,
-                  currentDescription: favour.description,
+                  selectedFavour: favour,
                   openLearnDialog: true,
                 })
               }
@@ -212,9 +102,12 @@ export class Marketplace extends React.Component<
   );
 
   componentDidMount() {
-    this.favoursDb = firebase.firestore().collection("favours");
     if (this.userContext.loggedIn) {
-      this.getFavours();
+      this.favourServicer
+        .getFavours(this.userContext.user.uid)
+        .then((favourList) => {
+          this.setState((state) => ({ ...state, favourList }));
+        });
     }
   }
 
@@ -222,7 +115,11 @@ export class Marketplace extends React.Component<
     if (this.userContext != this.context) {
       this.userContext = this.context;
       if (this.userContext.loggedIn) {
-        this.getFavours();
+        this.favourServicer
+          .getFavours(this.userContext.user.uid)
+          .then((favourList) => {
+            this.setState((state) => ({ ...state, favourList }));
+          });
       }
     }
   }
@@ -241,7 +138,12 @@ export class Marketplace extends React.Component<
             >
               Add New Favour
             </Button>
-            <this.favourDialog />
+            <CreateFavourDialog
+              open={this.state.openFavourDialog}
+              newFavour={this.state.newFavour}
+              onClose={this.favourDialogClose}
+              onCreate={this.onFavourCreated}
+            />
           </div>
           <br />
           <Typography>Groups</Typography>
@@ -279,11 +181,12 @@ export class Marketplace extends React.Component<
                 <>
                   {this.state.favourList.map((favour) => (
                     <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
-                      <this.FavourCard
+                      <this.FavourCard favour={favour} user={favour.owner} />
+                      <LearnMoreDialog
+                        open={this.state.openLearnDialog}
                         favour={favour}
-                        user={this.state.userMapping.get(favour.ownerUid)}
+                        onClose={this.learnDialogClose}
                       />
-                      <this.learnMoreDialog />
                     </Grid>
                   ))}
                 </>
@@ -295,71 +198,41 @@ export class Marketplace extends React.Component<
     );
   }
 
-  getFavours() {
-    const user = firebase.auth().currentUser;
-    this.favoursDb
-      .doc(user.uid)
-      .collection("favourList")
-      .get()
-      .then((value) => {
-        const favourList = value.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() } as Favour))
-          .sort((f1, f2) =>
-            compareDesc(f1.timestamp.toDate(), f2.timestamp.toDate()),
-          );
-
-        this.setState((state) => ({
-          ...state,
-          favourList,
-        }));
-
-        const getUsersPromises = favourList.map((favour) => {
-          const ownerUid = favour.ownerUid;
-
-          let promise: Promise<void | any> = Promise.resolve();
-          if (!this.state.userMapping.has(ownerUid)) {
-            promise = firebase
-              .firestore()
-              .collection("users")
-              .doc(ownerUid)
-              .get();
-            promise.then((value) => {
-              if (!value.exists) return;
-
-              const user = value.data();
-              this.state.userMapping.set(ownerUid, user);
-            });
-          }
-          return promise;
-        });
-        Promise.all(getUsersPromises).then(() =>
-          this.setState((state) => ({
-            ...state,
-            userMapping: new Map(this.state.userMapping),
-          })),
-        );
-      });
-  }
-
-  createFavour = (title: string, location: string, cost: number) => {
-    const user = firebase.auth().currentUser;
-    const favour = {
-      title,
-      ownerUid: user.uid,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      roughLocation: "Macquaire Park",
-      description: "Detailed description to be shown",
-      actualLocation: location,
-      cost,
-    } as Favour;
-
-    const doc = this.favoursDb.doc(user.uid);
-    doc.collection("favourList").add(favour);
-
-    favour.timestamp = firebase.firestore.Timestamp.now();
-    this.setState((state) => ({
-      ...state,
-      favourList: [favour, ...this.state.favourList],
-    }));
+  private favourDialogClose = () => {
+    this.setState({ openFavourDialog: false });
   };
+
+  private learnDialogClose = () => {
+    this.setState({ openLearnDialog: false });
+  };
+
+  private onFavourCreated = () => {
+    const createdFavour = this.favourServicer.createFavour(
+      this.state.newFavour,
+      this.userContext.user.uid,
+    );
+
+    // Add the newly created favour to the list with the current user
+    this.setState({
+      favourList: [
+        {
+          ...createdFavour,
+          owner: this.userContext.user,
+        },
+        ...this.state.favourList,
+      ],
+    });
+
+    this.favourDialogClose();
+  };
+}
+
+export function formatDate(date: Date): JSX.Element {
+  return (
+    <>
+      {format(date, "eeee, io LLLL")}
+      <br />
+      {formatDistanceToNow(date)} ago
+    </>
+  );
 }

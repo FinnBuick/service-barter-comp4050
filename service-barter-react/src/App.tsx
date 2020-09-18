@@ -1,4 +1,5 @@
 import "firebase/database";
+import "./global.scss";
 
 import * as firebase from "firebase/app";
 import * as React from "react";

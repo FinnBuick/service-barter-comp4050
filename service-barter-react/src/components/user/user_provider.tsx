@@ -53,6 +53,7 @@ export const UserProvider = React.memo(
             ref.get().then((value) => {
               if (value.exists) {
                 user = value.data();
+                user.uid = firebaseUser.uid;
               } else {
                 ref.set(user, { merge: true });
               }
