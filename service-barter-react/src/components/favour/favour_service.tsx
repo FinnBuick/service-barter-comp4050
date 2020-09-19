@@ -8,6 +8,7 @@ export type Favour = {
   title: string;
   cost: number;
   ownerUid: string;
+  acceptUid: string;
   timestamp: firebase.firestore.Timestamp;
   roughLocation: string;
   description: string;
