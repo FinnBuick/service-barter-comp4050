@@ -32,7 +32,7 @@ export class FavourService {
 
   public getFavours(): Promise<(Favour & { owner: User })[]> {
     return this.favoursDb
-      .orderBy("timestamp", "asc")
+      .orderBy("timestamp", "desc")
       .limit(50)
       .get()
       .then((value) => {

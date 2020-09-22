@@ -78,6 +78,7 @@ export const CreateFavourDialog = React.memo(
             margin="dense"
             label="Favour cost"
             defaultValue={0}
+            name="cost"
             onChange={dataChangedNumber}
             required
             fullWidth

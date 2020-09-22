@@ -137,6 +137,16 @@ export class Marketplace extends React.Component<
               onCreate={this.onFavourCreated}
             />
           </div>
+          <LearnMoreDialog
+            open={this.state.openLearnDialog}
+            favour={this.state.selectedFavour}
+            onClose={this.learnDialogClose}
+            showAccept={
+              this.userContext.user != undefined &&
+              this.userContext.user.uid != ""
+            }
+            onAccept={this.learnDialogAccept}
+          />
           <br />
           <Typography>Groups</Typography>
           <div>
@@ -174,16 +184,6 @@ export class Marketplace extends React.Component<
                   {this.state.favourList.map((favour) => (
                     <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
                       <this.FavourCard favour={favour} user={favour.owner} />
-                      <LearnMoreDialog
-                        open={this.state.openLearnDialog}
-                        favour={favour}
-                        onClose={this.learnDialogClose}
-                        showAccept={
-                          this.userContext.user != undefined &&
-                          this.userContext.user.uid != ""
-                        }
-                        onAccept={this.learnDialogAccept}
-                      />
                     </Grid>
                   ))}
                 </>
@@ -203,8 +203,11 @@ export class Marketplace extends React.Component<
     this.setState({ openLearnDialog: false });
   };
 
-  private learnDialogAccept = (favour: Favour) => {
-    this.favourServicer.acceptFavour(favour.id, this.userContext.user.uid);
+  private learnDialogAccept = () => {
+    this.favourServicer.acceptFavour(
+      this.state.selectedFavour.id,
+      this.userContext.user.uid,
+    );
   };
 
   private onFavourCreated = () => {

@@ -24,12 +24,8 @@ export const LearnMoreDialog = React.memo(
     favour?: Favour;
     onClose: () => void;
     showAccept: boolean;
-    onAccept: (favour: Favour) => void;
+    onAccept: () => void;
   }) => {
-    const onAcceptImpl = () => {
-      onAccept(favour);
-    };
-
     return (
       <>
         {favour ? (
@@ -68,11 +64,7 @@ export const LearnMoreDialog = React.memo(
                     textAlign: "center",
                   }}
                 >
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={onAcceptImpl}
-                  >
+                  <Button variant="outlined" color="primary" onClick={onAccept}>
                     Accept
                   </Button>
                 </div>
