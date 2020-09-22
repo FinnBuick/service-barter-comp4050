@@ -7,7 +7,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
-import firebase from "firebase";
 import * as React from "react";
 
 import { formatDate } from "../../pages/marketplace/marketplace";
@@ -18,15 +17,19 @@ export const LearnMoreDialog = React.memo(
     open,
     favour,
     onClose,
+    showAccept,
+    onAccept,
   }: {
     open: boolean;
     favour?: Favour;
     onClose: () => void;
+    showAccept: boolean;
+    onAccept: (favour: Favour) => void;
   }) => {
-    const acceptRequest = () => {
-      favour.acceptUid = firebase.auth().currentUser.uid;
-      console.log(favour.acceptUid);
+    const onAcceptImpl = () => {
+      onAccept(favour);
     };
+
     return (
       <>
         {favour ? (
@@ -57,21 +60,23 @@ export const LearnMoreDialog = React.memo(
                 Description
               </Typography>
               <Typography variant="subtitle1">{favour.description}</Typography>
-              <div
-                style={{
-                  marginTop: "3%",
-                  marginBottom: "1%",
-                  textAlign: "center",
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={acceptRequest}
+              {showAccept && (
+                <div
+                  style={{
+                    marginTop: "3%",
+                    marginBottom: "1%",
+                    textAlign: "center",
+                  }}
                 >
-                  Accept
-                </Button>
-              </div>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={onAcceptImpl}
+                  >
+                    Accept
+                  </Button>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         ) : (

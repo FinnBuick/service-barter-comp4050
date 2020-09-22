@@ -102,25 +102,17 @@ export class Marketplace extends React.Component<
   );
 
   componentDidMount() {
-    if (this.userContext.loggedIn) {
-      this.favourServicer
-        .getFavours(this.userContext.user.uid)
-        .then((favourList) => {
-          this.setState((state) => ({ ...state, favourList }));
-        });
-    }
+    this.favourServicer.getFavours().then((favourList) => {
+      this.setState((state) => ({ ...state, favourList }));
+    });
   }
 
   componentDidUpdate() {
     if (this.userContext != this.context) {
       this.userContext = this.context;
-      if (this.userContext.loggedIn) {
-        this.favourServicer
-          .getFavours(this.userContext.user.uid)
-          .then((favourList) => {
-            this.setState((state) => ({ ...state, favourList }));
-          });
-      }
+      this.favourServicer.getFavours().then((favourList) => {
+        this.setState((state) => ({ ...state, favourList }));
+      });
     }
   }
 
@@ -186,6 +178,8 @@ export class Marketplace extends React.Component<
                         open={this.state.openLearnDialog}
                         favour={favour}
                         onClose={this.learnDialogClose}
+                        showAccept={this.userContext.user.uid != ""}
+                        onAccept={this.learnDialogAccept}
                       />
                     </Grid>
                   ))}
@@ -204,6 +198,10 @@ export class Marketplace extends React.Component<
 
   private learnDialogClose = () => {
     this.setState({ openLearnDialog: false });
+  };
+
+  private learnDialogAccept = (favour: Favour) => {
+    this.favourServicer.acceptFavour(favour.id, this.userContext.user.uid);
   };
 
   private onFavourCreated = () => {

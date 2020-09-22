@@ -1,4 +1,3 @@
-import { compareDesc } from "date-fns";
 import firebase from "firebase";
 
 import { User } from "../../components/user/user_provider";
@@ -31,17 +30,15 @@ export class FavourService {
     this.favoursDb = firebase.firestore().collection("favours");
   }
 
-  public getFavours(userUid: string): Promise<(Favour & { owner: User })[]> {
+  public getFavours(): Promise<(Favour & { owner: User })[]> {
     return this.favoursDb
-      .doc(userUid)
-      .collection("favourList")
+      .orderBy("timestamp", "asc")
+      .limit(50)
       .get()
       .then((value) => {
-        const favourList = value.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() } as Favour))
-          .sort((f1, f2) =>
-            compareDesc(f1.timestamp.toDate(), f2.timestamp.toDate()),
-          );
+        const favourList = value.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Favour),
+        );
 
         const getUsersPromises = favourList.map((favour) => {
           const ownerUid = favour.ownerUid;
@@ -81,12 +78,15 @@ export class FavourService {
       cost: newFavour.cost,
     } as Favour;
 
-    const doc = this.favoursDb.doc(ownerUid);
-    doc.collection("favourList").add(favour);
+    this.favoursDb.doc().set(favour);
 
     // Generate a fake random id, will eventually get replace by Firebase.
     favour.id = Date.now().toString();
     favour.timestamp = firebase.firestore.Timestamp.now();
     return favour;
+  }
+
+  public acceptFavour(favourId: string, acceptUid: string): void {
+    this.favoursDb.doc(favourId).update({ acceptUid });
   }
 }
