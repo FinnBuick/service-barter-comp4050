@@ -178,7 +178,10 @@ export class Marketplace extends React.Component<
                         open={this.state.openLearnDialog}
                         favour={favour}
                         onClose={this.learnDialogClose}
-                        showAccept={this.userContext.user.uid != ""}
+                        showAccept={
+                          this.userContext.user != undefined &&
+                          this.userContext.user.uid != ""
+                        }
                         onAccept={this.learnDialogAccept}
                       />
                     </Grid>
