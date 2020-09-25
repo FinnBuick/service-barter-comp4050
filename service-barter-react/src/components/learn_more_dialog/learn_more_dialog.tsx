@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Dialog,
   DialogContent,
@@ -34,9 +35,20 @@ export const LearnMoreDialog = React.memo(
         {favour ? (
           <Dialog open={open} onClose={onClose} fullWidth>
             <DialogTitle>
-              {favour.title}
-              <CancelIcon style={{ float: "right" }} onClick={onClose} />
-              <DialogContentText>by {owner.displayName}</DialogContentText>
+              <Avatar
+                src={owner.photoURL || "invalid"}
+                alt={owner.displayName}
+                style={{
+                  marginTop: "1.5%",
+                  float: "left",
+                  display: "inline-block",
+                }}
+              />
+              <div style={{ marginLeft: "10%" }}>
+                {favour.title}
+                <CancelIcon style={{ float: "right" }} onClick={onClose} />
+                <DialogContentText>by {owner.displayName}</DialogContentText>
+              </div>
               <DialogContentText>
                 {formatDate(favour.timestamp.toDate())}
               </DialogContentText>
