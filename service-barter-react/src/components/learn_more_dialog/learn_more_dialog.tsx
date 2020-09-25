@@ -17,14 +17,14 @@ export const LearnMoreDialog = React.memo(
     open,
     favour,
     onClose,
-    showAccept,
-    onAccept,
+    showRequest,
+    onRequest,
   }: {
     open: boolean;
     favour?: Favour;
     onClose: () => void;
-    showAccept: boolean;
-    onAccept: () => void;
+    showRequest: boolean;
+    onRequest: () => void;
   }) => {
     return (
       <>
@@ -56,7 +56,7 @@ export const LearnMoreDialog = React.memo(
                 Description
               </Typography>
               <Typography variant="subtitle1">{favour.description}</Typography>
-              {showAccept && (
+              {showRequest && (
                 <div
                   style={{
                     marginTop: "3%",
@@ -64,8 +64,12 @@ export const LearnMoreDialog = React.memo(
                     textAlign: "center",
                   }}
                 >
-                  <Button variant="outlined" color="primary" onClick={onAccept}>
-                    Accept
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={onRequest}
+                  >
+                    Request
                   </Button>
                 </div>
               )}

@@ -86,7 +86,7 @@ export class FavourService {
     return favour;
   }
 
-  public acceptFavour(favourId: string, acceptUid: string): void {
-    this.favoursDb.doc(favourId).update({ acceptUid });
+  public requestFavour(favourId: string, requestUid: string): void {
+    this.favoursDb.doc(favourId).update({ requestUid });
   }
 }

@@ -141,11 +141,11 @@ export class Marketplace extends React.Component<
             open={this.state.openLearnDialog}
             favour={this.state.selectedFavour}
             onClose={this.learnDialogClose}
-            showAccept={
+            showRequest={
               this.userContext.user != undefined &&
               this.userContext.user.uid != ""
             }
-            onAccept={this.learnDialogAccept}
+            onRequest={this.learnDialogRequest}
           />
           <br />
           <Typography>Groups</Typography>
@@ -203,11 +203,12 @@ export class Marketplace extends React.Component<
     this.setState({ openLearnDialog: false });
   };
 
-  private learnDialogAccept = () => {
-    this.favourServicer.acceptFavour(
+  private learnDialogRequest = () => {
+    this.favourServicer.requestFavour(
       this.state.selectedFavour.id,
       this.userContext.user.uid,
     );
+    this.learnDialogClose();
   };
 
   private onFavourCreated = () => {
