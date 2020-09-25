@@ -34,6 +34,7 @@ export class Marketplace extends React.Component<
     openLearnDialog: boolean;
     newFavour: NewFavour;
     selectedFavour: Favour;
+    selectedFavourUser: User;
     favourList: (Favour & { owner: User })[];
   }
 > {
@@ -53,6 +54,7 @@ export class Marketplace extends React.Component<
         description: "",
       },
       selectedFavour: undefined,
+      selectedFavourUser: undefined,
       openFavourDialog: false,
       openLearnDialog: false,
     };
@@ -81,7 +83,6 @@ export class Marketplace extends React.Component<
             >
               Location: {favour.roughLocation}
             </Typography>
-            <Typography variant="body2" component="p"></Typography>
           </CardContent>
           <CardActions>
             <Button
@@ -89,6 +90,7 @@ export class Marketplace extends React.Component<
               onClick={() =>
                 this.setState({
                   selectedFavour: favour,
+                  selectedFavourUser: user,
                   openLearnDialog: true,
                 })
               }
@@ -140,6 +142,7 @@ export class Marketplace extends React.Component<
           <LearnMoreDialog
             open={this.state.openLearnDialog}
             favour={this.state.selectedFavour}
+            owner={this.state.selectedFavourUser}
             onClose={this.learnDialogClose}
             showRequest={
               this.userContext.user != undefined &&

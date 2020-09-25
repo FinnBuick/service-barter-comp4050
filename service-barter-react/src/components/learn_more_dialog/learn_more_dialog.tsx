@@ -9,6 +9,7 @@ import {
 import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
 
+import { User } from "../../components/user/user_provider";
 import { formatDate } from "../../pages/marketplace/marketplace";
 import { Favour } from "../favour/favour_service";
 
@@ -16,12 +17,14 @@ export const LearnMoreDialog = React.memo(
   ({
     open,
     favour,
+    owner,
     onClose,
     showRequest,
     onRequest,
   }: {
     open: boolean;
     favour?: Favour;
+    owner: User;
     onClose: () => void;
     showRequest: boolean;
     onRequest: () => void;
@@ -33,6 +36,7 @@ export const LearnMoreDialog = React.memo(
             <DialogTitle>
               {favour.title}
               <CancelIcon style={{ float: "right" }} onClick={onClose} />
+              <DialogContentText>by {owner.displayName}</DialogContentText>
               <DialogContentText>
                 {formatDate(favour.timestamp.toDate())}
               </DialogContentText>
