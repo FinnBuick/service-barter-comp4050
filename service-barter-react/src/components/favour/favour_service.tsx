@@ -12,6 +12,7 @@ export type Favour = {
   roughLocation: string;
   description: string;
   actualLocation: string;
+  group: string;
 };
 
 export type NewFavour = {
@@ -20,6 +21,7 @@ export type NewFavour = {
   street: string;
   suburb: string;
   description: string;
+  group: string;
 };
 
 export class FavourService {
@@ -76,6 +78,7 @@ export class FavourService {
       description: newFavour.description,
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
+      group: newFavour.group;
     } as Favour;
 
     this.favoursDb.doc().set(favour);
