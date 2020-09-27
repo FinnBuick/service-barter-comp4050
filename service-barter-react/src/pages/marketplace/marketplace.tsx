@@ -14,11 +14,17 @@ import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
 import { CreateFavourDialog } from "../../components/create_favour_dialog/create_favour_dialog";
+import { CreateGroupDialog } from "../../components/create_group_dialog/create_group_dialog";
 import {
   Favour,
   FavourService,
   NewFavour,
 } from "../../components/favour/favour_service";
+import {
+  Group,
+  GroupService,
+  NewGroup,
+} from "../../components/group/group_service";
 import { LearnMoreDialog } from "../../components/learn_more_dialog/learn_more_dialog";
 import {
   User,
@@ -32,30 +38,38 @@ export class Marketplace extends React.Component<
   {
     openFavourDialog: boolean;
     openLearnDialog: boolean;
+    openGroupDialog: boolean;
     newFavour: NewFavour;
     selectedFavour: Favour;
     selectedFavourUser: User;
     favourList: (Favour & { owner: User })[];
+    groupList: (Group & { member: User })[];
+    newGroup: { title: "" };
   }
 > {
   static contextType = UserContext;
 
   private favourServicer = new FavourService();
+  private groupServicer = new GroupService();
   private userContext: UserContextProps;
   constructor(props, context) {
     super(props, context);
     this.state = {
       favourList: [],
+      groupList: [],
       newFavour: {
         title: "",
         cost: 0,
         street: "",
         suburb: "",
         description: "",
+        group: "",
       },
+      newGroup: { title: "" },
       selectedFavour: undefined,
       selectedFavourUser: undefined,
       openFavourDialog: false,
+      openGroupDialog: false,
       openLearnDialog: false,
     };
     this.userContext = context;
@@ -153,17 +167,28 @@ export class Marketplace extends React.Component<
           <br />
           <Typography>Groups</Typography>
           <div>
+            <Button
+              className={styles.buttons}
+              variant="contained"
+              color="primary"
+              onClick={() => this.setState({ openGroupDialog: true })}
+              startIcon={<AddIcon />}
+            >
+              Add New Group
+            </Button>
+            <CreateGroupDialog
+              open={this.state.openGroupDialog}
+              newGroup={this.state.newGroup}
+              onClose={this.groupDialogClose}
+              onCreate={this.onGroupCreated}
+            />
+          </div>
+          <div>
             <Button className={styles.buttons} variant="contained">
               All Groups
             </Button>
             <Button className={styles.buttons} variant="contained">
               Group A
-            </Button>
-            <Button className={styles.buttons} variant="contained">
-              Group B
-            </Button>
-            <Button className={styles.buttons} variant="contained">
-              Group C
             </Button>
           </div>
         </div>
@@ -202,6 +227,9 @@ export class Marketplace extends React.Component<
     this.setState({ openFavourDialog: false });
   };
 
+  private groupDialogClose = () => {
+    this.setState({ openGroupDialog: false });
+  };
   private learnDialogClose = () => {
     this.setState({ openLearnDialog: false });
   };
@@ -232,6 +260,26 @@ export class Marketplace extends React.Component<
     });
 
     this.favourDialogClose();
+  };
+
+  private onGroupCreated = () => {
+    const createdGroup = this.groupServicer.createGroup(
+      this.state.newGroup,
+      this.userContext.user.uid,
+    );
+
+    // Add the newly created group to the list with the current user
+    this.setState({
+      groupList: [
+        {
+          ...createdGroup,
+          member: this.userContext.user,
+        },
+        ...this.state.groupList,
+      ],
+    });
+
+    this.groupDialogClose();
   };
 }
 

@@ -78,7 +78,7 @@ export class FavourService {
       description: newFavour.description,
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
-      group: newFavour.group;
+      group: newFavour.group,
     } as Favour;
 
     this.favoursDb.doc().set(favour);
