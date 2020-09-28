@@ -145,7 +145,9 @@ export const Header = React.memo(
                           >
                             Profile
                           </MenuItem>
-                          <MenuItem onClick={logout}>Logout</MenuItem>
+                          <MenuItem component={Link} to="/" onClick={logout}>
+                            Logout
+                          </MenuItem>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>
