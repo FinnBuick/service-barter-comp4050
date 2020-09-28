@@ -122,7 +122,6 @@ export const Header = React.memo(
                 anchorEl={anchorRef.current}
                 role={undefined}
                 transition
-                disablePortal
               >
                 {({ TransitionProps, placement }) => (
                   <Grow
