@@ -6,12 +6,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import CancelIcon from "@material-ui/icons/Cancel";
-"import MuiAlert from \"@material-ui/lab/Alert\";";
+('import MuiAlert from "@material-ui/lab/Alert";');
 import firebase from "firebase";
 import * as React from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
-"import { UserContext } from \"../../components/user/user_provider\";";
+('import { UserContext } from "../../components/user/user_provider";');
 import styles from "./signin.scss";
 
 const uiConfig = {
@@ -24,10 +24,10 @@ const uiConfig = {
   tosUrl: "http://example.com/tos",
   privacyPolicyUrl: "http://example.com/privacy",
 };
-"const userContext = React.useContext(UserContext);";
+("const userContext = React.useContext(UserContext);");
 
-"const [snackbarOpen, setSnackbarOpen] = React.useState(false);";
-"const handleSnackbarClose = () => setSnackbarOpen(false);";
+("const [snackbarOpen, setSnackbarOpen] = React.useState(false);");
+("const handleSnackbarClose = () => setSnackbarOpen(false);");
 export const Signin = React.memo(() => {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => setOpen(true);
@@ -56,24 +56,22 @@ export const Signin = React.memo(() => {
           <CancelIcon style={{ float: "right" }} onClick={handleClose} />
         </DialogTitle>
         <DialogContent>
-          <form>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="email"
-              required
-              fullWidth
-            />
-            <div style={{ marginTop: "10px", textAlign: "center" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => resetPassword(this.form.email.value)}
-              >
-                Send Email
-              </Button>
-            </div>
-          </form>
+          <TextField
+            autoFocus
+            margin="dense"
+            inputRef={(el) => (this.fv = el)}
+            required
+            fullWidth
+          />
+          <div style={{ marginTop: "10px", textAlign: "center" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => resetPassword(this.fv.value)}
+            >
+              Send Email
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
