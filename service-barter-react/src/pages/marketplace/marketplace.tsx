@@ -34,7 +34,7 @@ export class Marketplace extends React.Component<
     openLearnDialog: boolean;
     newFavour: NewFavour;
     selectedFavour: Favour;
-    selectedFavourUser: User;
+    selectedFavourOwner: User;
     favourList: (Favour & { owner: User })[];
   }
 > {
@@ -54,7 +54,7 @@ export class Marketplace extends React.Component<
         description: "",
       },
       selectedFavour: undefined,
-      selectedFavourUser: undefined,
+      selectedFavourOwner: undefined,
       openFavourDialog: false,
       openLearnDialog: false,
     };
@@ -90,7 +90,7 @@ export class Marketplace extends React.Component<
               onClick={() =>
                 this.setState({
                   selectedFavour: favour,
-                  selectedFavourUser: user,
+                  selectedFavourOwner: user,
                   openLearnDialog: true,
                 })
               }
@@ -142,7 +142,7 @@ export class Marketplace extends React.Component<
           <LearnMoreDialog
             open={this.state.openLearnDialog}
             favour={this.state.selectedFavour}
-            owner={this.state.selectedFavourUser}
+            owner={this.state.selectedFavourOwner}
             onClose={this.learnDialogClose}
             showRequest={
               this.userContext.user != undefined &&
@@ -209,7 +209,8 @@ export class Marketplace extends React.Component<
   private learnDialogRequest = () => {
     this.favourServicer.requestFavour(
       this.state.selectedFavour.id,
-      this.userContext.user.uid,
+      this.userContext.user,
+      this.state.selectedFavourOwner,
     );
     this.learnDialogClose();
   };

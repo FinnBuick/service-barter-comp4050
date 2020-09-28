@@ -85,7 +85,7 @@ export const LearnMoreDialog = React.memo(
                     color="primary"
                     onClick={onRequest}
                   >
-                    Request
+                    Send a request message
                   </Button>
                 </div>
               )}

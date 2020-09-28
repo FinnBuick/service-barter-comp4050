@@ -22,12 +22,26 @@ export type NewFavour = {
   description: string;
 };
 
+type Room = {
+  id: string;
+  messages: {
+    userId: string;
+    userName: string;
+    timestamp: string;
+    message: string;
+  }[];
+  users: string[];
+  typing: string[];
+};
+
 export class FavourService {
   private favoursDb?: firebase.firestore.CollectionReference;
   private userMapping = new Map<string, User>();
+  private database?: firebase.database.Database;
 
   constructor() {
     this.favoursDb = firebase.firestore().collection("favours");
+    this.database = firebase.database();
   }
 
   public getFavours(): Promise<(Favour & { owner: User })[]> {
@@ -86,7 +100,48 @@ export class FavourService {
     return favour;
   }
 
-  public requestFavour(favourId: string, requestUid: string): void {
+  public requestFavour(
+    favourId: string,
+    requestUser: User,
+    ownerUser: User,
+  ): void {
+    this.createRoomForRequest(requestUser, ownerUser);
+    const requestUid = requestUser.uid;
     this.favoursDb.doc(favourId).update({ requestUid });
   }
+
+  private createRoomForRequest = (requestUser: User, otherUser: User) => {
+    const roomRef = this.database.ref().child("/rooms").push();
+    const roomId = roomRef.key;
+    roomRef.set({
+      id: roomId,
+      messages: [],
+      users: [requestUser.uid, otherUser.uid],
+      typing: [],
+    } as Room);
+
+    const roomName = `${requestUser.displayName}, ${otherUser.displayName}`;
+    const room = {
+      id: roomId,
+      name: roomName,
+      avatar: "",
+    };
+
+    this.database.ref(`/users/${requestUser.uid}/rooms/${roomId}`).set(room);
+    this.database.ref(`/users/${otherUser.uid}/rooms/${roomId}`).set(room);
+
+    this.sendRequestMessage(requestUser, roomId);
+  };
+
+  private sendRequestMessage = (senderUser: User, requestRoomId: string) => {
+    this.database
+      .ref(`/rooms/${requestRoomId}/messages`)
+      .push()
+      .set({
+        userId: senderUser.uid,
+        userName: senderUser.displayName,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        message: `There is a request from the user: ${senderUser.displayName}`,
+      });
+  };
 }
