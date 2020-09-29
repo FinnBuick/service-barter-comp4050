@@ -10,6 +10,7 @@ import * as React from "react";
 import { Redirect } from "react-router-dom";
 import RSC from "react-scrollbars-custom";
 
+import { AcceptPicker } from "../../components/accept_picker/accept_picker";
 import { FavourCard } from "../../components/favour_card/favour_card";
 import { FavourService } from "../../components/favour/favour_service";
 import { UserContext } from "../../components/user/user_provider";
@@ -23,7 +24,12 @@ export const Favours = React.memo(() => {
   }
 
   const [tabValue, setTabValue] = React.useState(0);
-  const [favourList, setFavourList] = React.useState([]);
+  const [favourList, setFavourList] = React.useState(null);
+
+  const [acceptPickerState, setAcceptPickerState] = React.useState({
+    open: false,
+    requestedUsers: [],
+  });
 
   const favourServicer = new FavourService();
   React.useEffect(() => {
@@ -36,12 +42,43 @@ export const Favours = React.memo(() => {
       .then((favourList) => setFavourList(favourList));
   }, [userContext]);
 
+  // TODO: Change between different types of favours
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
+  const favourCardClick = () => {
+    // TODO: Actually get the list of requested users
+    const randomUser = {
+      address: "Macquarie Park, NSW Australia",
+      displayName: "Test",
+      email: "test@gmail.com",
+      favourPoint: 0,
+      photoURL: null,
+      skillList: [],
+      uid: "5MF4vSP8OMe9jEql25BuxSAva9u2",
+    };
+
+    setAcceptPickerState({ open: true, requestedUsers: [randomUser] });
+  };
+
+  const acceptPickerClose = () => {
+    setAcceptPickerState({ open: false, requestedUsers: [] });
+  };
+
+  // TODO: Change state of favour to accepted, set accepted user
+  const acceptPickerClick = () => {
+    setAcceptPickerState({ open: false, requestedUsers: [] });
+  };
+
   return (
     <div className={styles.content}>
+      <AcceptPicker
+        users={acceptPickerState.requestedUsers}
+        open={acceptPickerState.open}
+        handleClose={acceptPickerClose}
+        onUserClick={acceptPickerClick}
+      />
       <Paper>
         <Tabs
           value={tabValue}
@@ -50,7 +87,7 @@ export const Favours = React.memo(() => {
           textColor="primary"
           centered
         >
-          <Tab label="Pending favours" />
+          <Tab label="Your favours" />
           <Tab label="Accepted favours" />
           <Tab label="Done favours" />
         </Tabs>
@@ -74,8 +111,10 @@ export const Favours = React.memo(() => {
                 <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
                   <FavourCard
                     favour={favour}
-                    user={favour.owner}
-                    onClick={this.favourCardClick}
+                    user={userContext.user}
+                    onClick={favourCardClick}
+                    requests={4}
+                    viewRequests={true}
                   />
                 </Grid>
               ))}

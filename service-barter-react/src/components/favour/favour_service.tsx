@@ -2,6 +2,12 @@ import firebase from "firebase";
 
 import { User } from "../../components/user/user_provider";
 
+export enum FavourState {
+  PENDING = 1,
+  ACCEPTED,
+  DONE,
+}
+
 export type Favour = {
   id: string;
   title: string;
@@ -12,6 +18,7 @@ export type Favour = {
   roughLocation: string;
   description: string;
   actualLocation: string;
+  state: FavourState;
 };
 
 export type NewFavour = {
@@ -100,6 +107,7 @@ export class FavourService {
       description: newFavour.description,
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
+      state: FavourState.PENDING,
     } as Favour;
 
     this.favoursDb.doc().set(favour);
