@@ -1,11 +1,17 @@
 import Button from "@material-ui/core/Button";
+import Collapse from "@material-ui/core/Collapse";
 import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
+import CloseIcon from "@material-ui/icons/Close";
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
 import { FavourCard } from "../../components/favour_card/favour_card";
 import { Favour, FavourService } from "../../components/favour/favour_service";
+import { LearnMoreDialog } from "../../components/learn_more_dialog/learn_more_dialog";
 import {
   User,
   UserContext,
@@ -16,6 +22,10 @@ import styles from "./home.scss";
 export class Home extends React.Component<
   unknown,
   {
+    openSuccessAlert: boolean;
+    openLearnDialog: boolean;
+    selectedFavour: Favour;
+    selectedFavourOwner: User;
     recentFavourList: (Favour & { owner: User })[];
   }
 > {
@@ -27,6 +37,10 @@ export class Home extends React.Component<
     super(props, context);
     this.state = {
       recentFavourList: [],
+      openSuccessAlert: false,
+      openLearnDialog: false,
+      selectedFavour: undefined,
+      selectedFavourOwner: undefined,
     };
     this.userContext = context;
   }
@@ -47,11 +61,25 @@ export class Home extends React.Component<
   }
 
   private favourCardClick = (favour: Favour, user: User) => {
-    // this.setState({
-    //   selectedFavour: favour,
-    //   selectedFavourOwner: user,
-    //   openLearnDialog: true,
-    // });
+    this.setState({
+      selectedFavour: favour,
+      selectedFavourOwner: user,
+      openLearnDialog: true,
+    });
+  };
+
+  private learnDialogClose = () => {
+    this.setState({ openLearnDialog: false });
+  };
+
+  private learnDialogRequest = () => {
+    this.favourServicer.requestFavour(
+      this.state.selectedFavour.id,
+      this.userContext.user,
+      this.state.selectedFavourOwner,
+    );
+    this.learnDialogClose();
+    this.setState({ openSuccessAlert: true });
   };
 
   render() {
@@ -76,7 +104,39 @@ export class Home extends React.Component<
             </div>
           )}
         </div>
+        <Collapse in={this.state.openSuccessAlert} style={{ marginTop: "1%" }}>
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  this.setState({ openSuccessAlert: false });
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            <AlertTitle>Success</AlertTitle>
+            The request message has been sent —{" "}
+            <strong>check out the message!</strong>
+          </Alert>
+        </Collapse>
         <div className={styles.contentBody}>
+          <LearnMoreDialog
+            open={this.state.openLearnDialog}
+            favour={this.state.selectedFavour}
+            owner={this.state.selectedFavourOwner}
+            onClose={this.learnDialogClose}
+            showRequest={
+              this.userContext.user != undefined &&
+              this.userContext.user.uid != ""
+            }
+            onRequest={this.learnDialogRequest}
+          />
           <div className={styles.listFavours}>
             <Typography variant="h5">Recent favours</Typography>
             <Grid container className={styles.grid}>
@@ -92,7 +152,6 @@ export class Home extends React.Component<
                         <FavourCard
                           favour={favour}
                           user={favour.owner}
-                          viewFromHome={true}
                           onClick={this.favourCardClick}
                         />
                       </Grid>
@@ -116,7 +175,6 @@ export class Home extends React.Component<
                       <FavourCard
                         favour={favour}
                         user={favour.owner}
-                        viewFromHome={true}
                         onClick={this.favourCardClick}
                       />
                     </Grid>

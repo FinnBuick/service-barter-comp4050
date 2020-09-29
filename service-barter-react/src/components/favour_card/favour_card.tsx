@@ -23,14 +23,12 @@ export const FavourCard = React.memo(
     onClick,
     requests,
     viewRequests,
-    viewFromHome,
   }: {
     favour: Favour;
     user: User;
     onClick: (favour: Favour, user: User) => void;
     requests?: number;
     viewRequests?: boolean;
-    viewFromHome?: boolean;
   }) => {
     const onClickImpl = () => onClick(favour, user);
 
@@ -52,14 +50,14 @@ export const FavourCard = React.memo(
               Location: {favour.roughLocation}
             </Typography>
           </CardContent>
-          {!viewFromHome && !viewRequests && (
+          {!viewRequests && (
             <CardActions>
               <Button size="small" onClick={onClickImpl}>
                 Learn More
               </Button>
             </CardActions>
           )}
-          {!viewFromHome && viewRequests && (
+          {viewRequests && (
             <CardActions>
               <Button size="small" onClick={onClickImpl}>
                 View requests &nbsp;
