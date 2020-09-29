@@ -104,7 +104,7 @@ export class Home extends React.Component<
             </div>
           )}
         </div>
-        <Collapse in={this.state.openSuccessAlert} style={{ marginTop: "1%" }}>
+        <Collapse className={styles.alert} in={this.state.openSuccessAlert}>
           <Alert
             severity="success"
             action={

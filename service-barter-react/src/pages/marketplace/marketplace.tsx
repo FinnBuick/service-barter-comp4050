@@ -128,10 +128,7 @@ export class Marketplace extends React.Component<
           </div>
         </div>
         <div className={styles.cards}>
-          <Collapse
-            in={this.state.openSuccessAlert}
-            style={{ marginBottom: "1%" }}
-          >
+          <Collapse className={styles.alert} in={this.state.openSuccessAlert}>
             <Alert
               severity="success"
               action={
