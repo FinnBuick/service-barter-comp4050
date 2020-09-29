@@ -201,7 +201,7 @@ export class Marketplace extends React.Component<
 
   private learnDialogRequest = () => {
     this.favourServicer.requestFavour(
-      this.state.selectedFavour.id,
+      this.state.selectedFavour,
       this.userContext.user,
       this.state.selectedFavourOwner,
     );

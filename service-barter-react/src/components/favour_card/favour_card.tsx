@@ -59,9 +59,13 @@ export const FavourCard = React.memo(
           )}
           {viewRequests && (
             <CardActions>
-              <Button size="small" onClick={onClickImpl}>
+              <Button
+                size="small"
+                onClick={onClickImpl}
+                disabled={requests === 0}
+              >
                 View requests &nbsp;
-                <Badge badgeContent={requests} color="primary">
+                <Badge badgeContent={requests} color="primary" showZero>
                   <MailIcon />
                 </Badge>
               </Button>

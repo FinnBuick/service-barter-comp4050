@@ -1,6 +1,11 @@
-import firebase from "firebase";
+import firebase, { firestore } from "firebase";
 
 import { User } from "../../components/user/user_provider";
+
+export type Requester = {
+  id: string;
+  ownerUid: string;
+};
 
 export enum FavourState {
   PENDING = 1,
@@ -43,12 +48,43 @@ type Room = {
 
 export class FavourService {
   private favoursDb?: firebase.firestore.CollectionReference;
+  private requestsDb?: firebase.firestore.CollectionReference;
   private userMapping = new Map<string, User>();
   private database?: firebase.database.Database;
 
   constructor() {
     this.favoursDb = firebase.firestore().collection("favours");
+    this.requestsDb = firebase.firestore().collection("requests");
     this.database = firebase.database();
+  }
+
+  private appendCachedUsers<T>(
+    userList: (T & { ownerUid: string })[],
+  ): Promise<(T & { owner: User })[]> {
+    const getUsersPromises = userList.map((favour) => {
+      const ownerUid = favour.ownerUid;
+
+      if (!this.userMapping.has(ownerUid)) {
+        return firebase
+          .firestore()
+          .collection("users")
+          .doc(ownerUid)
+          .get()
+          .then((value) => {
+            if (!value.exists) return;
+            const user = value.data() as User;
+            this.userMapping.set(ownerUid, user);
+          });
+      }
+      return Promise.resolve();
+    });
+
+    return Promise.all(getUsersPromises).then(() => {
+      return userList.map((v) => ({
+        ...v,
+        owner: this.userMapping.get(v.ownerUid),
+      }));
+    });
   }
 
   public getFavours(): Promise<(Favour & { owner: User })[]> {
@@ -56,36 +92,11 @@ export class FavourService {
       .orderBy("timestamp", "desc")
       .limit(50)
       .get()
-      .then((value) => {
-        const favourList = value.docs.map(
-          (doc) => ({ id: doc.id, ...doc.data() } as Favour),
-        );
-
-        const getUsersPromises = favourList.map((favour) => {
-          const ownerUid = favour.ownerUid;
-
-          if (!this.userMapping.has(ownerUid)) {
-            return firebase
-              .firestore()
-              .collection("users")
-              .doc(ownerUid)
-              .get()
-              .then((value) => {
-                if (!value.exists) return;
-                const user = value.data() as User;
-                this.userMapping.set(ownerUid, user);
-              });
-          }
-          return Promise.resolve();
-        });
-
-        return Promise.all(getUsersPromises).then(() => {
-          return favourList.map((v) => ({
-            ...v,
-            owner: this.userMapping.get(v.ownerUid),
-          }));
-        });
-      });
+      .then((value) =>
+        this.appendCachedUsers<Favour>(
+          value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
+        ),
+      );
   }
 
   public getUserFavours(ownerUid: string): Promise<Favour[]> {
@@ -119,13 +130,31 @@ export class FavourService {
   }
 
   public requestFavour(
-    favourId: string,
+    favour: Favour,
     requestUser: User,
     ownerUser: User,
   ): void {
     this.createRoomForRequest(requestUser, ownerUser);
-    const requestUid = requestUser.uid;
-    this.favoursDb.doc(favourId).update({ requestUid });
+
+    this.requestsDb
+      .doc(favour.id)
+      .collection("requests")
+      .doc(requestUser.uid)
+      .set({ exists: true });
+  }
+
+  getFavourRequesters(
+    favour: Favour,
+  ): Promise<(Requester & { owner: User })[]> {
+    return this.requestsDb
+      .doc(favour.id)
+      .collection("requests")
+      .get()
+      .then((value) =>
+        this.appendCachedUsers<Requester>(
+          value.docs.map((doc) => ({ id: doc.id, ownerUid: doc.id })),
+        ),
+      );
   }
 
   private createRoomForRequest = (requestUser: User, otherUser: User) => {

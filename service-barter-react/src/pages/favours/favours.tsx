@@ -12,8 +12,12 @@ import RSC from "react-scrollbars-custom";
 
 import { AcceptPicker } from "../../components/accept_picker/accept_picker";
 import { FavourCard } from "../../components/favour_card/favour_card";
-import { FavourService } from "../../components/favour/favour_service";
-import { UserContext } from "../../components/user/user_provider";
+import {
+  Favour,
+  FavourService,
+  Requester,
+} from "../../components/favour/favour_service";
+import { User, UserContext } from "../../components/user/user_provider";
 import styles from "./favours.scss";
 
 export const Favours = React.memo(() => {
@@ -31,15 +35,24 @@ export const Favours = React.memo(() => {
     requestedUsers: [],
   });
 
+  const [favourMap, setFavourMap] = React.useState(
+    new Map<string, (Requester & { owner: User })[]>(),
+  );
+
   const favourServicer = new FavourService();
   React.useEffect(() => {
     if (!userContext.user?.uid) {
       return;
     }
 
-    favourServicer
-      .getUserFavours(userContext.user.uid)
-      .then((favourList) => setFavourList(favourList));
+    favourServicer.getUserFavours(userContext.user.uid).then((favourList) => {
+      const promises = favourList.map((favour) =>
+        favourServicer.getFavourRequesters(favour).then((requesters) => {
+          setFavourMap(new Map(favourMap.set(favour.id, requesters)));
+        }),
+      );
+      Promise.all(promises).then(() => setFavourList(favourList));
+    });
   }, [userContext]);
 
   // TODO: Change between different types of favours
@@ -47,19 +60,11 @@ export const Favours = React.memo(() => {
     setTabValue(newValue);
   };
 
-  const favourCardClick = () => {
-    // TODO: Actually get the list of requested users
-    const randomUser = {
-      address: "Macquarie Park, NSW Australia",
-      displayName: "Test",
-      email: "test@gmail.com",
-      favourPoint: 0,
-      photoURL: null,
-      skillList: [],
-      uid: "5MF4vSP8OMe9jEql25BuxSAva9u2",
-    };
-
-    setAcceptPickerState({ open: true, requestedUsers: [randomUser] });
+  const favourCardClick = (favour: Favour, user: User) => {
+    setAcceptPickerState({
+      open: true,
+      requestedUsers: favourMap.get(favour.id).map((request) => request.owner),
+    });
   };
 
   const acceptPickerClose = () => {
@@ -113,7 +118,7 @@ export const Favours = React.memo(() => {
                     favour={favour}
                     user={userContext.user}
                     onClick={favourCardClick}
-                    requests={4}
+                    requests={favourMap.get(favour.id)?.length || 0}
                     viewRequests={true}
                   />
                 </Grid>
