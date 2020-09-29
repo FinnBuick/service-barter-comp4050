@@ -1,14 +1,8 @@
 import { CircularProgress } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
 import Collapse from "@material-ui/core/Collapse";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
-import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
 import CloseIcon from "@material-ui/icons/Close";
@@ -19,6 +13,7 @@ import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
 import { CreateFavourDialog } from "../../components/create_favour_dialog/create_favour_dialog";
+import { FavourCard } from "../../components/favour_card/favour_card";
 import {
   Favour,
   FavourService,
@@ -67,48 +62,6 @@ export class Marketplace extends React.Component<
     };
     this.userContext = context;
   }
-
-  private FavourCard = React.memo(
-    ({ favour, user }: { favour: Favour; user: User }) => (
-      <Paper>
-        <Card>
-          <CardHeader
-            avatar={
-              <Avatar
-                src={user?.photoURL || "invalid"}
-                alt={user?.displayName}
-              />
-            }
-            title={favour.title}
-            subheader={formatDate(favour.timestamp.toDate())}
-          />
-          <CardContent>
-            <Typography
-              variant="body2"
-              className={styles.pos}
-              color="textSecondary"
-            >
-              Location: {favour.roughLocation}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              onClick={() =>
-                this.setState({
-                  selectedFavour: favour,
-                  selectedFavourOwner: user,
-                  openLearnDialog: true,
-                })
-              }
-            >
-              Learn More
-            </Button>
-          </CardActions>
-        </Card>
-      </Paper>
-    ),
-  );
 
   componentDidMount() {
     this.favourServicer.getFavours().then((favourList) => {
@@ -214,7 +167,11 @@ export class Marketplace extends React.Component<
                 <>
                   {this.state.favourList.map((favour) => (
                     <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
-                      <this.FavourCard favour={favour} user={favour.owner} />
+                      <FavourCard
+                        favour={favour}
+                        user={favour.owner}
+                        onClick={this.favourCardClick}
+                      />
                     </Grid>
                   ))}
                 </>
@@ -225,6 +182,14 @@ export class Marketplace extends React.Component<
       </div>
     );
   }
+
+  private favourCardClick = (favour: Favour, user: User) => {
+    this.setState({
+      selectedFavour: favour,
+      selectedFavourOwner: user,
+      openLearnDialog: true,
+    });
+  };
 
   private favourDialogClose = () => {
     this.setState({ openFavourDialog: false });

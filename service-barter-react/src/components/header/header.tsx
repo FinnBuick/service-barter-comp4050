@@ -146,6 +146,13 @@ export const Header = React.memo(
                           >
                             Profile
                           </MenuItem>
+                          <MenuItem
+                            component={Link}
+                            to="/favours"
+                            onClick={handleClose}
+                          >
+                            Favours
+                          </MenuItem>
                           <MenuItem onClick={logout}>Logout</MenuItem>
                         </MenuList>
                       </ClickAwayListener>

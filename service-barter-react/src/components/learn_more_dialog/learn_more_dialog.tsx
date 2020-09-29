@@ -41,7 +41,6 @@ export const LearnMoreDialog = React.memo(
                 style={{
                   marginTop: "1.5%",
                   float: "left",
-                  display: "inline-block",
                 }}
               />
               <div style={{ marginLeft: "10%" }}>

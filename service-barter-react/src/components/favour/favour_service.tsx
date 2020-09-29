@@ -81,6 +81,16 @@ export class FavourService {
       });
   }
 
+  public getUserFavours(ownerUid: string): Promise<Favour[]> {
+    return this.favoursDb
+      .orderBy("timestamp", "desc")
+      .where("ownerUid", "==", ownerUid)
+      .get()
+      .then((value) =>
+        value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
+      );
+  }
+
   public createFavour(newFavour: NewFavour, ownerUid: string): Favour {
     const favour = {
       title: newFavour.title,
