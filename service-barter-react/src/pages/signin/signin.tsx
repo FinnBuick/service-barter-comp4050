@@ -32,8 +32,10 @@ export const Signin = React.memo(() => {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const resetPassword = (email) =>
+  const resetPassword = (email) => {
+    handleClose();
     firebase.auth().sendPasswordResetEmail(email);
+  };
 
   return (
     <div className={styles.content}>
@@ -67,7 +69,9 @@ export const Signin = React.memo(() => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => resetPassword(this.fv.value)}
+              onClick={() => {
+                resetPassword(this.fv.value);
+              }}
             >
               Send Email
             </Button>
