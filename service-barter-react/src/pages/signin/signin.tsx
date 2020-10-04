@@ -6,12 +6,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import CancelIcon from "@material-ui/icons/Cancel";
-('import MuiAlert from "@material-ui/lab/Alert";');
+import MuiAlert from "@material-ui/lab/Alert";
 import firebase from "firebase";
 import * as React from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 
-('import { UserContext } from "../../components/user/user_provider";');
+import { UserContext } from "../../components/user/user_provider";
 import styles from "./signin.scss";
 
 const uiConfig = {
@@ -24,17 +24,21 @@ const uiConfig = {
   tosUrl: "http://example.com/tos",
   privacyPolicyUrl: "http://example.com/privacy",
 };
-("const userContext = React.useContext(UserContext);");
 
-("const [snackbarOpen, setSnackbarOpen] = React.useState(false);");
-("const handleSnackbarClose = () => setSnackbarOpen(false);");
 export const Signin = React.memo(() => {
   const [open, setOpen] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const handleSnackbarClose = () => setSnackbarOpen(false);
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const resetPassword = (email) => {
     handleClose();
-    firebase.auth().sendPasswordResetEmail(email);
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(() => {
+        setSnackbarOpen(true);
+      });
   };
 
   return (
@@ -48,6 +52,7 @@ export const Signin = React.memo(() => {
       </Button>
       <Dialog
         className={styles.dialogs}
+        id="emailForm"
         open={open}
         onClose={handleClose}
         disableBackdropClick={true}
@@ -76,6 +81,20 @@ export const Signin = React.memo(() => {
               Send Email
             </Button>
           </div>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={2000}
+            onClose={handleSnackbarClose}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              onClose={handleSnackbarClose}
+              severity="success"
+            >
+              A password reset email has been sent to your email, {"Email"}
+            </MuiAlert>
+          </Snackbar>
         </DialogContent>
       </Dialog>
     </div>
