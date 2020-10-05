@@ -53,10 +53,12 @@ export const EditProfile = React.memo(() => {
     });
   };
 
-  const handleTagDelete = (tag) => {
+  const handleTagDelete = (i) => {
+    const newSkillList = newUserData.skillList;
+    newSkillList.splice(i, 1);
     setNewUserData({
       ...newUserData,
-      skillList: newUserData.skillList.filter((skill) => skill !== tag.text),
+      skillList: newSkillList,
     });
   };
 
