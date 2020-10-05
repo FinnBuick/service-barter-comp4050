@@ -20,12 +20,14 @@ export const FavourCard = React.memo(
   ({
     favour,
     user,
+    acceptUser,
     onClick,
     requests,
     viewRequests,
   }: {
     favour: Favour;
     user: User;
+    acceptUser?: User;
     onClick: (favour: Favour, user: User) => void;
     requests?: number;
     viewRequests?: boolean;
@@ -62,12 +64,18 @@ export const FavourCard = React.memo(
               <Button
                 size="small"
                 onClick={onClickImpl}
-                disabled={requests === 0}
+                disabled={requests === 0 || acceptUser != null}
               >
-                View requests &nbsp;
-                <Badge badgeContent={requests} color="primary" showZero>
-                  <MailIcon />
-                </Badge>
+                {acceptUser ? (
+                  <>Accepted by {acceptUser.displayName}</>
+                ) : (
+                  <>
+                    View requests &nbsp;
+                    <Badge badgeContent={requests} color="primary" showZero>
+                      <MailIcon />
+                    </Badge>
+                  </>
+                )}
               </Button>
             </CardActions>
           )}

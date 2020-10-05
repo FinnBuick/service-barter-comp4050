@@ -157,6 +157,21 @@ export class FavourService {
       );
   }
 
+  acceptFavour(favour: Favour, user: User) {
+    return this.favoursDb.doc(favour.id).update({ acceptUid: user.uid });
+  }
+
+  getUserCached(userUid: string): Promise<User> {
+    return this.appendCachedUsers<unknown>([{ ownerUid: userUid }]).then(
+      (values) => {
+        if (values.length === 0) {
+          throw new Error(`User not found with ${userUid}`);
+        }
+        return values[0].owner;
+      },
+    );
+  }
+
   private createRoomForRequest = (requestUser: User, otherUser: User) => {
     const roomRef = this.database.ref().child("/rooms").push();
     const roomId = roomRef.key;
