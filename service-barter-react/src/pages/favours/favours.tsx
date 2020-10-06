@@ -6,6 +6,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
+import { VerifiedUserSharp } from "@material-ui/icons";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 import RSC from "react-scrollbars-custom";
@@ -134,18 +135,21 @@ export const Favours = React.memo(() => {
             </Grid>
           ) : (
             <>
-              {favourList.map((favour) => (
-                <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
-                  <FavourCard
-                    favour={favour}
-                    user={userContext.user}
-                    acceptUser={favour.acceptUser}
-                    onClick={favourCardClick}
-                    requests={favourMap.get(favour.id)?.length || 0}
-                    viewRequests={true}
-                  />
-                </Grid>
-              ))}
+              {favourList.map(
+                (favour) =>
+                  favour.state == tabValue && (
+                    <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
+                      <FavourCard
+                        favour={favour}
+                        user={userContext.user}
+                        acceptUser={favour.acceptUser}
+                        onClick={favourCardClick}
+                        requests={favourMap.get(favour.id)?.length || 0}
+                        viewRequests={true}
+                      />
+                    </Grid>
+                  ),
+              )}
             </>
           )}
         </Grid>

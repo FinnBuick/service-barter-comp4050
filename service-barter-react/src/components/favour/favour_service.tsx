@@ -8,7 +8,7 @@ export type Requester = {
 };
 
 export enum FavourState {
-  PENDING = 1,
+  PENDING,
   ACCEPTED,
   DONE,
 }
@@ -205,5 +205,9 @@ export class FavourService {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         message: `There is a request from the user: ${senderUser.displayName}`,
       });
+  };
+
+  public completeFavour = (favour: Favour) => {
+    favour.state = FavourState.DONE;
   };
 }
