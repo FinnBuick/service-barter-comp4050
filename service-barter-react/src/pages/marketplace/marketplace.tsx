@@ -52,6 +52,7 @@ export class Marketplace extends React.Component<
         cost: 0,
         street: "",
         suburb: "",
+        skills: "",
         description: "",
       },
       selectedFavour: undefined,
