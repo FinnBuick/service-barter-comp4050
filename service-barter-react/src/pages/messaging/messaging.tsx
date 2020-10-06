@@ -223,7 +223,6 @@ class MessagingImpl extends React.Component<
     this.deleteRoomSelected(this.roomDeleteId);
   };
 
-  //TODO(jridey): Select last picked room
   getUserRooms() {
     const user = this.userContext.user;
     this.database.ref(`/users/${user.uid}/rooms`).on("value", (snapshot) => {
