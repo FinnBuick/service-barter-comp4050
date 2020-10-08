@@ -84,6 +84,13 @@ export const CreateFavourDialog = React.memo(
             fullWidth
           />
           <TextField
+            margin="dense"
+            label="Skills required"
+            name="skills"
+            onChange={dataChanged}
+            fullWidth
+          />
+          <TextField
             label="Favour Description"
             name="description"
             multiline

@@ -16,7 +16,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ForwardIcon from "@material-ui/icons/Forward";
 import classnames from "classnames";
 import * as firebase from "firebase";
+import { instanceOf } from "prop-types";
 import * as React from "react";
+import { Cookies, withCookies } from "react-cookie";
 import { Redirect } from "react-router-dom";
 
 import { ConfirmDialog } from "../../components/confirm_dialog/confirm_dialog";
@@ -45,8 +47,10 @@ type UserRooms = {
   avatar: string;
 };
 
-export class Messaging extends React.Component<
-  Record<string, unknown>,
+class MessagingImpl extends React.Component<
+  {
+    cookies: Cookies;
+  },
   {
     userDialogOpen: boolean;
     deleteDialogOpen: boolean;
@@ -219,7 +223,6 @@ export class Messaging extends React.Component<
     this.deleteRoomSelected(this.roomDeleteId);
   };
 
-  //TODO(jridey): Select last picked room
   getUserRooms() {
     const user = this.userContext.user;
     this.database.ref(`/users/${user.uid}/rooms`).on("value", (snapshot) => {
@@ -234,6 +237,8 @@ export class Messaging extends React.Component<
             typing: [],
           },
         }));
+
+        this.newRoomSelected(this.props.cookies.get("lastRoomId"));
       } else {
         this.setState((state) => ({
           ...state,
@@ -251,6 +256,7 @@ export class Messaging extends React.Component<
 
   newRoomSelected = (roomId: string) => {
     this.setState((state) => ({ ...state, room: undefined }));
+    this.lastRoomSelected(roomId);
 
     const ref = this.database.ref(`/rooms/${roomId}`);
 
@@ -269,6 +275,10 @@ export class Messaging extends React.Component<
         }));
       }
     });
+  };
+
+  lastRoomSelected = (roomId) => {
+    this.props.cookies.set("lastRoomId", roomId);
   };
 
   deleteRoomSelected = (roomId: string) => {
@@ -332,3 +342,5 @@ export class Messaging extends React.Component<
     }
   };
 }
+
+export const Messaging = withCookies(MessagingImpl);

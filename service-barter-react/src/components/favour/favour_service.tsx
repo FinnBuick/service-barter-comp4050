@@ -22,6 +22,7 @@ export type Favour = {
   timestamp: firebase.firestore.Timestamp;
   roughLocation: string;
   description: string;
+  skills: string;
   actualLocation: string;
   state: FavourState;
 };
@@ -31,6 +32,7 @@ export type NewFavour = {
   cost: number;
   street: string;
   suburb: string;
+  skills: string;
   description: string;
 };
 
@@ -118,6 +120,7 @@ export class FavourService {
       description: newFavour.description,
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
+      skills: newFavour.skills,
       state: FavourState.PENDING,
     } as Favour;
 

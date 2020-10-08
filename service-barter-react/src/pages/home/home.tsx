@@ -27,6 +27,7 @@ export class Home extends React.Component<
     selectedFavour: Favour;
     selectedFavourOwner: User;
     recentFavourList: (Favour & { owner: User })[];
+    favourHistory: Favour[];
   }
 > {
   static contextType = UserContext;
@@ -36,11 +37,12 @@ export class Home extends React.Component<
   constructor(props, context) {
     super(props, context);
     this.state = {
-      recentFavourList: [],
       openSuccessAlert: false,
       openLearnDialog: false,
       selectedFavour: undefined,
       selectedFavourOwner: undefined,
+      recentFavourList: [],
+      favourHistory: [],
     };
     this.userContext = context;
   }
@@ -58,6 +60,11 @@ export class Home extends React.Component<
         this.setState((state) => ({ ...state, recentFavourList }));
       });
     }
+    this.favourServicer
+      .getUserFavours(this.userContext.user.uid)
+      .then((favourHistory) => {
+        this.setState((state) => ({ ...state, favourHistory }));
+      });
   }
 
   private favourCardClick = (favour: Favour, user: User) => {
@@ -83,13 +90,14 @@ export class Home extends React.Component<
   };
 
   render() {
-    console.log(this.userContext);
+    console.log(this.state.favourHistory);
     return (
       <div className={styles.content}>
         <div className={styles.contentTitle}>
           <Typography variant="h3">Service Barter</Typography>
           <Typography variant="body1">
-            Short subtle description of the website
+            Welcome to the Barter Service website! We are currently working on
+            this website to provide the best experience for our clients.
           </Typography>
           {!this.userContext.loggedIn && (
             <div className={styles.rootButton}>
@@ -164,17 +172,19 @@ export class Home extends React.Component<
           <Typography variant="h5">Recent favour history</Typography>
           <Grid container className={styles.grid}>
             <Grid container justify="center">
-              {this.state.recentFavourList.length === 0 ? (
+              {this.state.favourHistory.length === 0 ? (
                 <Grid item xs={6} md={4}>
-                  <Typography>There are no recent favour history!</Typography>
+                  <Typography>
+                    You do not have any favour history yet!
+                  </Typography>
                 </Grid>
               ) : (
                 <>
-                  {this.state.recentFavourList.slice(0, 3).map((favour) => (
+                  {this.state.favourHistory.slice(0, 3).map((favour) => (
                     <Grid className={styles.favourCard} key={favour.id}>
                       <FavourCard
                         favour={favour}
-                        user={favour.owner}
+                        user={this.userContext.user}
                         onClick={this.favourCardClick}
                       />
                     </Grid>

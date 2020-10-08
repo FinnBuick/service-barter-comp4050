@@ -79,6 +79,7 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "node-sass": "^4.14.1",
+    "react-cookie": "^4.0.3",
     "react-dnd": "8.0.3",
     "react-dnd-html5-backend": "8.0.2",
     "react-firebaseui": "^4.1.0",
