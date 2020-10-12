@@ -93,7 +93,7 @@ export const CreateFavourDialog = React.memo(
             style={{ marginTop: "19px" }}
             fullWidth
           />
-<TextField
+          <TextField
             margin="dense"
             label="Group"
             name="group"
