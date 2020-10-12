@@ -13,7 +13,7 @@ import MailIcon from "@material-ui/icons/Mail";
 import * as React from "react";
 
 import { formatDate } from "../../pages/marketplace/marketplace";
-import { Favour } from "../favour/favour_service";
+import { Favour, FavourService } from "../favour/favour_service";
 import { User } from "../user/user_provider";
 
 export const FavourCard = React.memo(
@@ -24,6 +24,7 @@ export const FavourCard = React.memo(
     onClick,
     requests,
     viewRequests,
+    completedFavour,
   }: {
     favour: Favour;
     user: User;
@@ -31,8 +32,11 @@ export const FavourCard = React.memo(
     onClick: (favour: Favour, user: User) => void;
     requests?: number;
     viewRequests?: boolean;
+    completedFavour?: number;
   }) => {
+    const favServer = new FavourService();
     const onClickImpl = () => onClick(favour, user);
+    const completeFavour = () => favServer.completeFavour(favour);
 
     return (
       <Paper>
@@ -66,8 +70,10 @@ export const FavourCard = React.memo(
                 onClick={onClickImpl}
                 disabled={requests === 0 || acceptUser != null}
               >
-                {acceptUser ? (
+                {acceptUser && favour.state != 2 ? (
                   <>Accepted by {acceptUser.displayName}</>
+                ) : acceptUser && favour.state == 2 ? (
+                  <>Completed by {acceptUser.displayName}</>
                 ) : (
                   <>
                     View requests &nbsp;
@@ -77,6 +83,19 @@ export const FavourCard = React.memo(
                   </>
                 )}
               </Button>
+              <>
+                {acceptUser && favour.state != 2 ? (
+                  <Button
+                    size="small"
+                    onClick={completeFavour}
+                    disabled={false}
+                  >
+                    Confirm completion
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </>
             </CardActions>
           )}
         </Card>

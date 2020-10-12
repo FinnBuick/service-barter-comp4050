@@ -1,5 +1,6 @@
 import {
   CircularProgress,
+  Collapse,
   Grid,
   Tab,
   Tabs,
@@ -69,7 +70,6 @@ export const Favours = React.memo(() => {
     });
   }, [userContext]);
 
-  // TODO: Change between different types of favours
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -117,7 +117,7 @@ export const Favours = React.memo(() => {
         >
           <Tab label="Your favours" />
           <Tab label="Accepted favours" />
-          <Tab label="Done favours" />
+          <Tab label="Completed favours" />
         </Tabs>
       </Paper>
       <RSC noScrollX>
@@ -146,6 +146,7 @@ export const Favours = React.memo(() => {
                         onClick={favourCardClick}
                         requests={favourMap.get(favour.id)?.length || 0}
                         viewRequests={true}
+                        completedFavour={favour.state}
                       />
                     </Grid>
                   ),
