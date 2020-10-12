@@ -161,7 +161,13 @@ export class FavourService {
   }
 
   acceptFavour(favour: Favour, user: User) {
-    return this.favoursDb.doc(favour.id).update({ acceptUid: user.uid });
+    return this.favoursDb
+      .doc(favour.id)
+      .update({ acceptUid: user.uid, state: 1 });
+  }
+
+  completeFavour(favour: Favour) {
+    return this.favoursDb.doc(favour.id).update({ state: 2 });
   }
 
   getUserCached(userUid: string): Promise<User> {
@@ -208,9 +214,5 @@ export class FavourService {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         message: `There is a request from the user: ${senderUser.displayName}`,
       });
-  };
-
-  public completeFavour = (favour: Favour) => {
-    favour.state = FavourState.DONE;
   };
 }
