@@ -121,6 +121,9 @@ export class Marketplace extends React.Component<
     this.favourServicer.getFavours().then((favourList) => {
       this.setState((state) => ({ ...state, favourList }));
     });
+    this.groupServicer.getGroups().then((groupList) => {
+      this.setState((state) => ({ ...state, groupList }));
+    });
   }
 
   componentDidUpdate() {
@@ -190,6 +193,13 @@ export class Marketplace extends React.Component<
             <Button className={styles.buttons} variant="contained">
               Group A
             </Button>
+            {this.state.groupList.map((group) => (
+              <Grid key={group.id} item xs={6} md={4} zeroMinWidth>
+                <Button className={styles.buttons} variant="contained">
+                  {group.title}
+                </Button>
+              </Grid>
+            ))}
           </div>
         </div>
         <div className={styles.cards}>

@@ -4,6 +4,7 @@ import { User } from "../../components/user/user_provider";
 
 export type Group = {
   id: string;
+  memberUid: string;
   title: string;
 };
 
@@ -15,6 +16,43 @@ export class GroupService {
 
   constructor() {
     this.groupsDb = firebase.firestore().collection("groups");
+  }
+
+  public getGroups(): Promise<(Group & { member: User })[]> {
+    return this.groupsDb
+      .orderBy("timestamp", "desc")
+      .limit(50)
+      .get()
+      .then((value) => {
+        const groupList = value.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Group),
+        );
+
+        const getUsersPromises = groupList.map((group) => {
+          const memberUid = group.memberUid;
+
+          if (!this.userMapping.has(memberUid)) {
+            return firebase
+              .firestore()
+              .collection("users")
+              .doc(memberUid)
+              .get()
+              .then((value) => {
+                if (!value.exists) return;
+                const user = value.data() as User;
+                this.userMapping.set(memberUid, user);
+              });
+          }
+          return Promise.resolve();
+        });
+
+        return Promise.all(getUsersPromises).then(() => {
+          return groupList.map((v) => ({
+            ...v,
+            member: this.userMapping.get(v.memberUid),
+          }));
+        });
+      });
   }
 
   public createGroup(newGroup: NewGroup, ownerUid: string): Group {
