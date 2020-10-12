@@ -60,11 +60,14 @@ export class Home extends React.Component<
         this.setState((state) => ({ ...state, recentFavourList }));
       });
     }
-    this.favourServicer
-      .getUserFavours(this.userContext.user.uid)
-      .then((favourHistory) => {
-        this.setState((state) => ({ ...state, favourHistory }));
-      });
+
+    if (this.userContext.loggedIn) {
+      this.favourServicer
+        .getUserFavours(this.userContext.user.uid)
+        .then((favourHistory) => {
+          this.setState((state) => ({ ...state, favourHistory }));
+        });
+    }
   }
 
   private favourCardClick = (favour: Favour, user: User) => {
@@ -90,7 +93,6 @@ export class Home extends React.Component<
   };
 
   render() {
-    console.log(this.state.favourHistory);
     return (
       <div className={styles.content}>
         <div className={styles.contentTitle}>
