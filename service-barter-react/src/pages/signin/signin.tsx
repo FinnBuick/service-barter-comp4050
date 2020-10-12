@@ -28,16 +28,26 @@ const uiConfig = {
 export const Signin = React.memo(() => {
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [invalid, setInvalid] = React.useState(false);
   const handleSnackbarClose = () => setSnackbarOpen(false);
+  const handleInvalid = () => setInvalid(true);
+  const handleValid = () => setInvalid(false);
   const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setInvalid(false);
+  };
   const resetPassword = (email) => {
-    handleClose();
-    firebase
+    return firebase
       .auth()
       .sendPasswordResetEmail(email)
       .then(() => {
+        handleClose();
+        handleValid();
         setSnackbarOpen(true);
+      })
+      .catch((err) => {
+        handleInvalid();
       });
   };
 
@@ -64,11 +74,13 @@ export const Signin = React.memo(() => {
         </DialogTitle>
         <DialogContent>
           <TextField
+            error
             autoFocus
             margin="dense"
             inputRef={(el) => (this.fv = el)}
             required
             fullWidth
+            helperText={invalid && "Invalid Email"}
           />
           <div style={{ marginTop: "10px", textAlign: "center" }}>
             <Button
