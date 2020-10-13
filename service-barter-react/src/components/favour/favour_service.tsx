@@ -101,10 +101,19 @@ export class FavourService {
       );
   }
 
-  public getUserFavours(ownerUid: string): Promise<Favour[]> {
-    return this.favoursDb
+  public getUserFavours(
+    ownerUid: string,
+    filterState?: FavourState,
+  ): Promise<Favour[]> {
+    let filteredResults = this.favoursDb
       .orderBy("timestamp", "desc")
-      .where("ownerUid", "==", ownerUid)
+      .where("ownerUid", "==", ownerUid);
+
+    if (filterState !== undefined) {
+      filteredResults = filteredResults.where("state", "==", filterState);
+    }
+
+    return filteredResults
       .get()
       .then((value) =>
         value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
@@ -163,11 +172,11 @@ export class FavourService {
   acceptFavour(favour: Favour, user: User) {
     return this.favoursDb
       .doc(favour.id)
-      .update({ acceptUid: user.uid, state: 1 });
+      .update({ acceptUid: user.uid, state: FavourState.ACCEPTED });
   }
 
   completeFavour(favour: Favour) {
-    return this.favoursDb.doc(favour.id).update({ state: 2 });
+    return this.favoursDb.doc(favour.id).update({ state: FavourState.DONE });
   }
 
   getUserCached(userUid: string): Promise<User> {
