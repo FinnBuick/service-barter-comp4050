@@ -76,20 +76,20 @@ export class Home extends React.Component<
   };
 
   render() {
-    if (this.userContext != this.context) {
-      this.userContext = this.context;
-      this.favourServicer.getFavours().then((recentFavourList) => {
-        this.setState((state) => ({ ...state, recentFavourList }));
-      });
-    }
+    // if (this.userContext != this.context) {
+    //   this.userContext = this.context;
+    //   this.favourServicer.getFavours().then((recentFavourList) => {
+    //     this.setState((state) => ({ ...state, recentFavourList }));
+    //   });
+    // }
 
-    if (this.userContext.loggedIn) {
-      this.favourServicer
-        .getUserFavours(this.userContext.user.uid)
-        .then((favourHistory) => {
-          this.setState((state) => ({ ...state, favourHistory }));
-        });
-    }
+    // if (this.userContext.loggedIn) {
+    //   this.favourServicer
+    //     .getUserFavours(this.userContext.user.uid)
+    //     .then((favourHistory) => {
+    //       this.setState((state) => ({ ...state, favourHistory }));
+    //     });
+    // }
 
     return (
       <div className={styles.content}>
