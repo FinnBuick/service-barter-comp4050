@@ -31,7 +31,7 @@ export const FavourCard = React.memo(
     user: User;
     acceptUser?: User;
     onClick: (favour: Favour, user: User) => void;
-    onComplete: (favour: Favour, user: User) => void;
+    onComplete?: (favour: Favour, user: User) => void;
     requests?: number;
     viewRequests?: boolean;
     completedFavour?: number;
