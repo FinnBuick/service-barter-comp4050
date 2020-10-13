@@ -42,7 +42,7 @@ export class Home extends React.Component<
       selectedFavour: undefined,
       selectedFavourOwner: undefined,
       recentFavourList: [],
-      favourHistory: [],
+      favourHistory: undefined,
     };
     this.userContext = context;
   }
@@ -51,6 +51,24 @@ export class Home extends React.Component<
     this.favourServicer.getFavours().then((recentFavourList) => {
       this.setState((state) => ({ ...state, recentFavourList }));
     });
+  }
+
+  componentDidUpdate() {
+    if (this.userContext != this.context) {
+      this.userContext = this.context;
+      this.favourServicer.getFavours().then((recentFavourList) => {
+        this.setState((state) => ({ ...state, recentFavourList }));
+      });
+    }
+
+    if (this.userContext.loggedIn && !this.state.favourHistory) {
+      this.favourServicer
+        .getUserFavours(this.userContext.user.uid)
+        .then((favourHistory) => {
+          console.log(favourHistory);
+          this.setState((state) => ({ ...state, favourHistory }));
+        });
+    }
   }
 
   private favourCardClick = (favour: Favour, user: User) => {
@@ -76,21 +94,6 @@ export class Home extends React.Component<
   };
 
   render() {
-    // if (this.userContext != this.context) {
-    //   this.userContext = this.context;
-    //   this.favourServicer.getFavours().then((recentFavourList) => {
-    //     this.setState((state) => ({ ...state, recentFavourList }));
-    //   });
-    // }
-
-    // if (this.userContext.loggedIn) {
-    //   this.favourServicer
-    //     .getUserFavours(this.userContext.user.uid)
-    //     .then((favourHistory) => {
-    //       this.setState((state) => ({ ...state, favourHistory }));
-    //     });
-    // }
-
     return (
       <div className={styles.content}>
         <div className={styles.contentTitle}>
@@ -172,7 +175,13 @@ export class Home extends React.Component<
           <Typography variant="h5">Recent favour history</Typography>
           <Grid container className={styles.grid}>
             <Grid container justify="center">
-              {this.state.favourHistory.length === 0 ? (
+              {!this.state.favourHistory ? (
+                <Grid item xs={6} md={4}>
+                  <Typography>
+                    Please create an account to view your favour history!
+                  </Typography>
+                </Grid>
+              ) : this.state.favourHistory.length === 0 ? (
                 <Grid item xs={6} md={4}>
                   <Typography>
                     You do not have any favour history yet!
