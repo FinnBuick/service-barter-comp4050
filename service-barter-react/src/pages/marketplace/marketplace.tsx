@@ -1,20 +1,20 @@
 import { CircularProgress } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
+import Collapse from "@material-ui/core/Collapse";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
+import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
+import CloseIcon from "@material-ui/icons/Close";
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
 import { format, formatDistanceToNow } from "date-fns";
 import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
 import { CreateFavourDialog } from "../../components/create_favour_dialog/create_favour_dialog";
 import { CreateGroupDialog } from "../../components/create_group_dialog/create_group_dialog";
+import { FavourCard } from "../../components/favour_card/favour_card";
 import {
   Favour,
   FavourService,
@@ -39,9 +39,10 @@ export class Marketplace extends React.Component<
     openFavourDialog: boolean;
     openLearnDialog: boolean;
     openGroupDialog: boolean;
+    openSuccessAlert: boolean;
     newFavour: NewFavour;
     selectedFavour: Favour;
-    selectedFavourUser: User;
+    selectedFavourOwner: User;
     favourList: (Favour & { owner: User })[];
     groupList: (Group & { member: User })[];
     newGroup: NewGroup;
@@ -62,60 +63,20 @@ export class Marketplace extends React.Component<
         cost: 0,
         street: "",
         suburb: "",
+        skills: "",
         description: "",
         group: "",
       },
       newGroup: { title: "" },
       selectedFavour: undefined,
-      selectedFavourUser: undefined,
+      selectedFavourOwner: undefined,
       openFavourDialog: false,
       openGroupDialog: false,
       openLearnDialog: false,
+      openSuccessAlert: false,
     };
     this.userContext = context;
   }
-
-  private FavourCard = React.memo(
-    ({ favour, user }: { favour: Favour; user: User }) => (
-      <Paper>
-        <Card>
-          <CardHeader
-            avatar={
-              <Avatar
-                src={user?.photoURL || "invalid"}
-                alt={user?.displayName}
-              />
-            }
-            title={favour.title}
-            subheader={formatDate(favour.timestamp.toDate())}
-          />
-          <CardContent>
-            <Typography
-              variant="body2"
-              className={styles.pos}
-              color="textSecondary"
-            >
-              Location: {favour.roughLocation}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              onClick={() =>
-                this.setState({
-                  selectedFavour: favour,
-                  selectedFavourUser: user,
-                  openLearnDialog: true,
-                })
-              }
-            >
-              Learn More
-            </Button>
-          </CardActions>
-        </Card>
-      </Paper>
-    ),
-  );
 
   componentDidMount() {
     this.favourServicer.getFavours().then((favourList) => {
@@ -161,7 +122,7 @@ export class Marketplace extends React.Component<
           <LearnMoreDialog
             open={this.state.openLearnDialog}
             favour={this.state.selectedFavour}
-            owner={this.state.selectedFavourUser}
+            owner={this.state.selectedFavourOwner}
             onClose={this.learnDialogClose}
             showRequest={
               this.userContext.user != undefined &&
@@ -205,6 +166,27 @@ export class Marketplace extends React.Component<
           </div>
         </div>
         <div className={styles.cards}>
+          <Collapse className={styles.alert} in={this.state.openSuccessAlert}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    this.setState({ openSuccessAlert: false });
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              <AlertTitle>Success</AlertTitle>
+              The request message has been sent —{" "}
+              <strong>check out the message!</strong>
+            </Alert>
+          </Collapse>
           <Typography>Cards</Typography>
           <RSC noScrollX>
             <Grid className={styles.cardsWrapper} container spacing={2}>
@@ -223,7 +205,11 @@ export class Marketplace extends React.Component<
                 <>
                   {this.state.favourList.map((favour) => (
                     <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
-                      <this.FavourCard favour={favour} user={favour.owner} />
+                      <FavourCard
+                        favour={favour}
+                        user={favour.owner}
+                        onClick={this.favourCardClick}
+                      />
                     </Grid>
                   ))}
                 </>
@@ -234,6 +220,14 @@ export class Marketplace extends React.Component<
       </div>
     );
   }
+
+  private favourCardClick = (favour: Favour, user: User) => {
+    this.setState({
+      selectedFavour: favour,
+      selectedFavourOwner: user,
+      openLearnDialog: true,
+    });
+  };
 
   private favourDialogClose = () => {
     this.setState({ openFavourDialog: false });
@@ -248,10 +242,12 @@ export class Marketplace extends React.Component<
 
   private learnDialogRequest = () => {
     this.favourServicer.requestFavour(
-      this.state.selectedFavour.id,
-      this.userContext.user.uid,
+      this.state.selectedFavour,
+      this.userContext.user,
+      this.state.selectedFavourOwner,
     );
     this.learnDialogClose();
+    this.setState({ openSuccessAlert: true });
   };
 
   private onFavourCreated = () => {

@@ -12,6 +12,7 @@ import { Header } from "./components/header/header";
 import { Sidebar } from "./components/sidebar/sidebar";
 import { UserProvider } from "./components/user/user_provider";
 import { EditProfile } from "./pages/edit_profile/edit_profile";
+import { Favours } from "./pages/favours/favours";
 import { Home } from "./pages/home/home";
 import { Marketplace } from "./pages/marketplace/marketplace";
 import { Messaging } from "./pages/messaging/messaging";
@@ -72,6 +73,10 @@ class App extends React.Component<
 
               <Route path="/profile">
                 <Profile />
+              </Route>
+
+              <Route path="/favours">
+                <Favours />
               </Route>
 
               <Route path="/editProfile">

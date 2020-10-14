@@ -1,6 +1,17 @@
-import firebase from "firebase";
+import firebase, { firestore } from "firebase";
 
 import { User } from "../../components/user/user_provider";
+
+export type Requester = {
+  id: string;
+  ownerUid: string;
+};
+
+export enum FavourState {
+  PENDING,
+  ACCEPTED,
+  DONE,
+}
 
 export type Favour = {
   id: string;
@@ -11,8 +22,10 @@ export type Favour = {
   timestamp: firebase.firestore.Timestamp;
   roughLocation: string;
   description: string;
+  skills: string;
   actualLocation: string;
   group: string;
+  state: FavourState;
 };
 
 export type NewFavour = {
@@ -20,16 +33,62 @@ export type NewFavour = {
   cost: number;
   street: string;
   suburb: string;
+  skills: string;
   description: string;
   group: string;
 };
 
+type Room = {
+  id: string;
+  messages: {
+    userId: string;
+    userName: string;
+    timestamp: string;
+    message: string;
+  }[];
+  users: string[];
+  typing: string[];
+};
+
 export class FavourService {
   private favoursDb?: firebase.firestore.CollectionReference;
+  private requestsDb?: firebase.firestore.CollectionReference;
   private userMapping = new Map<string, User>();
+  private database?: firebase.database.Database;
 
   constructor() {
     this.favoursDb = firebase.firestore().collection("favours");
+    this.requestsDb = firebase.firestore().collection("requests");
+    this.database = firebase.database();
+  }
+
+  private appendCachedUsers<T>(
+    userList: (T & { ownerUid: string })[],
+  ): Promise<(T & { owner: User })[]> {
+    const getUsersPromises = userList.map((favour) => {
+      const ownerUid = favour.ownerUid;
+
+      if (!this.userMapping.has(ownerUid)) {
+        return firebase
+          .firestore()
+          .collection("users")
+          .doc(ownerUid)
+          .get()
+          .then((value) => {
+            if (!value.exists) return;
+            const user = value.data() as User;
+            this.userMapping.set(ownerUid, user);
+          });
+      }
+      return Promise.resolve();
+    });
+
+    return Promise.all(getUsersPromises).then(() => {
+      return userList.map((v) => ({
+        ...v,
+        owner: this.userMapping.get(v.ownerUid),
+      }));
+    });
   }
 
   public getFavours(): Promise<(Favour & { owner: User })[]> {
@@ -37,36 +96,21 @@ export class FavourService {
       .orderBy("timestamp", "desc")
       .limit(50)
       .get()
-      .then((value) => {
-        const favourList = value.docs.map(
-          (doc) => ({ id: doc.id, ...doc.data() } as Favour),
-        );
+      .then((value) =>
+        this.appendCachedUsers<Favour>(
+          value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
+        ),
+      );
+  }
 
-        const getUsersPromises = favourList.map((favour) => {
-          const ownerUid = favour.ownerUid;
-
-          if (!this.userMapping.has(ownerUid)) {
-            return firebase
-              .firestore()
-              .collection("users")
-              .doc(ownerUid)
-              .get()
-              .then((value) => {
-                if (!value.exists) return;
-                const user = value.data() as User;
-                this.userMapping.set(ownerUid, user);
-              });
-          }
-          return Promise.resolve();
-        });
-
-        return Promise.all(getUsersPromises).then(() => {
-          return favourList.map((v) => ({
-            ...v,
-            owner: this.userMapping.get(v.ownerUid),
-          }));
-        });
-      });
+  public getUserFavours(ownerUid: string): Promise<Favour[]> {
+    return this.favoursDb
+      .orderBy("timestamp", "desc")
+      .where("ownerUid", "==", ownerUid)
+      .get()
+      .then((value) =>
+        value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
+      );
   }
 
   public createFavour(newFavour: NewFavour, ownerUid: string): Favour {
@@ -79,6 +123,8 @@ export class FavourService {
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
       group: newFavour.group,
+      skills: newFavour.skills,
+      state: FavourState.PENDING,
     } as Favour;
 
     this.favoursDb.doc().set(favour);
@@ -89,7 +135,87 @@ export class FavourService {
     return favour;
   }
 
-  public requestFavour(favourId: string, requestUid: string): void {
-    this.favoursDb.doc(favourId).update({ requestUid });
+  public requestFavour(
+    favour: Favour,
+    requestUser: User,
+    ownerUser: User,
+  ): void {
+    this.createRoomForRequest(requestUser, ownerUser);
+
+    this.requestsDb
+      .doc(favour.id)
+      .collection("requests")
+      .doc(requestUser.uid)
+      .set({ exists: true });
   }
+
+  getFavourRequesters(
+    favour: Favour,
+  ): Promise<(Requester & { owner: User })[]> {
+    return this.requestsDb
+      .doc(favour.id)
+      .collection("requests")
+      .get()
+      .then((value) =>
+        this.appendCachedUsers<Requester>(
+          value.docs.map((doc) => ({ id: doc.id, ownerUid: doc.id })),
+        ),
+      );
+  }
+
+  acceptFavour(favour: Favour, user: User) {
+    return this.favoursDb
+      .doc(favour.id)
+      .update({ acceptUid: user.uid, state: 1 });
+  }
+
+  completeFavour(favour: Favour) {
+    return this.favoursDb.doc(favour.id).update({ state: 2 });
+  }
+
+  getUserCached(userUid: string): Promise<User> {
+    return this.appendCachedUsers<unknown>([{ ownerUid: userUid }]).then(
+      (values) => {
+        if (values.length === 0) {
+          throw new Error(`User not found with ${userUid}`);
+        }
+        return values[0].owner;
+      },
+    );
+  }
+
+  private createRoomForRequest = (requestUser: User, otherUser: User) => {
+    const roomRef = this.database.ref().child("/rooms").push();
+    const roomId = roomRef.key;
+    roomRef.set({
+      id: roomId,
+      messages: [],
+      users: [requestUser.uid, otherUser.uid],
+      typing: [],
+    } as Room);
+
+    const roomName = `${requestUser.displayName}, ${otherUser.displayName}`;
+    const room = {
+      id: roomId,
+      name: roomName,
+      avatar: "",
+    };
+
+    this.database.ref(`/users/${requestUser.uid}/rooms/${roomId}`).set(room);
+    this.database.ref(`/users/${otherUser.uid}/rooms/${roomId}`).set(room);
+
+    this.sendRequestMessage(requestUser, roomId);
+  };
+
+  private sendRequestMessage = (senderUser: User, requestRoomId: string) => {
+    this.database
+      .ref(`/rooms/${requestRoomId}/messages`)
+      .push()
+      .set({
+        userId: senderUser.uid,
+        userName: senderUser.displayName,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        message: `There is a request from the user: ${senderUser.displayName}`,
+      });
+  };
 }

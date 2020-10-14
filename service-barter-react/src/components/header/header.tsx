@@ -122,7 +122,6 @@ export const Header = React.memo(
                 anchorEl={anchorRef.current}
                 role={undefined}
                 transition
-                disablePortal
               >
                 {({ TransitionProps, placement }) => (
                   <Grow
@@ -146,7 +145,16 @@ export const Header = React.memo(
                           >
                             Profile
                           </MenuItem>
-                          <MenuItem onClick={logout}>Logout</MenuItem>
+                          <MenuItem
+                            component={Link}
+                            to="/favours"
+                            onClick={handleClose}
+                          >
+                            Favours
+                          </MenuItem>
+                          <MenuItem component={Link} to="/" onClick={logout}>
+                            Logout
+                          </MenuItem>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>

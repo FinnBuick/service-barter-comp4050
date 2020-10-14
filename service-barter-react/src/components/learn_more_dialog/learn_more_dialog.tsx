@@ -41,7 +41,6 @@ export const LearnMoreDialog = React.memo(
                 style={{
                   marginTop: "1.5%",
                   float: "left",
-                  display: "inline-block",
                 }}
               />
               <div style={{ marginLeft: "10%" }}>
@@ -58,6 +57,7 @@ export const LearnMoreDialog = React.memo(
                 <div style={{ display: "inline-block" }}>
                   <Typography variant="body1">Location</Typography>
                   <Typography variant="body1">Cost</Typography>
+                  <Typography variant="body1">Skills required</Typography>
                 </div>
                 <div style={{ display: "inline-block", marginLeft: "5%" }}>
                   <Typography variant="body1" color="primary">
@@ -66,6 +66,15 @@ export const LearnMoreDialog = React.memo(
                   <Typography variant="body1" color="primary">
                     {favour.cost} Favour points
                   </Typography>
+                  {/\S/.test(favour.skills) ? (
+                    <Typography variant="body1" color="primary">
+                      {favour.skills}
+                    </Typography>
+                  ) : (
+                    <Typography variant="body1" color="primary">
+                      None
+                    </Typography>
+                  )}
                 </div>
               </div>
               <Typography variant="body1" style={{ marginTop: "3%" }}>
@@ -85,7 +94,7 @@ export const LearnMoreDialog = React.memo(
                     color="primary"
                     onClick={onRequest}
                   >
-                    Request
+                    Send a request message
                   </Button>
                 </div>
               )}
