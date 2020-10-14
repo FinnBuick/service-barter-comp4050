@@ -6,6 +6,7 @@ export type Group = {
   id: string;
   memberUid: string;
   title: string;
+  timestamp: firebase.firestore.Timestamp;
 };
 
 export type NewGroup = { title: string };
@@ -20,14 +21,13 @@ export class GroupService {
 
   public getGroups(): Promise<(Group & { member: User })[]> {
     return this.groupsDb
-      .orderBy("timestamp", "desc")
       .limit(50)
       .get()
       .then((value) => {
+        console.log(value.docs);
         const groupList = value.docs.map(
           (doc) => ({ id: doc.id, ...doc.data() } as Group),
         );
-
         const getUsersPromises = groupList.map((group) => {
           const memberUid = group.memberUid;
 
@@ -55,9 +55,11 @@ export class GroupService {
       });
   }
 
-  public createGroup(newGroup: NewGroup, ownerUid: string): Group {
+  public createGroup(newGroup: NewGroup, memberUid: string): Group {
     const group = {
       title: newGroup.title,
+      memberUid,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     } as Group;
 
     this.groupsDb.doc().set(group);

@@ -44,7 +44,7 @@ export class Marketplace extends React.Component<
     selectedFavourUser: User;
     favourList: (Favour & { owner: User })[];
     groupList: (Group & { member: User })[];
-    newGroup: { title: "" };
+    newGroup: NewGroup;
   }
 > {
   static contextType = UserContext;
@@ -132,9 +132,11 @@ export class Marketplace extends React.Component<
       this.favourServicer.getFavours().then((favourList) => {
         this.setState((state) => ({ ...state, favourList }));
       });
+      this.groupServicer.getGroups().then((groupList) => {
+        this.setState((state) => ({ ...state, groupList }));
+      });
     }
   }
-
   render() {
     return (
       <div className={styles.content}>
