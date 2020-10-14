@@ -91,6 +91,14 @@ export const CreateFavourDialog = React.memo(
             fullWidth
           />
           <TextField
+            margin="dense"
+            label="Group"
+            name="group"
+            onChange={dataChanged}
+            required
+            fullWidth
+          />
+          <TextField
             label="Favour Description"
             name="description"
             multiline
@@ -98,14 +106,6 @@ export const CreateFavourDialog = React.memo(
             variant="outlined"
             onChange={dataChanged}
             style={{ marginTop: "19px" }}
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            label="Group"
-            name="group"
-            onChange={dataChanged}
-            required
             fullWidth
           />
           <div style={{ marginTop: "9px", textAlign: "center" }}>

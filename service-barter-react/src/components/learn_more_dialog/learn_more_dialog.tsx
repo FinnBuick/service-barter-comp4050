@@ -58,6 +58,7 @@ export const LearnMoreDialog = React.memo(
                   <Typography variant="body1">Location</Typography>
                   <Typography variant="body1">Cost</Typography>
                   <Typography variant="body1">Skills required</Typography>
+                  <Typography variant="body1">Group</Typography>
                 </div>
                 <div style={{ display: "inline-block", marginLeft: "5%" }}>
                   <Typography variant="body1" color="primary">
@@ -75,6 +76,9 @@ export const LearnMoreDialog = React.memo(
                       None
                     </Typography>
                   )}
+                  <Typography variant="body1" color="primary">
+                    {favour.group}
+                  </Typography>
                 </div>
               </div>
               <Typography variant="body1" style={{ marginTop: "3%" }}>
