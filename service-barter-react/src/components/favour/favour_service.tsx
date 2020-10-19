@@ -24,7 +24,8 @@ export type Favour = {
   description: string;
   skills: string;
   actualLocation: string;
-  group: string;
+  groupId: string;
+  groupTitle: string;
   state: FavourState;
 };
 
@@ -35,7 +36,8 @@ export type NewFavour = {
   suburb: string;
   skills: string;
   description: string;
-  group: string;
+  groupId: string;
+  groupTitle: string;
 };
 
 type Room = {
@@ -122,7 +124,7 @@ export class FavourService {
       description: newFavour.description,
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
-      group: newFavour.group,
+      groupTitle: newFavour.groupTitle,
       skills: newFavour.skills,
       state: FavourState.PENDING,
     } as Favour;

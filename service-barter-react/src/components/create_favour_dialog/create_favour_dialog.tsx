@@ -93,7 +93,7 @@ export const CreateFavourDialog = React.memo(
           <TextField
             margin="dense"
             label="Group"
-            name="group"
+            name="groupTitle"
             onChange={dataChanged}
             required
             fullWidth

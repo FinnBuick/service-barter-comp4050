@@ -77,7 +77,7 @@ export const LearnMoreDialog = React.memo(
                     </Typography>
                   )}
                   <Typography variant="body1" color="primary">
-                    {favour.group}
+                    {favour.groupTitle}
                   </Typography>
                 </div>
               </div>
