@@ -18,6 +18,7 @@ import { FavourCard } from "../../components/favour_card/favour_card";
 import {
   Favour,
   FavourService,
+  FavourState,
   NewFavour,
 } from "../../components/favour/favour_service";
 import {
@@ -79,7 +80,10 @@ export class Marketplace extends React.Component<
   }
 
   componentDidMount() {
-    this.favourServicer.getFavours().then((favourList) => {
+    this.favourServicer.getFavours().then((favours) => {
+      const favourList = favours.filter(
+        (favour) => favour.state == FavourState.PENDING,
+      );
       this.setState((state) => ({ ...state, favourList }));
     });
     this.groupServicer.getGroups().then((groupList) => {
@@ -90,7 +94,10 @@ export class Marketplace extends React.Component<
   componentDidUpdate() {
     if (this.userContext != this.context) {
       this.userContext = this.context;
-      this.favourServicer.getFavours().then((favourList) => {
+      this.favourServicer.getFavours().then((favours) => {
+        const favourList = favours.filter(
+          (favour) => favour.state == FavourState.PENDING,
+        );
         this.setState((state) => ({ ...state, favourList }));
       });
       this.groupServicer.getGroups().then((groupList) => {
@@ -126,7 +133,8 @@ export class Marketplace extends React.Component<
             onClose={this.learnDialogClose}
             showRequest={
               this.userContext.user != undefined &&
-              this.userContext.user.uid != ""
+              this.userContext.user.uid != "" &&
+              this.userContext.user.uid != this.state.selectedFavourOwner?.uid
             }
             onRequest={this.learnDialogRequest}
           />
@@ -187,7 +195,7 @@ export class Marketplace extends React.Component<
               <strong>check out the message!</strong>
             </Alert>
           </Collapse>
-          <Typography>Cards</Typography>
+          <Typography>Favours</Typography>
           <RSC noScrollX>
             <Grid className={styles.cardsWrapper} container spacing={2}>
               {this.state.favourList == null ? (
@@ -241,13 +249,15 @@ export class Marketplace extends React.Component<
   };
 
   private learnDialogRequest = () => {
-    this.favourServicer.requestFavour(
-      this.state.selectedFavour,
-      this.userContext.user,
-      this.state.selectedFavourOwner,
-    );
-    this.learnDialogClose();
-    this.setState({ openSuccessAlert: true });
+    if (this.userContext.user.uid != this.state.selectedFavourOwner.uid) {
+      this.favourServicer.requestFavour(
+        this.state.selectedFavour,
+        this.userContext.user,
+        this.state.selectedFavourOwner,
+      );
+      this.learnDialogClose();
+      this.setState({ openSuccessAlert: true });
+    }
   };
 
   private onFavourCreated = () => {

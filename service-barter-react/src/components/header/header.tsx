@@ -9,6 +9,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
+import TextField from "@material-ui/core/TextField";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -104,6 +105,12 @@ export const Header = React.memo(
               </Button>
             </div>
           )}
+
+          <div className={styles.pointsCounter}>
+            {userContext.loggedIn && (
+              <Typography>Points: {userContext.user.favourPoint}</Typography>
+            )}
+          </div>
 
           <div>
             <div className={styles.accountIcon}>
