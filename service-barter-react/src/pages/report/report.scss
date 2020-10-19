@@ -1,0 +1,40 @@
+.content {
+    padding: 8px;
+    width: 100%;
+}
+
+.report {
+    border: solid 2px;
+    border-color: #09f;
+    border-radius: 15px;
+    margin: 20px auto 0;
+    max-width: 900px;
+    padding: 20px;
+}
+
+.reportInfo {
+    margin-left: 50px;
+    margin-top: 30px;
+}
+
+.reportContent {
+    margin-left: 20px;
+    margin-top: 30px;
+}
+
+.inputField {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.text {
+    flex: 1 0 135px;
+    margin-right: 16px;
+    max-width: 135px;
+}
+
+.textField {
+    flex: 1 0 500px;
+    max-width: 600px;
+}

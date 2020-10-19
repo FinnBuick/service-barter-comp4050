@@ -159,6 +159,13 @@ export const Header = React.memo(
                           >
                             Favours
                           </MenuItem>
+                          <MenuItem
+                            component={Link}
+                            to="/report"
+                            onClick={handleClose}
+                          >
+                            Report
+                          </MenuItem>
                           <MenuItem component={Link} to="/" onClick={logout}>
                             Logout
                           </MenuItem>
