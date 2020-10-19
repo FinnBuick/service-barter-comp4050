@@ -98,6 +98,19 @@ export const LearnMoreDialog = React.memo(
                   </Button>
                 </div>
               )}
+              {!showRequest && (
+                <div
+                  style={{
+                    marginTop: "3%",
+                    marginBottom: "1%",
+                    textAlign: "center",
+                  }}
+                >
+                  <Button variant="outlined" disabled>
+                    This is your favour request!
+                  </Button>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         ) : (
