@@ -240,7 +240,7 @@ class MessagingImpl extends React.Component<
         this.setState((state) => ({
           ...state,
           userRooms: Object.values(snapshot.val()),
-          room: {
+          room: state.room ?? {
             id: "empty",
             messages: [],
             users: [],
@@ -250,7 +250,8 @@ class MessagingImpl extends React.Component<
 
         // TODO(jridey): This doesn't properly take into account you could switch to another browser
         // Should probably be stored on firebase and fetched.
-        this.newRoomSelected(this.props.cookies.get("lastRoomId"));
+        // Disable since it cause issues with room notifications
+        // this.newRoomSelected(this.props.cookies.get("lastRoomId"));
       } else {
         this.setState((state) => ({
           ...state,
@@ -269,6 +270,11 @@ class MessagingImpl extends React.Component<
   newRoomSelected = (roomId: string) => {
     this.setState((state) => ({ ...state, room: undefined }));
     this.lastRoomSelected(roomId);
+
+    const user = this.userContext.user;
+    this.database
+      .ref(`/users/${user.uid}/rooms/${roomId}`)
+      .update({ newMessages: 0 });
 
     const ref = this.database.ref(`/rooms/${roomId}`);
 
@@ -339,7 +345,7 @@ class MessagingImpl extends React.Component<
     this.database.ref(`/users/${user.uid}/rooms/${roomId}`).set(room);
     this.database.ref(`/users/${otherUser.uid}/rooms/${roomId}`).set(room);
 
-    this.newRoomSelected(roomRef.key);
+    this.newRoomSelected(roomId);
   };
 
   sendMessage = (e) => {
