@@ -29,6 +29,7 @@ export const Favours = React.memo(() => {
     return <Redirect to="/signin" />;
   }
 
+  const [completedFavour, setCompletedFavour] = React.useState(undefined);
   const [tabValue, setTabValue] = React.useState(0);
   const [favourList, setFavourList] = React.useState(null);
 
@@ -48,27 +49,29 @@ export const Favours = React.memo(() => {
       return;
     }
 
-    favourServicer.getUserFavours(userContext.user.uid).then((favourListI) => {
-      const favourList = favourListI as (Favour & { acceptUser: User })[];
+    favourServicer
+      .getUserFavours(userContext.user.uid, tabValue)
+      .then((favourListI) => {
+        const favourList = favourListI as (Favour & { acceptUser: User })[];
 
-      const promisesRequests = favourList.map((favour) =>
-        favourServicer.getFavourRequesters(favour).then((requesters) => {
-          setFavourMap(new Map(favourMap.set(favour.id, requesters)));
-        }),
-      );
+        const promisesRequests = favourList.map((favour) =>
+          favourServicer.getFavourRequesters(favour).then((requesters) => {
+            setFavourMap(new Map(favourMap.set(favour.id, requesters)));
+          }),
+        );
 
-      const promisesAccepts = favourList.map((favour) =>
-        favour.acceptUid
-          ? favourServicer
-              .getUserCached(favour.acceptUid)
-              .then((user) => (favour.acceptUser = user))
-          : Promise.resolve(),
-      );
-      Promise.all([promisesRequests, promisesAccepts]).then(() =>
-        setFavourList(favourList),
-      );
-    });
-  }, [userContext]);
+        const promisesAccepts = favourList.map((favour) =>
+          favour.acceptUid
+            ? favourServicer
+                .getUserCached(favour.acceptUid)
+                .then((user) => (favour.acceptUser = user))
+            : Promise.resolve(),
+        );
+        Promise.all([promisesRequests, promisesAccepts]).then(() =>
+          setFavourList(favourList),
+        );
+      });
+  }, [userContext, tabValue, completedFavour]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -80,6 +83,11 @@ export const Favours = React.memo(() => {
       requestedUsers: favourMap.get(favour.id).map((request) => request.owner),
       selectedFavour: favour,
     });
+  };
+
+  const favourCardComplete = (favour: Favour) => {
+    favourServicer.completeFavour(favour);
+    setCompletedFavour(favour.id);
   };
 
   const acceptPickerClose = () => {
@@ -97,6 +105,9 @@ export const Favours = React.memo(() => {
       requestedUsers: [],
       selectedFavour: null,
     });
+
+    // Just need something that changes
+    setCompletedFavour(user.uid);
   };
 
   return (
@@ -127,7 +138,7 @@ export const Favours = React.memo(() => {
               <CircularProgress />
               <br />
             </Grid>
-          ) : favourList.length === 0 ? (
+          ) : favourList.length === 0 && tabValue == 0 ? (
             <Grid item xs={6} md={4} zeroMinWidth>
               <Typography>
                 There are no favours, start by creating one!
@@ -135,22 +146,20 @@ export const Favours = React.memo(() => {
             </Grid>
           ) : (
             <>
-              {favourList.map(
-                (favour) =>
-                  favour.state == tabValue && (
-                    <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
-                      <FavourCard
-                        favour={favour}
-                        user={userContext.user}
-                        acceptUser={favour.acceptUser}
-                        onClick={favourCardClick}
-                        requests={favourMap.get(favour.id)?.length || 0}
-                        viewRequests={true}
-                        completedFavour={favour.state}
-                      />
-                    </Grid>
-                  ),
-              )}
+              {favourList.map((favour) => (
+                <Grid key={favour.id} item xs={6} md={4} zeroMinWidth>
+                  <FavourCard
+                    favour={favour}
+                    user={userContext.user}
+                    acceptUser={favour.acceptUser}
+                    onClick={favourCardClick}
+                    onComplete={favourCardComplete}
+                    requests={favourMap.get(favour.id)?.length || 0}
+                    viewRequests={true}
+                    completedFavour={favour.state}
+                  />
+                </Grid>
+              ))}
             </>
           )}
         </Grid>

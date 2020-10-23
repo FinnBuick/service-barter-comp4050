@@ -27,6 +27,8 @@ export type Favour = {
   groupId: string;
   groupTitle: string;
   state: FavourState;
+  review: string;
+  stars: number;
 };
 
 export type NewFavour = {
@@ -105,10 +107,19 @@ export class FavourService {
       );
   }
 
-  public getUserFavours(ownerUid: string): Promise<Favour[]> {
-    return this.favoursDb
+  public getUserFavours(
+    ownerUid: string,
+    filterState?: FavourState,
+  ): Promise<Favour[]> {
+    let filteredResults = this.favoursDb
       .orderBy("timestamp", "desc")
-      .where("ownerUid", "==", ownerUid)
+      .where("ownerUid", "==", ownerUid);
+
+    if (filterState !== undefined) {
+      filteredResults = filteredResults.where("state", "==", filterState);
+    }
+
+    return filteredResults
       .get()
       .then((value) =>
         value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
@@ -127,6 +138,8 @@ export class FavourService {
       groupTitle: newFavour.groupTitle,
       skills: newFavour.skills,
       state: FavourState.PENDING,
+      review: "",
+      stars: 0,
     } as Favour;
 
     this.favoursDb.doc().set(favour);
@@ -168,11 +181,11 @@ export class FavourService {
   acceptFavour(favour: Favour, user: User) {
     return this.favoursDb
       .doc(favour.id)
-      .update({ acceptUid: user.uid, state: 1 });
+      .update({ acceptUid: user.uid, state: FavourState.ACCEPTED });
   }
 
   completeFavour(favour: Favour) {
-    return this.favoursDb.doc(favour.id).update({ state: 2 });
+    return this.favoursDb.doc(favour.id).update({ state: FavourState.DONE });
   }
 
   getUserCached(userUid: string): Promise<User> {
@@ -219,5 +232,9 @@ export class FavourService {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         message: `There is a request from the user: ${senderUser.displayName}`,
       });
+  };
+
+  public setReview = (favour: Favour, rev: string) => {
+    this.favoursDb.doc(favour.id).update({ review: rev });
   };
 }

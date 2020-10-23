@@ -22,6 +22,7 @@ export const FavourCard = React.memo(
     user,
     acceptUser,
     onClick,
+    onComplete,
     requests,
     viewRequests,
     completedFavour,
@@ -30,13 +31,14 @@ export const FavourCard = React.memo(
     user: User;
     acceptUser?: User;
     onClick: (favour: Favour, user: User) => void;
+    onComplete?: (favour: Favour, user: User) => void;
     requests?: number;
     viewRequests?: boolean;
     completedFavour?: number;
   }) => {
     const favServer = new FavourService();
     const onClickImpl = () => onClick(favour, user);
-    const completeFavour = () => favServer.completeFavour(favour);
+    const completeFavour = () => onComplete(favour, user);
 
     return (
       <Paper>
