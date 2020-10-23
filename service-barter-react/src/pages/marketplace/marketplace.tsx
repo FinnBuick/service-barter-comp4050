@@ -42,11 +42,12 @@ export class Marketplace extends React.Component<
     openGroupDialog: boolean;
     openSuccessAlert: boolean;
     newFavour: NewFavour;
+    newGroup: NewGroup;
     selectedFavour: Favour;
     selectedFavourOwner: User;
     favourList: (Favour & { owner: User })[];
     groupList: (Group & { member: User })[];
-    newGroup: NewGroup;
+    selectedGroup: string;
   }
 > {
   static contextType = UserContext;
@@ -76,10 +77,14 @@ export class Marketplace extends React.Component<
       openGroupDialog: false,
       openLearnDialog: false,
       openSuccessAlert: false,
+      selectedGroup: sessionStorage.getItem("selectedGroup"),
     };
     this.userContext = context;
   }
 
+  private handleGroupSelect = (title) => {
+    this.setState({ selectedGroup: title });
+  };
   componentDidMount() {
     this.favourServicer.getFavours().then((favours) => {
       const favourList = favours.filter(
@@ -96,8 +101,12 @@ export class Marketplace extends React.Component<
     if (this.userContext != this.context) {
       this.userContext = this.context;
       this.favourServicer.getFavours().then((favours) => {
+        console.log(favours);
+        console.log(this.state.selectedGroup);
         const favourList = favours.filter(
-          (favour) => favour.state == FavourState.PENDING,
+          (favour) =>
+            favour.state == FavourState.PENDING &&
+            favour.groupTitle == this.state.selectedGroup,
         );
         this.setState((state) => ({ ...state, favourList }));
       });
@@ -106,6 +115,7 @@ export class Marketplace extends React.Component<
       });
     }
   }
+
   render() {
     return (
       <div className={styles.content}>
@@ -162,12 +172,13 @@ export class Marketplace extends React.Component<
             <Button className={styles.buttons} variant="contained">
               All Groups
             </Button>
-            <Button className={styles.buttons} variant="contained">
-              Group A
-            </Button>
             {this.state.groupList.map((group) => (
               <Grid key={group.id} item xs={6} md={4} zeroMinWidth>
-                <Button className={styles.buttons} variant="contained">
+                <Button
+                  className={styles.buttons}
+                  variant="contained"
+                  onClick={this.handleGroupSelect}
+                >
                   {group.title}
                 </Button>
               </Grid>
