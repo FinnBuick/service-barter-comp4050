@@ -138,7 +138,7 @@ export const Favours = React.memo(() => {
               <CircularProgress />
               <br />
             </Grid>
-          ) : favourList.length === 0 ? (
+          ) : favourList.length === 0 && tabValue == 0 ? (
             <Grid item xs={6} md={4} zeroMinWidth>
               <Typography>
                 There are no favours, start by creating one!

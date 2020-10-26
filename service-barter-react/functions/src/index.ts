@@ -35,9 +35,12 @@ export const updateMessageCount = database
         const roomRef = admin
           .database()
           .ref(`users/${user}/rooms/${context.params.roomId}`);
-        return roomRef.once("value", (room) =>
-          roomRef.update({ newMessages: room.val().newMessages + 1 }),
-        );
+        return roomRef.once("value", (room) => {
+          if (!room.exists()) return;
+
+          const newMessages = (room.val().newMessages || 0) + 1;
+          return roomRef.update({ newMessages });
+        });
       });
     }),
   );

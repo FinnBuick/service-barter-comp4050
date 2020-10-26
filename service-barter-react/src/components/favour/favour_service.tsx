@@ -24,7 +24,11 @@ export type Favour = {
   description: string;
   skills: string;
   actualLocation: string;
+  groupId: string;
+  groupTitle: string;
   state: FavourState;
+  review: string;
+  stars: number;
 };
 
 export type NewFavour = {
@@ -34,6 +38,8 @@ export type NewFavour = {
   suburb: string;
   skills: string;
   description: string;
+  groupId: string;
+  groupTitle: string;
 };
 
 type Room = {
@@ -129,8 +135,11 @@ export class FavourService {
       description: newFavour.description,
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
+      groupTitle: newFavour.groupTitle,
       skills: newFavour.skills,
       state: FavourState.PENDING,
+      review: "",
+      stars: 0,
     } as Favour;
 
     this.favoursDb.doc().set(favour);
@@ -223,5 +232,9 @@ export class FavourService {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         message: `There is a request from the user: ${senderUser.displayName}`,
       });
+  };
+
+  public setReview = (favour: Favour, rev: string) => {
+    this.favoursDb.doc(favour.id).update({ review: rev });
   };
 }
