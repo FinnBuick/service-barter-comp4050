@@ -25,6 +25,8 @@ export type Favour = {
   skills: string;
   actualLocation: string;
   state: FavourState;
+  review: string;
+  stars: number;
 };
 
 export type NewFavour = {
@@ -131,6 +133,8 @@ export class FavourService {
       cost: newFavour.cost,
       skills: newFavour.skills,
       state: FavourState.PENDING,
+      review: "",
+      stars: 0,
     } as Favour;
 
     this.favoursDb.doc().set(favour);
@@ -223,5 +227,9 @@ export class FavourService {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         message: `There is a request from the user: ${senderUser.displayName}`,
       });
+  };
+
+  public setReview = (favour: Favour, rev: string) => {
+    this.favoursDb.doc(favour.id).update({ review: rev });
   };
 }
