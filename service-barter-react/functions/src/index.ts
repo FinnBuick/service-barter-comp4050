@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
 import {
-  Change,
   database,
   EventContext,
   firestore,
@@ -11,13 +10,16 @@ import { DataSnapshot } from "firebase-functions/lib/providers/database";
 admin.initializeApp();
 
 export const createNotificationOnFavourRequest = firestore
-  .document("requests/{favourId}/requests/{userId}")
-  .onUpdate((change: Change<any>, context: EventContext) => {
-    const newValue = change.after.data();
+  .document("/requests/{favourId}/requests/{requestUserId}")
+  .onCreate(
+    (snapshot: firestore.QueryDocumentSnapshot, context: EventContext) => {
+      // Grab the current value of what was written to Cloud Firestore.
+      const original = snapshot.data().original;
 
-    logger.info("Favour request!", { structuredData: newValue });
-    console.log(context.params.favourId);
-  });
+      // Access the parameter `{documentId}` with `context.params`
+      logger.log("Notification", context.params.documentId, original);
+    },
+  );
 
 export const updateMessageCount = database
   .ref("/rooms/{roomId}/messages/{messageId}")
