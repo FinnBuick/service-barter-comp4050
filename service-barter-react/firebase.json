@@ -12,5 +12,11 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "functions": {
+    "predeploy": [
+      "yarn --cwd \"functions\" run lint",
+      "yarn --cwd \"functions\" run build"
+    ]
   }
 }

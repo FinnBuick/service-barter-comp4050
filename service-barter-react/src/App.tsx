@@ -18,6 +18,7 @@ import { Marketplace } from "./pages/marketplace/marketplace";
 import { Messaging } from "./pages/messaging/messaging";
 import { NoMatch } from "./pages/nomatch/nomatch";
 import { Profile } from "./pages/profile/profile";
+import { Report } from "./pages/report/report";
 import { Signin } from "./pages/signin/signin";
 
 const firebaseConfig = {
@@ -77,6 +78,10 @@ class App extends React.Component<
 
               <Route path="/favours">
                 <Favours />
+              </Route>
+
+              <Route path="/report">
+                <Report />
               </Route>
 
               <Route path="/editProfile">
