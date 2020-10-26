@@ -1,8 +1,13 @@
 import Button from "@material-ui/core/Button";
+import Collapse from "@material-ui/core/Collapse";
 import FormControl from "@material-ui/core/FormControl";
+import IconButton from "@material-ui/core/IconButton";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
+import CloseIcon from "@material-ui/icons/Close";
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
@@ -15,10 +20,11 @@ export const Report = React.memo(() => {
   const [reportData, setReportData] = React.useState({
     name: "",
     email: "",
-    category: "Fake user",
+    category: "Favour issue",
     description: "",
   });
   const [categoryOthers, setCategoryOthers] = React.useState(false);
+  const [successOpen, setSuccessOpen] = React.useState(false);
   const reportServicer = new ReportService();
 
   React.useEffect(() => {
@@ -44,12 +50,43 @@ export const Report = React.memo(() => {
 
   const onSubmit = () => {
     reportServicer.createReport(reportData, userContext.user.uid);
+    setReportData({
+      name: "",
+      email: "",
+      category: "Favour issue",
+      description: "",
+    });
+    setCategoryOthers(false);
+    setSuccessOpen(true);
   };
 
   return (
     <div className={styles.content}>
       {userContext.user && (
         <div className={styles.report}>
+          <Collapse className={styles.alert} in={successOpen}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setSuccessOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              <AlertTitle>Success</AlertTitle>
+              The report has been sent —{" "}
+              <strong>
+                Our team will send you an email as soon as possible!
+              </strong>
+            </Alert>
+          </Collapse>
           <Typography variant="h4" style={{ textAlign: "center" }}>
             Report an issue
           </Typography>
@@ -63,6 +100,7 @@ export const Report = React.memo(() => {
               </Typography>
               <TextField
                 className={styles.textField}
+                value={reportData.name}
                 name="name"
                 onChange={(e) => onChange(e)}
               />
@@ -74,6 +112,7 @@ export const Report = React.memo(() => {
               <TextField
                 className={styles.textField}
                 name="email"
+                value={reportData.email}
                 onChange={(e) => onChange(e)}
               />
             </div>
@@ -82,7 +121,10 @@ export const Report = React.memo(() => {
                 Category
               </Typography>
               <FormControl>
-                <NativeSelect onChange={onCategoryChange}>
+                <NativeSelect
+                  value={categoryOthers ? "Others" : reportData.category}
+                  onChange={onCategoryChange}
+                >
                   <option>Favour issue</option>
                   <option>Fake user</option>
                   <option>Incorrect user information</option>
@@ -110,6 +152,7 @@ export const Report = React.memo(() => {
               multiline
               rows={9}
               variant="outlined"
+              value={reportData.description}
               onChange={onChange}
               style={{ marginTop: "10px", marginLeft: "30px", width: "800px" }}
             />
@@ -127,8 +170,6 @@ export const Report = React.memo(() => {
                 )
               }
               onClick={onSubmit}
-              component={Link}
-              to="/home"
             >
               Report
             </Button>
