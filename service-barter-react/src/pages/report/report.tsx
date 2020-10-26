@@ -3,22 +3,23 @@ import FormControl from "@material-ui/core/FormControl";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import * as firebase from "firebase";
 import * as React from "react";
 import { Link } from "react-router-dom";
 
+import { ReportService } from "../../components/report/report_service";
 import { UserContext } from "../../components/user/user_provider";
 import styles from "./report.scss";
 
 export const Report = React.memo(() => {
   const userContext = React.useContext(UserContext);
-  const [newUserData, setNewUserData] = React.useState({
+  const [reportData, setReportData] = React.useState({
     name: "",
     email: "",
     category: "Fake user",
     description: "",
   });
   const [categoryOthers, setCategoryOthers] = React.useState(false);
+  const reportServicer = new ReportService();
 
   React.useEffect(() => {
     if (!userContext.user) {
@@ -27,25 +28,22 @@ export const Report = React.memo(() => {
   }, [userContext]);
 
   const onChange = (e) => {
-    setNewUserData({ ...newUserData, [e.target.name]: e.target.value });
+    setReportData({ ...reportData, [e.target.name]: e.target.value });
   };
 
   const onCategoryChange = (e) => {
     const reportCategory = e.target.value;
     if (reportCategory === "Others") {
-      setNewUserData({ ...newUserData, category: "" });
+      setReportData({ ...reportData, category: "" });
       setCategoryOthers(true);
     } else {
-      setNewUserData({ ...newUserData, category: reportCategory });
+      setReportData({ ...reportData, category: reportCategory });
       setCategoryOthers(false);
     }
   };
 
   const onSubmit = () => {
-    // firebase.firestore().collection("reports").doc(userContext.user.uid).update({
-    //   displayName: newUserData.name,
-    //   email: newUserData.email,
-    // });
+    reportServicer.createReport(reportData, userContext.user.uid);
   };
 
   return (
@@ -82,6 +80,7 @@ export const Report = React.memo(() => {
               </Typography>
               <FormControl>
                 <NativeSelect onChange={onCategoryChange}>
+                  <option>Favour issue</option>
                   <option>Fake user</option>
                   <option>Incorrect user information</option>
                   <option>Account stolen</option>
