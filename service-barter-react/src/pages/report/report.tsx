@@ -54,6 +54,9 @@ export const Report = React.memo(() => {
             Report an issue
           </Typography>
           <div className={styles.reportInfo}>
+            <Typography variant="subtitle1" color="secondary">
+              Please fill out all fields*
+            </Typography>
             <div className={styles.inputField}>
               <Typography className={styles.text} variant="h6">
                 Name
@@ -115,6 +118,14 @@ export const Report = React.memo(() => {
             <Button
               variant="contained"
               color="secondary"
+              disabled={
+                !(
+                  /\S/.test(reportData.name) &&
+                  /\S/.test(reportData.email) &&
+                  /\S/.test(reportData.category) &&
+                  /\S/.test(reportData.description)
+                )
+              }
               onClick={onSubmit}
               component={Link}
               to="/home"
