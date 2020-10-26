@@ -229,7 +229,8 @@ export class FavourService {
       });
   };
 
-  public setReview = (favour: Favour, rev: string) => {
-    this.favoursDb.doc(favour.id).update({ review: rev });
-  };
+  setReview(favour: Favour, review: string, stars: number) {
+    //TODO: Append this review to the user who completed the task?
+    return this.favoursDb.doc(favour.id).update({ review, stars });
+  }
 }

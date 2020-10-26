@@ -1,13 +1,11 @@
 import {
   CircularProgress,
-  Collapse,
   Grid,
   Tab,
   Tabs,
   Typography,
 } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import { VerifiedUserSharp } from "@material-ui/icons";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 import RSC from "react-scrollbars-custom";
@@ -19,6 +17,7 @@ import {
   FavourService,
   Requester,
 } from "../../components/favour/favour_service";
+import { ReviewDialog } from "../../components/review_dialog/review_dialog";
 import { User, UserContext } from "../../components/user/user_provider";
 import styles from "./favours.scss";
 
@@ -37,6 +36,11 @@ export const Favours = React.memo(() => {
     open: false,
     requestedUsers: [],
     selectedFavour: null,
+  });
+
+  const [reviewDialogState, setReviewDialogState] = React.useState({
+    open: false,
+    favour: null,
   });
 
   const [favourMap, setFavourMap] = React.useState(
@@ -90,11 +94,25 @@ export const Favours = React.memo(() => {
     setCompletedFavour(favour.id);
   };
 
+  const favourCardReview = (favour: Favour) => {
+    setReviewDialogState({
+      open: true,
+      favour,
+    });
+  };
+
   const acceptPickerClose = () => {
     setAcceptPickerState({
       open: false,
       requestedUsers: [],
       selectedFavour: null,
+    });
+  };
+
+  const reviewDialogClose = () => {
+    setReviewDialogState({
+      open: false,
+      favour: null,
     });
   };
 
@@ -110,6 +128,19 @@ export const Favours = React.memo(() => {
     setCompletedFavour(user.uid);
   };
 
+  const reviewDialogComplete = (review: string, stars: number) => {
+    favourServicer.setReview(reviewDialogState.favour, review, stars);
+    setReviewDialogState({
+      open: false,
+      favour: null,
+    });
+
+    //TODO: Add a nice toast/snackbar notification that we have received the review?
+
+    // Just need something that changes
+    setCompletedFavour(review);
+  };
+
   return (
     <div className={styles.content}>
       <AcceptPicker
@@ -117,6 +148,11 @@ export const Favours = React.memo(() => {
         open={acceptPickerState.open}
         handleClose={acceptPickerClose}
         onUserClick={acceptPickerClick}
+      />
+      <ReviewDialog
+        open={reviewDialogState.open}
+        onClose={reviewDialogClose}
+        onComplete={reviewDialogComplete}
       />
       <Paper>
         <Tabs
@@ -154,9 +190,9 @@ export const Favours = React.memo(() => {
                     acceptUser={favour.acceptUser}
                     onClick={favourCardClick}
                     onComplete={favourCardComplete}
+                    onReview={favourCardReview}
                     requests={favourMap.get(favour.id)?.length || 0}
                     viewRequests={true}
-                    completedFavour={favour.state}
                   />
                 </Grid>
               ))}
