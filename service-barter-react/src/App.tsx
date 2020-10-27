@@ -1,7 +1,7 @@
 import "firebase/database";
 import "./global.scss";
 
-import * as firebase from "firebase/app";
+import firebase from "firebase";
 import * as React from "react";
 import { hot } from "react-hot-loader";
 import { Route, Switch } from "react-router-dom";
@@ -22,10 +22,14 @@ import { Report } from "./pages/report/report";
 import { Signin } from "./pages/signin/signin";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCkyJ2dzp6O64T-dZS5hsJlV94S7A0y5oc",
+  apiKey: "AIzaSyCOMjZi_fUKGx03H4ScXGxoiA8ru9R61pU",
   authDomain: "service-barter-comp4050.firebaseapp.com",
   databaseURL: "https://service-barter-comp4050.firebaseio.com",
   projectId: "service-barter-comp4050",
+  storageBucket: "service-barter-comp4050.appspot.com",
+  messagingSenderId: "889395434104",
+  appId: "1:889395434104:web:fc44924538905e413b538d",
+  measurementId: "G-25WF1SXZ5K",
 };
 
 class App extends React.Component<
@@ -45,6 +49,30 @@ class App extends React.Component<
     this.state = { sidebarOpen: false };
 
     firebase.initializeApp(firebaseConfig);
+  }
+
+  componentDidMount() {
+    const messaging = firebase.messaging();
+
+    messaging
+      .getToken({
+        vapidKey:
+          "BIbZhbP4glGt3HBPZg1jDdPWQyMJoqXuziqiO0v82vMK1PnMyUgbp2o24rlvapQa7hUg-TuRUHndfxxSE5icxJU",
+      })
+      .then((currentToken) => {
+        if (currentToken) {
+          console.log(currentToken);
+        } else {
+          // Show permission request.
+          console.log(
+            "No registration token available. Request permission to generate one.",
+          );
+          // Show permission UI.
+        }
+      })
+      .catch((err) => {
+        console.log("An error occurred while retrieving token. ", err);
+      });
   }
 
   render() {

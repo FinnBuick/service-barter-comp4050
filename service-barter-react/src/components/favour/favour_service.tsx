@@ -24,6 +24,8 @@ export type Favour = {
   description: string;
   skills: string;
   actualLocation: string;
+  groupId: string;
+  groupTitle: string;
   state: FavourState;
   review: string;
   stars: number;
@@ -36,6 +38,8 @@ export type NewFavour = {
   suburb: string;
   skills: string;
   description: string;
+  groupId: string;
+  groupTitle: string;
 };
 
 type Room = {
@@ -131,6 +135,7 @@ export class FavourService {
       description: newFavour.description,
       actualLocation: `${newFavour.street}, ${newFavour.suburb}`,
       cost: newFavour.cost,
+      groupTitle: newFavour.groupTitle,
       skills: newFavour.skills,
       state: FavourState.PENDING,
       review: "",
@@ -229,7 +234,8 @@ export class FavourService {
       });
   };
 
-  public setReview = (favour: Favour, rev: string) => {
-    this.favoursDb.doc(favour.id).update({ review: rev });
-  };
+  setReview(favour: Favour, review: string, stars: number) {
+    //TODO: Append this review to the user who completed the task?
+    return this.favoursDb.doc(favour.id).update({ review, stars });
+  }
 }
