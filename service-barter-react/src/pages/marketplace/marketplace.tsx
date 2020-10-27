@@ -53,7 +53,7 @@ export class Marketplace extends React.Component<
         cost: 0,
         street: "",
         suburb: "",
-        skills: "",
+        skills: [],
         description: "",
       },
       selectedFavour: undefined,
@@ -87,6 +87,8 @@ export class Marketplace extends React.Component<
   }
 
   render() {
+    // console.log(this.userContext.user);
+    // console.log(this.state.selectedFavour);
     return (
       <div className={styles.content}>
         <div className={styles.buttonsWrapper}>

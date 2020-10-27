@@ -66,9 +66,9 @@ export const LearnMoreDialog = React.memo(
                   <Typography variant="body1" color="primary">
                     {favour.cost} Favour points
                   </Typography>
-                  {/\S/.test(favour.skills) ? (
+                  {favour.skills.length > 0 ? (
                     <Typography variant="body1" color="primary">
-                      {favour.skills}
+                      {favour.skills.join(", ")}
                     </Typography>
                   ) : (
                     <Typography variant="body1" color="primary">
