@@ -65,31 +65,34 @@ export const FavourCard = React.memo(
               </Button>
             </CardActions>
           )}
-          {viewRequests && acceptUser && (
+          {viewRequests && (
             <CardActions>
-              <Button
-                size="small"
-                onClick={onClickImpl}
-                disabled={requests === 0 || acceptUser != null}
-              >
-                {favour.state === FavourState.PENDING ? (
-                  <>
-                    View requests &nbsp;
-                    <Badge badgeContent={requests} color="primary" showZero>
-                      <MailIcon />
-                    </Badge>
-                  </>
-                ) : favour.state === FavourState.ACCEPTED ? (
-                  <>Accepted by {acceptUser.displayName}</>
-                ) : (
-                  <>Completed by {acceptUser.displayName}</>
-                )}
-              </Button>
-              {favour.state === FavourState.ACCEPTED && (
-                <Button size="small" onClick={completeFavour}>
-                  Confirm completion
+              {user.uid !== acceptUser?.uid && (
+                <Button
+                  size="small"
+                  onClick={onClickImpl}
+                  disabled={requests === 0 || acceptUser != null}
+                >
+                  {favour.state === FavourState.PENDING ? (
+                    <>
+                      View requests &nbsp;
+                      <Badge badgeContent={requests} color="primary" showZero>
+                        <MailIcon />
+                      </Badge>
+                    </>
+                  ) : favour.state === FavourState.ACCEPTED ? (
+                    <>Accepted by {acceptUser?.displayName}</>
+                  ) : (
+                    <>Completed by {acceptUser?.displayName}</>
+                  )}
                 </Button>
               )}
+              {favour.state === FavourState.ACCEPTED &&
+                user.uid !== acceptUser?.uid && (
+                  <Button size="small" onClick={completeFavour}>
+                    Confirm completion
+                  </Button>
+                )}
               {favour.state === FavourState.DONE && (
                 <Button
                   size="small"

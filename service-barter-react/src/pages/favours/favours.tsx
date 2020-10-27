@@ -53,27 +53,40 @@ export const Favours = React.memo(() => {
       return;
     }
 
+    if (tabValue <= 2) {
+      favourServicer
+        .getUserFavours(userContext.user.uid, tabValue)
+        .then((favourListI) => {
+          const favourList = favourListI as (Favour & { acceptUser: User })[];
+
+          const promisesRequests = favourList.map((favour) =>
+            favourServicer.getFavourRequesters(favour).then((requesters) => {
+              setFavourMap(new Map(favourMap.set(favour.id, requesters)));
+            }),
+          );
+
+          const promisesAccepts = favourList.map((favour) =>
+            favour.acceptUid
+              ? favourServicer
+                  .getUserCached(favour.acceptUid)
+                  .then((user) => (favour.acceptUser = user))
+              : Promise.resolve(),
+          );
+          Promise.all([promisesRequests, promisesAccepts]).then(() =>
+            setFavourList(favourList),
+          );
+        });
+      return;
+    }
+
+    // TODO: Dirty hack, assuming that "Working on Favours" and "Worked on Favours" are in position 4 and 5, so that the
+    // favourState becomes ACCEPTED and DONE.
     favourServicer
-      .getUserFavours(userContext.user.uid, tabValue)
+      .getWorkedOnFavours(userContext.user.uid, tabValue - 2)
       .then((favourListI) => {
         const favourList = favourListI as (Favour & { acceptUser: User })[];
-
-        const promisesRequests = favourList.map((favour) =>
-          favourServicer.getFavourRequesters(favour).then((requesters) => {
-            setFavourMap(new Map(favourMap.set(favour.id, requesters)));
-          }),
-        );
-
-        const promisesAccepts = favourList.map((favour) =>
-          favour.acceptUid
-            ? favourServicer
-                .getUserCached(favour.acceptUid)
-                .then((user) => (favour.acceptUser = user))
-            : Promise.resolve(),
-        );
-        Promise.all([promisesRequests, promisesAccepts]).then(() =>
-          setFavourList(favourList),
-        );
+        favourList.forEach((favour) => (favour.acceptUser = userContext.user));
+        setFavourList(favourList);
       });
   }, [userContext, tabValue, completedFavour]);
 
@@ -165,6 +178,8 @@ export const Favours = React.memo(() => {
           <Tab label="Your favours" />
           <Tab label="Accepted favours" />
           <Tab label="Completed favours" />
+          <Tab label="Working on favours" />
+          <Tab label="Worked on favours" />
         </Tabs>
       </Paper>
       <RSC noScrollX>

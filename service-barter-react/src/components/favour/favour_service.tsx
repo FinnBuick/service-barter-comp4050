@@ -126,6 +126,25 @@ export class FavourService {
       );
   }
 
+  public getWorkedOnFavours(
+    acceptUid: string,
+    filterState?: FavourState,
+  ): Promise<Favour[]> {
+    let filteredResults = this.favoursDb
+      .orderBy("timestamp", "desc")
+      .where("acceptUid", "==", acceptUid);
+
+    if (filterState !== undefined) {
+      filteredResults = filteredResults.where("state", "==", filterState);
+    }
+
+    return filteredResults
+      .get()
+      .then((value) =>
+        value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
+      );
+  }
+
   public createFavour(newFavour: NewFavour, ownerUid: string): Favour {
     const favour = {
       title: newFavour.title,
