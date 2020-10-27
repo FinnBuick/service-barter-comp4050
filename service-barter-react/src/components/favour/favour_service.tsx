@@ -132,7 +132,6 @@ export class FavourService {
       skills: newFavour.skills,
       state: FavourState.PENDING,
     } as Favour;
-    console.log(favour);
     this.favoursDb.doc().set(favour);
 
     // Generate a fake random id, will eventually get replace by Firebase.

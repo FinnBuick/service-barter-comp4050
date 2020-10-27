@@ -29,7 +29,7 @@ export const CreateFavourDialog = React.memo(
     const [newSkillList, setNewSkillList] = React.useState([]);
 
     const dataChanged = (e) => {
-      newFavour[e.target.name] = e.target.value.trim;
+      newFavour[e.target.name] = e.target.value.trim();
       setValid(
         /\S/.test(newFavour.title) &&
           /\S/.test(newFavour.street) &&
