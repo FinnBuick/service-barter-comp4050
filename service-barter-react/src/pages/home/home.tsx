@@ -97,11 +97,15 @@ export class Home extends React.Component<
     return (
       <div className={styles.content}>
         <div className={styles.contentTitle}>
-          <Typography variant="h3">Service Barter</Typography>
-          <Typography variant="body1">
-            Welcome to the Barter Service website! We are currently working on
-            this website to provide the best experience for our clients.
-          </Typography>
+          <div>
+            {this.userContext.loggedIn ? (
+              <Typography variant="h3">
+                Welcome, {this.userContext.user.displayName}!
+              </Typography>
+            ) : (
+              <Typography variant="h3">Welcome to Help.Me!</Typography>
+            )}
+          </div>
           {!this.userContext.loggedIn && (
             <div className={styles.rootButton}>
               <Button
