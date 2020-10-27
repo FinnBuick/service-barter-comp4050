@@ -22,7 +22,7 @@ export type Favour = {
   timestamp: firebase.firestore.Timestamp;
   roughLocation: string;
   description: string;
-  skills: string;
+  skills: string[];
   actualLocation: string;
   groupId: string;
   groupTitle: string;
@@ -36,7 +36,7 @@ export type NewFavour = {
   cost: number;
   street: string;
   suburb: string;
-  skills: string;
+  skills: string[];
   description: string;
   groupId: string;
   groupTitle: string;
@@ -160,7 +160,6 @@ export class FavourService {
       review: "",
       stars: 0,
     } as Favour;
-
     this.favoursDb.doc().set(favour);
 
     // Generate a fake random id, will eventually get replace by Firebase.

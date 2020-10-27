@@ -84,13 +84,15 @@ export class Home extends React.Component<
   };
 
   private learnDialogRequest = () => {
-    this.favourServicer.requestFavour(
-      this.state.selectedFavour,
-      this.userContext.user,
-      this.state.selectedFavourOwner,
-    );
-    this.learnDialogClose();
-    this.setState({ openSuccessAlert: true });
+    if (this.userContext.user.uid != this.state.selectedFavourOwner.uid) {
+      this.favourServicer.requestFavour(
+        this.state.selectedFavour,
+        this.userContext.user,
+        this.state.selectedFavourOwner,
+      );
+      this.learnDialogClose();
+      this.setState({ openSuccessAlert: true });
+    }
   };
 
   render() {
