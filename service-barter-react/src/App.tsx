@@ -51,30 +51,6 @@ class App extends React.Component<
     firebase.initializeApp(firebaseConfig);
   }
 
-  componentDidMount() {
-    const messaging = firebase.messaging();
-
-    messaging
-      .getToken({
-        vapidKey:
-          "BIbZhbP4glGt3HBPZg1jDdPWQyMJoqXuziqiO0v82vMK1PnMyUgbp2o24rlvapQa7hUg-TuRUHndfxxSE5icxJU",
-      })
-      .then((currentToken) => {
-        if (currentToken) {
-          console.log(currentToken);
-        } else {
-          // Show permission request.
-          console.log(
-            "No registration token available. Request permission to generate one.",
-          );
-          // Show permission UI.
-        }
-      })
-      .catch((err) => {
-        console.log("An error occurred while retrieving token. ", err);
-      });
-  }
-
   render() {
     return (
       <UserProvider>
