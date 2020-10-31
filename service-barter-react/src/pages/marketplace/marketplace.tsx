@@ -133,6 +133,7 @@ export class Marketplace extends React.Component<
             <CreateFavourDialog
               open={this.state.openFavourDialog}
               newFavour={this.state.newFavour}
+              userInfo={this.userContext.user}
               onClose={this.favourDialogClose}
               onCreate={this.onFavourCreated}
             />

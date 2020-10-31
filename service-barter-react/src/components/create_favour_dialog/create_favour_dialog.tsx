@@ -11,6 +11,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
 import { WithContext as ReactTags } from "react-tag-input";
 
+import { User } from "../../components/user/user_provider";
 import { NewFavour } from "../favour/favour_service";
 import styles from "./create_favour_dialog.scss";
 
@@ -18,27 +19,37 @@ export const CreateFavourDialog = React.memo(
   ({
     open,
     newFavour,
+    userInfo,
     onClose,
     onCreate,
   }: {
     open: boolean;
     newFavour: NewFavour;
+    userInfo: User;
     onClose: () => void;
     onCreate: () => void;
   }) => {
     const [newSkillList, setNewSkillList] = React.useState([]);
+    const [allowPoint, setAllowPoint] = React.useState(true);
 
     const dataChanged = (e) => {
       newFavour[e.target.name] = e.target.value.trim();
       setValid(
         /\S/.test(newFavour.title) &&
           /\S/.test(newFavour.street) &&
-          /\S/.test(newFavour.suburb),
+          /\S/.test(newFavour.suburb) &&
+          allowPoint,
       );
     };
 
     const dataChangedNumber = (e) => {
       newFavour[e.target.name] = parseInt(e.target.value);
+      setValid(
+        /\S/.test(newFavour.title) &&
+          /\S/.test(newFavour.street) &&
+          /\S/.test(newFavour.suburb) &&
+          allowPoint,
+      );
     };
 
     const [valid, setValid] = React.useState(false);
@@ -111,7 +122,16 @@ export const CreateFavourDialog = React.memo(
             label="Favour cost"
             defaultValue={0}
             name="cost"
-            onChange={dataChangedNumber}
+            error={!allowPoint}
+            helperText={allowPoint ? "" : "Out of balance"}
+            onChange={(e) => {
+              if (userInfo.favourPoint < Number(e.target.value)) {
+                setAllowPoint(false);
+              } else {
+                setAllowPoint(true);
+              }
+              dataChangedNumber(e);
+            }}
             required
             fullWidth
           />
