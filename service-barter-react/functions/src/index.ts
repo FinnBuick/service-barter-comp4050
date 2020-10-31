@@ -14,8 +14,6 @@ export const createNotificationOnFavourRequest = firestore
       // Access the parameter `{documentId}` with `context.params`
       logger.log("Notification", original, context.params);
 
-      let ownerUid = null;
-
       // get the favours ownerUid
       admin
         .firestore()
@@ -26,52 +24,53 @@ export const createNotificationOnFavourRequest = firestore
           if (value.exists) {
             const favour = value.data();
             if (favour?.ownerUid) {
-              ownerUid = favour.ownerUid;
-            }
-          }
-        })
-        .catch((err) => logger.log(err));
-
-      // get the owners fcm tokens
-      if (ownerUid) {
-        return admin
-          .firestore()
-          .collection("users")
-          .doc(ownerUid)
-          .get()
-          .then((value) => {
-            if (value.exists) {
-              const user = value.data();
-              if (user?.fcmTokens) {
-                var registrationTokens = user.fcmTokens;
-              }
-
-              // send notification via fcm
-              if (registrationTokens && user?.displayName) {
-                const message = {
-                  tokens: registrationTokens,
-                  notification: {
-                    title: "New favour request!",
-                    body: `${user.displayName} offered to do your favour!`,
-                  },
-                };
-
+              const ownerUid = favour.ownerUid;
+              if (ownerUid) {
                 return admin
-                  .messaging()
-                  .sendMulticast(message)
-                  .then((response) => {
-                    logger.log(
-                      response.successCount +
-                        " messages were sent successfully",
-                    );
+                  .firestore()
+                  .collection("users")
+                  .doc(ownerUid)
+                  .get()
+                  .then((data) => {
+                    if (data.exists) {
+                      const user = data.data();
+                      if (user?.fcmTokens) {
+                        var registrationTokens = user.fcmTokens;
+                      }
+
+                      // send notification via fcm
+                      if (registrationTokens && user?.displayName) {
+                        const message = {
+                          tokens: registrationTokens,
+                          notification: {
+                            title: "New favour request!",
+                            body: `${user.displayName} offered to do your favour!`,
+                          },
+                        };
+
+                        return admin
+                          .messaging()
+                          .sendMulticast(message)
+                          .then((response) => {
+                            logger.log(
+                              response.successCount +
+                                " messages were sent successfully",
+                            );
+                          })
+                          .catch((err) => logger.log(err));
+                      }
+                    }
+                    return Promise.resolve();
                   })
                   .catch((err) => logger.log(err));
               }
             }
-            return Promise.resolve();
-          })
-          .catch((err) => logger.log(err));
-      }
+          }
+          return Promise.resolve();
+        })
+        .catch((err) => logger.log(err));
+
+      // get the owners fcm tokens
 
       return false;
     },
