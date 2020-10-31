@@ -32,47 +32,47 @@ export const createNotificationOnFavourRequest = firestore
         })
         .catch((err) => logger.log(err));
 
-      let registrationTokens = null;
-      let user: any = null;
-
       // get the owners fcm tokens
       if (ownerUid) {
-        admin
+        return admin
           .firestore()
           .collection("users")
           .doc(ownerUid)
           .get()
           .then((value) => {
             if (value.exists) {
-              user = value.data();
+              const user = value.data();
               if (user?.fcmTokens) {
-                registrationTokens = user.fcmTokens;
+                var registrationTokens = user.fcmTokens;
+              }
+
+              // send notification via fcm
+              if (registrationTokens && user?.displayName) {
+                const message = {
+                  tokens: registrationTokens,
+                  notification: {
+                    title: "New favour request!",
+                    body: `${user.displayName} offered to do your favour!`,
+                  },
+                };
+
+                return admin
+                  .messaging()
+                  .sendMulticast(message)
+                  .then((response) => {
+                    logger.log(
+                      response.successCount +
+                        " messages were sent successfully",
+                    );
+                  })
+                  .catch((err) => logger.log(err));
               }
             }
+            return Promise.resolve();
           })
           .catch((err) => logger.log(err));
       }
 
-      // send notification via fcm
-      if (registrationTokens && user.displayName) {
-        const message = {
-          tokens: registrationTokens,
-          notification: {
-            title: "New favour request!",
-            body: `${user.displayName} offered to do your favour!`,
-          },
-        };
-
-        return admin
-          .messaging()
-          .sendMulticast(message)
-          .then((response) => {
-            logger.log(
-              response.successCount + " messages were sent successfully",
-            );
-          })
-          .catch((err) => logger.log(err));
-      }
       return false;
     },
   );
