@@ -130,7 +130,17 @@ export const Favours = React.memo(() => {
   };
 
   const acceptPickerClick = (user: User) => {
-    favourServicer.acceptFavour(acceptPickerState.selectedFavour, user);
+    console.log(userContext.user.favourPoint);
+    console.log(acceptPickerState.selectedFavour.cost);
+    if (userContext.user.favourPoint < acceptPickerState.selectedFavour.cost) {
+    } else {
+      favourServicer.acceptFavour(
+        acceptPickerState.selectedFavour,
+        user,
+        userContext.user,
+      );
+    }
+
     setAcceptPickerState({
       open: false,
       requestedUsers: [],

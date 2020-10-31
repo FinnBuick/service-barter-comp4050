@@ -196,7 +196,15 @@ export class FavourService {
       );
   }
 
-  acceptFavour(favour: Favour, user: User) {
+  acceptFavour(favour: Favour, user: User, favourOwner: User) {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(favourOwner.uid)
+      .update({
+        favourPoint: favourOwner.favourPoint - favour.cost,
+      });
+
     return this.favoursDb
       .doc(favour.id)
       .update({ acceptUid: user.uid, state: FavourState.ACCEPTED });
