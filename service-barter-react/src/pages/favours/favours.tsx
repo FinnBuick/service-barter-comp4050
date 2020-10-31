@@ -5,7 +5,12 @@ import {
   Tabs,
   Typography,
 } from "@material-ui/core";
+import Collapse from "@material-ui/core/Collapse";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
+import CloseIcon from "@material-ui/icons/Close";
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 import RSC from "react-scrollbars-custom";
@@ -28,8 +33,10 @@ export const Favours = React.memo(() => {
     return <Redirect to="/signin" />;
   }
 
+  const [acceptFailAlert, setAcceptFailAlert] = React.useState(false);
   const [completedFavour, setCompletedFavour] = React.useState(undefined);
   const [tabValue, setTabValue] = React.useState(0);
+  const [requiredPoint, setRequiredPoint] = React.useState(null);
   const [favourList, setFavourList] = React.useState(null);
 
   const [acceptPickerState, setAcceptPickerState] = React.useState({
@@ -130,9 +137,9 @@ export const Favours = React.memo(() => {
   };
 
   const acceptPickerClick = (user: User) => {
-    console.log(userContext.user.favourPoint);
-    console.log(acceptPickerState.selectedFavour.cost);
     if (userContext.user.favourPoint < acceptPickerState.selectedFavour.cost) {
+      setAcceptFailAlert(true);
+      setRequiredPoint(acceptPickerState.selectedFavour.cost);
     } else {
       favourServicer.acceptFavour(
         acceptPickerState.selectedFavour,
@@ -166,6 +173,27 @@ export const Favours = React.memo(() => {
 
   return (
     <div className={styles.content}>
+      <Collapse className={styles.alert} in={acceptFailAlert}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAcceptFailAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          <AlertTitle>Failed</AlertTitle>
+          You do not have enough favour points. —{" "}
+          <strong>Required favour points: {requiredPoint}</strong>
+        </Alert>
+      </Collapse>
       <AcceptPicker
         users={acceptPickerState.requestedUsers}
         open={acceptPickerState.open}
