@@ -225,7 +225,7 @@ export class Marketplace extends React.Component<
               }
             >
               <AlertTitle>Failed</AlertTitle>
-              The request message has not been sent —{" "}
+              The request message could not been sent —{" "}
               <strong>Your skills does not meet the requirement</strong>
             </Alert>
           </Collapse>
