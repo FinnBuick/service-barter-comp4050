@@ -284,10 +284,12 @@ export class Marketplace extends React.Component<
 
   private learnDialogRequest = () => {
     const requiredSkills = this.state.selectedFavour.skills;
-    const userSkillList = this.userContext.user.skillList;
+    const userSkillList = this.userContext.user.skillList.map((s) =>
+      s.toLowerCase(),
+    );
 
     const metSkills = requiredSkills.filter((s) => {
-      userSkillList.includes(s);
+      if (userSkillList.includes(s.toLowerCase())) return s;
     });
 
     if (
