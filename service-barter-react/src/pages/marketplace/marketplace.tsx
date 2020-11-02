@@ -86,9 +86,19 @@ export class Marketplace extends React.Component<
     this.userContext = context;
   }
 
-  private handleGroupSelect = (title) => {
-    this.setState({ selectedGroup: title });
+  private handleGroupSelect = (group) => {
+    const groupTitle = group.title;
+    this.favourServicer.getFavours().then((favours) => {
+      const filteredFavours = favours.filter(
+        (favour) =>
+          favour.state === FavourState.PENDING &&
+          favour.groupTitle === groupTitle,
+      );
+
+      this.setState((state) => ({ ...state, favourList: filteredFavours }));
+    });
   };
+
   componentDidMount() {
     this.favourServicer.getFavours().then((favours) => {
       const favourList = favours.filter(
@@ -102,32 +112,28 @@ export class Marketplace extends React.Component<
   }
 
   componentDidUpdate() {
-    const values = queryString.parse(location.search);
-    const searchTerm: any = values.q;
-    console.log(searchTerm);
-
     if (this.userContext != this.context) {
       this.userContext = this.context;
-      this.favourServicer.getFavours().then((favours) => {
-        const filteredfavours = favours.filter(
-          (favour) =>
-            favour.state == FavourState.PENDING &&
-            favour.groupTitle == this.state.selectedGroup,
-        );
 
+      this.groupServicer.getGroups().then((groupList) => {
+        this.setState((state) => ({ ...state, groupList }));
+      });
+    }
+
+    const values = queryString.parse(location.search);
+    const searchTerm: string = values.q as string;
+    if (searchTerm) {
+      this.favourServicer.getFavours().then((favours) => {
         const options: Fuse.IFuseOptions<Favour & { owner: User }> = {
           keys: ["title", "description", "actualLocation"],
         };
-        const fuse = new Fuse(filteredfavours, options);
+        const fuse = new Fuse(favours, options);
         const result = fuse.search(searchTerm);
         const favourList: (Favour & { owner: User })[] = result.map(
           (favour) => favour.item,
         );
 
         this.setState((state) => ({ ...state, favourList }));
-      });
-      this.groupServicer.getGroups().then((groupList) => {
-        this.setState((state) => ({ ...state, groupList }));
       });
     }
   }
@@ -194,16 +200,14 @@ export class Marketplace extends React.Component<
               All Groups
             </Button>
             {this.state.groupList.map((group) => (
-              <Grid key={group.id} item xs={6} md={4} zeroMinWidth>
-                <Button
-                  className={styles.buttons}
-                  color="primary"
-                  variant="contained"
-                  onClick={this.handleGroupSelect}
-                >
-                  {group.title}
-                </Button>
-              </Grid>
+              <Button
+                className={styles.buttons}
+                color="primary"
+                variant="contained"
+                onClick={() => this.handleGroupSelect(group)}
+              >
+                {group.title}
+              </Button>
             ))}
           </div>
         </div>
