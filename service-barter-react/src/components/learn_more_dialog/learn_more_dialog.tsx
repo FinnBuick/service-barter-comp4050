@@ -40,18 +40,19 @@ export const LearnMoreDialog = React.memo(
     return (
       <>
         {favour ? (
+          <>
             <LearnMoreProfile
               open={openProfile}
               owner={owner}
               onClose={closeProfile}
             />
 
-          <Dialog
-            classes={{ paper: styles.paper }}
-            open={open}
-            onClose={onClose}
-            fullWidth
-          >
+            <Dialog
+              classes={{ paper: styles.paper }}
+              open={open}
+              onClose={onClose}
+              fullWidth
+            >
               <DialogTitle>
                 <Avatar
                   src={owner.photoURL || "invalid"}
@@ -105,7 +106,10 @@ export const LearnMoreDialog = React.memo(
                 <Typography variant="body1" style={{ marginTop: "3%" }}>
                   Description
                 </Typography>
-                <Typography variant="subtitle1"> {favour.description} </Typography>
+                <Typography variant="subtitle1">
+                  {" "}
+                  {favour.description}{" "}
+                </Typography>
                 {showRequest && (
                   <div
                     style={{
@@ -116,7 +120,7 @@ export const LearnMoreDialog = React.memo(
                   >
                     <Button
                       variant="outlined"
-                    color="secondary"
+                      color="secondary"
                       onClick={onRequest}
                     >
                       Send a request message
