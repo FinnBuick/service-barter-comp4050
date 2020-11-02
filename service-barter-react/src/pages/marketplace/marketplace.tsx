@@ -117,9 +117,7 @@ export class Marketplace extends React.Component<
         const options: Fuse.IFuseOptions<Favour & { owner: User }> = {
           keys: ["title", "description", "actualLocation"],
         };
-
         const fuse = new Fuse(filteredfavours, options);
-
         const result = fuse.search(searchTerm);
         const favourList: (Favour & { owner: User })[] = result.map(
           (favour) => favour.item,
