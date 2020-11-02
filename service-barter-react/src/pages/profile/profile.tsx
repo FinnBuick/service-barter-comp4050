@@ -210,34 +210,43 @@ export const Profile = React.memo(() => {
                   <div className={styles.infoBox}>
                     <Typography variant="h5">Reviews</Typography>
                     <RSC noScrollX>
-                      {favourHist?.favHist?.map((favour) => (
-                        <Grid
-                          container
-                          key={favour.id}
-                          direction={"column"}
-                          spacing={2}
-                        >
-                          <Card>
-                            <CardContent>
-                              <Typography
-                                gutterBottom
-                                variant="subtitle1"
-                                component="h2"
-                              >
-                                {favour.owner.displayName}
-                              </Typography>
-                              <Typography
-                                gutterBottom
-                                variant="subtitle1"
-                                component="h2"
-                              >
-                                {favour.review}
-                              </Typography>
-                              <Rating value={favour.stars} readOnly />
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      ))}
+                      {favourHist?.favHist
+                        ?.filter((favour) => favour.stars > 0)
+                        .map((favour) => (
+                          <Grid
+                            container
+                            key={favour.id}
+                            direction={"column"}
+                            spacing={2}
+                          >
+                            <Card>
+                              <CardContent>
+                                <Typography
+                                  gutterBottom
+                                  variant="h6"
+                                  component="h2"
+                                >
+                                  {favour.owner.displayName}
+                                </Typography>
+                                <Typography
+                                  gutterBottom
+                                  variant="subtitle1"
+                                  component="h2"
+                                >
+                                  {favour.title}
+                                </Typography>
+                                <Typography
+                                  gutterBottom
+                                  variant="subtitle1"
+                                  component="h2"
+                                >
+                                  {favour.review}
+                                </Typography>
+                                <Rating value={favour.stars} readOnly />
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        ))}
                     </RSC>
                   </div>
                 </Paper>
