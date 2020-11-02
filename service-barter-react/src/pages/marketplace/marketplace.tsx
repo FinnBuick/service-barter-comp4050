@@ -86,8 +86,10 @@ export class Marketplace extends React.Component<
 
   private handleGroupSelect = (title) => {
     this.setState({ selectedGroup: title });
-    console.log(this.state.selectedGroup);
+    sessionStorage.setItem("selectedGroup", title);
+    window.location.reload();
   };
+
   componentDidMount() {
     this.favourServicer.getFavours().then((favours) => {
       const favourList = favours.filter(
@@ -103,12 +105,22 @@ export class Marketplace extends React.Component<
   componentDidUpdate() {
     if (this.userContext != this.context) {
       this.userContext = this.context;
+      console.log("I AM HERE");
+      console.log(this.state.selectedGroup);
       this.favourServicer.getFavours().then((favours) => {
-        const favourList = favours.filter(
-          (favour) =>
-            favour.state == FavourState.PENDING &&
-            favour.groupTitle == this.state.selectedGroup,
-        );
+        let favourList;
+    console.log(sessionStorage.getItem("selectedGroup"));
+        if (sessionStorage.getItem("selectedGroup") === "") {
+          favourList = favours.filter(
+            (favour) => favour.state == FavourState.PENDING,
+          );
+        } else {
+          favourList = favours.filter(
+            (favour) =>
+              favour.state == FavourState.PENDING &&
+              favour.groupTitle == sessionStorage.getItem("selectedGroup"),
+          );
+        }
         this.setState((state) => ({ ...state, favourList }));
       });
       this.groupServicer.getGroups().then((groupList) => {
@@ -175,6 +187,9 @@ export class Marketplace extends React.Component<
               color="primary"
               className={styles.buttons}
               variant="contained"
+              onClick={() => {
+                this.handleGroupSelect("");
+              }}
             >
               All Groups
             </Button>
