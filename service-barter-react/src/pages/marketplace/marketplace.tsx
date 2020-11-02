@@ -84,6 +84,7 @@ export class Marketplace extends React.Component<
 
   private handleGroupSelect = (title) => {
     this.setState({ selectedGroup: title });
+    console.log(this.state.selectedGroup);
   };
   componentDidMount() {
     this.favourServicer.getFavours().then((favours) => {
@@ -177,7 +178,9 @@ export class Marketplace extends React.Component<
                 <Button
                   className={styles.buttons}
                   variant="contained"
-                  onClick={this.handleGroupSelect}
+                  onClick={() => {
+                    this.handleGroupSelect(group.title);
+                  }}
                 >
                   {group.title}
                 </Button>
