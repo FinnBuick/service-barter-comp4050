@@ -87,13 +87,16 @@ export class Marketplace extends React.Component<
   }
 
   private handleGroupSelect = (group) => {
-    const groupTitle = group.title;
+    const groupTitle = group?.title;
+
     this.favourServicer.getFavours().then((favours) => {
-      const filteredFavours = favours.filter(
-        (favour) =>
-          favour.state === FavourState.PENDING &&
-          favour.groupTitle === groupTitle,
+      let filteredFavours = favours.filter(
+        (favour) => favour.state === FavourState.PENDING
       );
+
+      if (groupTitle) {
+        filteredFavours = filteredFavours.filter((favour) => favour.groupTitle === groupTitle);
+      }
 
       this.setState((state) => ({ ...state, favourList: filteredFavours }));
     });
@@ -196,6 +199,7 @@ export class Marketplace extends React.Component<
               color="primary"
               className={styles.buttons}
               variant="contained"
+              onClick={() => this.handleGroupSelect(null)}
             >
               All Groups
             </Button>
