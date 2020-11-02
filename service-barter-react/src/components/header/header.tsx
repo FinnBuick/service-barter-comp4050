@@ -17,7 +17,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import firebase from "firebase";
 import * as React from "react";
 import { render } from "react-dom";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, useHistory } from "react-router-dom";
 
 import { UserContext } from "../user/user_provider";
 import styles from "./header.scss";
@@ -38,9 +38,9 @@ import styles from "./header.scss";
 export const Header = React.memo(
   ({ toggleSidebar: toggleDrawer }: { toggleSidebar: () => void }) => {
     const [open, setOpen] = React.useState(false);
-    const [redirect, setRedirect] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState("");
     const anchorRef = React.useRef(null);
+    const history = useHistory();
 
     const userContext = React.useContext(UserContext);
 
@@ -66,7 +66,8 @@ export const Header = React.memo(
     const handleSearchKeyDown = (event) => {
       if (event.key === "Enter") {
         setSearchTerm(event.target.value);
-        setRedirect(true);
+        // history.push(`/marketplace?q=${event.target.value}`);
+        window.location.href = `/marketplace?q=${event.target.value}`;
       }
     };
 
@@ -87,17 +88,6 @@ export const Header = React.memo(
 
       prevOpen.current = open;
     }, [open]);
-
-    if (redirect) {
-      return (
-        <Redirect
-          to={{
-            pathname: "/marketplace",
-            // search: "?q=" + searchTerm,
-          }}
-        />
-      );
-    }
 
     return (
       <AppBar position="static">

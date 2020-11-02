@@ -104,6 +104,7 @@ export class Marketplace extends React.Component<
   componentDidUpdate() {
     const values = queryString.parse(location.search);
     const searchTerm: any = values.q;
+    console.log(searchTerm);
 
     if (this.userContext != this.context) {
       this.userContext = this.context;
