@@ -28,7 +28,7 @@ export const Profile = React.memo(() => {
   return (
     <div className={styles.content}>
       {userContext.user && (
-        <>
+        <div>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={2000}
@@ -86,7 +86,7 @@ export const Profile = React.memo(() => {
                 </Typography>
                 <Typography
                   variant="h6"
-color="primary"
+                  color="primary"
                   style={{
                     display: "inline-block",
                     marginLeft: "17%",
@@ -125,7 +125,7 @@ color="primary"
                   </Typography>
                   <Typography
                     variant="h6"
-color="primary"
+                    color="primary"
                     style={{
                       display: "inline-block",
                       marginLeft: "17%",
@@ -151,8 +151,9 @@ color="primary"
                   <Typography variant="subtitle1">Contents</Typography>
                 </div>
               </Paper>
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
