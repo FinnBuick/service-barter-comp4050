@@ -13,7 +13,7 @@ import MailIcon from "@material-ui/icons/Mail";
 import * as React from "react";
 
 import { formatDate } from "../../pages/marketplace/marketplace";
-import { Favour, FavourState} from "../favour/favour_service";
+import { Favour, FavourState } from "../favour/favour_service";
 import { User } from "../user/user_provider";
 import styles from "./favour_card.scss";
 export const FavourCard = React.memo(

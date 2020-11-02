@@ -207,7 +207,7 @@ export const Favours = React.memo(() => {
       />
       <Paper background-color="secondary">
         <Tabs
-	  className={styles.tabs}
+          className={styles.tabs}
           value={tabValue}
           onChange={handleTabChange}
           indicatorColor="primary"

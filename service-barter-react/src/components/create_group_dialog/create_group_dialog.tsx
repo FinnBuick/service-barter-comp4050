@@ -8,9 +8,9 @@ import {
 } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
-import styles from "./create_group_dialog.scss";
 
 import { NewGroup } from "../group/group_service";
+import styles from "./create_group_dialog.scss";
 
 export const CreateGroupDialog = React.memo(
   ({

@@ -177,7 +177,7 @@ export const Report = React.memo(() => {
               variant="contained"
               style={{ marginLeft: "4%" }}
               component={Link}
-	      color="secondary"
+              color="secondary"
               to="/home"
             >
               Cancel
