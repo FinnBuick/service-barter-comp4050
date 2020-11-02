@@ -93,15 +93,16 @@ export const FavourCard = React.memo(
                     Confirm completion
                   </Button>
                 )}
-              {favour.state === FavourState.DONE && (
-                <Button
-                  size="small"
-                  onClick={reviewFavour}
-                  disabled={!!favour.review}
-                >
-                  {favour.review ? "Review received!" : "Complete a review?"}
-                </Button>
-              )}
+              {favour.state === FavourState.DONE &&
+                favour.acceptUid !== user.uid && (
+                  <Button
+                    size="small"
+                    onClick={reviewFavour}
+                    disabled={!!favour.review}
+                  >
+                    {favour.review ? "Review received!" : "Complete a review?"}
+                  </Button>
+                )}
             </CardActions>
           )}
         </Card>

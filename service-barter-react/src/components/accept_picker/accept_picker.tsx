@@ -30,7 +30,7 @@ export const AcceptPicker = React.memo(
       const onClick = () => onUserClick(user);
 
       return (
-        <ListItem key={user.displayName}>
+        <ListItem key={user.displayName} className={styles.listItem}>
           <ListItemAvatar>
             <Avatar src={user.photoURL || "invalid"} alt={user.displayName} />
           </ListItemAvatar>
