@@ -9,6 +9,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import Alert from "@material-ui/lab/Alert";
 import AlertTitle from "@material-ui/lab/AlertTitle";
 import { format, formatDistanceToNow } from "date-fns";
+import Fuse from "fuse.js";
+import queryString from "query-string";
 import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
@@ -46,7 +48,7 @@ export class Marketplace extends React.Component<
     newGroup: NewGroup;
     selectedFavour: Favour;
     selectedFavourOwner: User;
-    favourList: (Favour & { owner: User })[];
+    favourList?: (Favour & { owner: User })[];
     groupList: (Group & { member: User })[];
     selectedGroup: string;
   }
@@ -100,14 +102,29 @@ export class Marketplace extends React.Component<
   }
 
   componentDidUpdate() {
+    const values = queryString.parse(location.search);
+    const searchTerm: any = values.q;
+
     if (this.userContext != this.context) {
       this.userContext = this.context;
       this.favourServicer.getFavours().then((favours) => {
-        const favourList = favours.filter(
+        const filteredfavours = favours.filter(
           (favour) =>
             favour.state == FavourState.PENDING &&
             favour.groupTitle == this.state.selectedGroup,
         );
+
+        const options: Fuse.IFuseOptions<Favour & { owner: User }> = {
+          keys: ["title", "description", "actualLocation"],
+        };
+
+        const fuse = new Fuse(filteredfavours, options);
+
+        const result = fuse.search(searchTerm);
+        const favourList: (Favour & { owner: User })[] = result.map(
+          (favour) => favour.item,
+        );
+
         this.setState((state) => ({ ...state, favourList }));
       });
       this.groupServicer.getGroups().then((groupList) => {
