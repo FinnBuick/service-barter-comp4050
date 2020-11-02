@@ -10,6 +10,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
 
 import { NewGroup } from "../group/group_service";
+import styles from "./create_group_dialog.scss";
 
 export const CreateGroupDialog = React.memo(
   ({
@@ -35,7 +36,12 @@ export const CreateGroupDialog = React.memo(
     const [valid, setValid] = React.useState(false);
 
     return (
-      <Dialog open={open} onClose={onClose} disableBackdropClick={true}>
+      <Dialog
+        classes={{ paper: styles.paper }}
+        open={open}
+        onClose={onClose}
+        disableBackdropClick={true}
+      >
         <DialogTitle>
           Add New Group
           <CancelIcon style={{ float: "right" }} onClick={onClose} />

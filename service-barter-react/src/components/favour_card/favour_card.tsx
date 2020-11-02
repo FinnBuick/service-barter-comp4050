@@ -13,9 +13,9 @@ import MailIcon from "@material-ui/icons/Mail";
 import * as React from "react";
 
 import { formatDate } from "../../pages/marketplace/marketplace";
-import { Favour, FavourService } from "../favour/favour_service";
+import { Favour, FavourState } from "../favour/favour_service";
 import { User } from "../user/user_provider";
-
+import styles from "./favour_card.scss";
 export const FavourCard = React.memo(
   ({
     favour,
@@ -23,26 +23,26 @@ export const FavourCard = React.memo(
     acceptUser,
     onClick,
     onComplete,
+    onReview,
     requests,
     viewRequests,
-    completedFavour,
   }: {
     favour: Favour;
     user: User;
     acceptUser?: User;
     onClick: (favour: Favour, user: User) => void;
     onComplete?: (favour: Favour, user: User) => void;
+    onReview?: (favour: Favour, user: User) => void;
     requests?: number;
     viewRequests?: boolean;
-    completedFavour?: number;
   }) => {
-    const favServer = new FavourService();
     const onClickImpl = () => onClick(favour, user);
     const completeFavour = () => onComplete(favour, user);
+    const reviewFavour = () => onReview(favour, user);
 
     return (
       <Paper>
-        <Card>
+        <Card className={styles.favour_card}>
           <CardHeader
             avatar={
               <Avatar
@@ -67,37 +67,41 @@ export const FavourCard = React.memo(
           )}
           {viewRequests && (
             <CardActions>
-              <Button
-                size="small"
-                onClick={onClickImpl}
-                disabled={requests === 0 || acceptUser != null}
-              >
-                {acceptUser && favour.state != 2 ? (
-                  <>Accepted by {acceptUser.displayName}</>
-                ) : acceptUser && favour.state == 2 ? (
-                  <>Completed by {acceptUser.displayName}</>
-                ) : (
-                  <>
-                    View requests &nbsp;
-                    <Badge badgeContent={requests} color="primary" showZero>
-                      <MailIcon />
-                    </Badge>
-                  </>
-                )}
-              </Button>
-              <>
-                {acceptUser && favour.state != 2 ? (
-                  <Button
-                    size="small"
-                    onClick={completeFavour}
-                    disabled={false}
-                  >
+              {user.uid !== acceptUser?.uid && (
+                <Button
+                  size="small"
+                  onClick={onClickImpl}
+                  disabled={requests === 0 || acceptUser != null}
+                >
+                  {favour.state === FavourState.PENDING ? (
+                    <>
+                      View requests &nbsp;
+                      <Badge badgeContent={requests} color="primary" showZero>
+                        <MailIcon />
+                      </Badge>
+                    </>
+                  ) : favour.state === FavourState.ACCEPTED ? (
+                    <>Accepted by {acceptUser?.displayName}</>
+                  ) : (
+                    <>Completed by {acceptUser?.displayName}</>
+                  )}
+                </Button>
+              )}
+              {favour.state === FavourState.ACCEPTED &&
+                user.uid !== acceptUser?.uid && (
+                  <Button size="small" onClick={completeFavour}>
                     Confirm completion
                   </Button>
-                ) : (
-                  <></>
                 )}
-              </>
+              {favour.state === FavourState.DONE && (
+                <Button
+                  size="small"
+                  onClick={reviewFavour}
+                  disabled={!!favour.review}
+                >
+                  {favour.review ? "Review received!" : "Complete a review?"}
+                </Button>
+              )}
             </CardActions>
           )}
         </Card>

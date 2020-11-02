@@ -1,13 +1,16 @@
 import {
   CircularProgress,
-  Collapse,
   Grid,
   Tab,
   Tabs,
   Typography,
 } from "@material-ui/core";
+import Collapse from "@material-ui/core/Collapse";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
-import { VerifiedUserSharp } from "@material-ui/icons";
+import CloseIcon from "@material-ui/icons/Close";
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 import RSC from "react-scrollbars-custom";
@@ -19,6 +22,7 @@ import {
   FavourService,
   Requester,
 } from "../../components/favour/favour_service";
+import { ReviewDialog } from "../../components/review_dialog/review_dialog";
 import { User, UserContext } from "../../components/user/user_provider";
 import styles from "./favours.scss";
 
@@ -29,14 +33,21 @@ export const Favours = React.memo(() => {
     return <Redirect to="/signin" />;
   }
 
+  const [acceptFailAlert, setAcceptFailAlert] = React.useState(false);
   const [completedFavour, setCompletedFavour] = React.useState(undefined);
   const [tabValue, setTabValue] = React.useState(0);
+  const [requiredPoint, setRequiredPoint] = React.useState(null);
   const [favourList, setFavourList] = React.useState(null);
 
   const [acceptPickerState, setAcceptPickerState] = React.useState({
     open: false,
     requestedUsers: [],
     selectedFavour: null,
+  });
+
+  const [reviewDialogState, setReviewDialogState] = React.useState({
+    open: false,
+    favour: null,
   });
 
   const [favourMap, setFavourMap] = React.useState(
@@ -49,27 +60,40 @@ export const Favours = React.memo(() => {
       return;
     }
 
+    if (tabValue <= 2) {
+      favourServicer
+        .getUserFavours(userContext.user.uid, tabValue)
+        .then((favourListI) => {
+          const favourList = favourListI as (Favour & { acceptUser: User })[];
+
+          const promisesRequests = favourList.map((favour) =>
+            favourServicer.getFavourRequesters(favour).then((requesters) => {
+              setFavourMap(new Map(favourMap.set(favour.id, requesters)));
+            }),
+          );
+
+          const promisesAccepts = favourList.map((favour) =>
+            favour.acceptUid
+              ? favourServicer
+                  .getUserCached(favour.acceptUid)
+                  .then((user) => (favour.acceptUser = user))
+              : Promise.resolve(),
+          );
+          Promise.all([promisesRequests, promisesAccepts]).then(() =>
+            setFavourList(favourList),
+          );
+        });
+      return;
+    }
+
+    // TODO: Dirty hack, assuming that "Working on Favours" and "Worked on Favours" are in position 4 and 5, so that the
+    // favourState becomes ACCEPTED and DONE.
     favourServicer
-      .getUserFavours(userContext.user.uid, tabValue)
+      .getWorkedOnFavours(userContext.user.uid, tabValue - 2)
       .then((favourListI) => {
         const favourList = favourListI as (Favour & { acceptUser: User })[];
-
-        const promisesRequests = favourList.map((favour) =>
-          favourServicer.getFavourRequesters(favour).then((requesters) => {
-            setFavourMap(new Map(favourMap.set(favour.id, requesters)));
-          }),
-        );
-
-        const promisesAccepts = favourList.map((favour) =>
-          favour.acceptUid
-            ? favourServicer
-                .getUserCached(favour.acceptUid)
-                .then((user) => (favour.acceptUser = user))
-            : Promise.resolve(),
-        );
-        Promise.all([promisesRequests, promisesAccepts]).then(() =>
-          setFavourList(favourList),
-        );
+        favourList.forEach((favour) => (favour.acceptUser = userContext.user));
+        setFavourList(favourList);
       });
   }, [userContext, tabValue, completedFavour]);
 
@@ -90,6 +114,13 @@ export const Favours = React.memo(() => {
     setCompletedFavour(favour.id);
   };
 
+  const favourCardReview = (favour: Favour) => {
+    setReviewDialogState({
+      open: true,
+      favour,
+    });
+  };
+
   const acceptPickerClose = () => {
     setAcceptPickerState({
       open: false,
@@ -98,8 +129,25 @@ export const Favours = React.memo(() => {
     });
   };
 
+  const reviewDialogClose = () => {
+    setReviewDialogState({
+      open: false,
+      favour: null,
+    });
+  };
+
   const acceptPickerClick = (user: User) => {
-    favourServicer.acceptFavour(acceptPickerState.selectedFavour, user);
+    if (userContext.user.favourPoint < acceptPickerState.selectedFavour.cost) {
+      setAcceptFailAlert(true);
+      setRequiredPoint(acceptPickerState.selectedFavour.cost);
+    } else {
+      favourServicer.acceptFavour(
+        acceptPickerState.selectedFavour,
+        user,
+        userContext.user,
+      );
+    }
+
     setAcceptPickerState({
       open: false,
       requestedUsers: [],
@@ -110,16 +158,56 @@ export const Favours = React.memo(() => {
     setCompletedFavour(user.uid);
   };
 
+  const reviewDialogComplete = (review: string, stars: number) => {
+    favourServicer.setReview(reviewDialogState.favour, review, stars);
+    setReviewDialogState({
+      open: false,
+      favour: null,
+    });
+
+    //TODO: Add a nice toast/snackbar notification that we have received the review?
+
+    // Just need something that changes
+    setCompletedFavour(review);
+  };
+
   return (
     <div className={styles.content}>
+      <Collapse className={styles.alert} in={acceptFailAlert}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAcceptFailAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          <AlertTitle>Failed</AlertTitle>
+          You do not have enough favour points. —{" "}
+          <strong>Required favour points: {requiredPoint}</strong>
+        </Alert>
+      </Collapse>
       <AcceptPicker
         users={acceptPickerState.requestedUsers}
         open={acceptPickerState.open}
         handleClose={acceptPickerClose}
         onUserClick={acceptPickerClick}
       />
-      <Paper>
+      <ReviewDialog
+        open={reviewDialogState.open}
+        onClose={reviewDialogClose}
+        onComplete={reviewDialogComplete}
+      />
+      <Paper background-color="secondary">
         <Tabs
+          className={styles.tabs}
           value={tabValue}
           onChange={handleTabChange}
           indicatorColor="primary"
@@ -129,6 +217,8 @@ export const Favours = React.memo(() => {
           <Tab label="Your favours" />
           <Tab label="Accepted favours" />
           <Tab label="Completed favours" />
+          <Tab label="Working on favours" />
+          <Tab label="Worked on favours" />
         </Tabs>
       </Paper>
       <RSC noScrollX>
@@ -154,9 +244,9 @@ export const Favours = React.memo(() => {
                     acceptUser={favour.acceptUser}
                     onClick={favourCardClick}
                     onComplete={favourCardComplete}
+                    onReview={favourCardReview}
                     requests={favourMap.get(favour.id)?.length || 0}
                     viewRequests={true}
-                    completedFavour={favour.state}
                   />
                 </Grid>
               ))}

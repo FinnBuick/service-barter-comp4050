@@ -22,7 +22,7 @@ export type Favour = {
   timestamp: firebase.firestore.Timestamp;
   roughLocation: string;
   description: string;
-  skills: string;
+  skills: string[];
   actualLocation: string;
   groupId: string;
   groupTitle: string;
@@ -36,7 +36,7 @@ export type NewFavour = {
   cost: number;
   street: string;
   suburb: string;
-  skills: string;
+  skills: string[];
   description: string;
   groupId: string;
   groupTitle: string;
@@ -126,6 +126,25 @@ export class FavourService {
       );
   }
 
+  public getWorkedOnFavours(
+    acceptUid: string,
+    filterState?: FavourState,
+  ): Promise<Favour[]> {
+    let filteredResults = this.favoursDb
+      .orderBy("timestamp", "desc")
+      .where("acceptUid", "==", acceptUid);
+
+    if (filterState !== undefined) {
+      filteredResults = filteredResults.where("state", "==", filterState);
+    }
+
+    return filteredResults
+      .get()
+      .then((value) =>
+        value.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Favour)),
+      );
+  }
+
   public createFavour(newFavour: NewFavour, ownerUid: string): Favour {
     const favour = {
       title: newFavour.title,
@@ -141,7 +160,6 @@ export class FavourService {
       review: "",
       stars: 0,
     } as Favour;
-
     this.favoursDb.doc().set(favour);
 
     // Generate a fake random id, will eventually get replace by Firebase.
@@ -178,7 +196,15 @@ export class FavourService {
       );
   }
 
-  acceptFavour(favour: Favour, user: User) {
+  acceptFavour(favour: Favour, user: User, favourOwner: User) {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(favourOwner.uid)
+      .update({
+        favourPoint: favourOwner.favourPoint - favour.cost,
+      });
+
     return this.favoursDb
       .doc(favour.id)
       .update({ acceptUid: user.uid, state: FavourState.ACCEPTED });
@@ -234,7 +260,8 @@ export class FavourService {
       });
   };
 
-  public setReview = (favour: Favour, rev: string) => {
-    this.favoursDb.doc(favour.id).update({ review: rev });
-  };
+  setReview(favour: Favour, review: string, stars: number) {
+    //TODO: Append this review to the user who completed the task?
+    return this.favoursDb.doc(favour.id).update({ review, stars });
+  }
 }

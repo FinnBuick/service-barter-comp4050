@@ -24,6 +24,7 @@ export class Home extends React.Component<
   {
     openSuccessAlert: boolean;
     openLearnDialog: boolean;
+    openFailAlert: boolean;
     selectedFavour: Favour;
     selectedFavourOwner: User;
     recentFavourList: (Favour & { owner: User })[];
@@ -38,6 +39,7 @@ export class Home extends React.Component<
     super(props, context);
     this.state = {
       openSuccessAlert: false,
+      openFailAlert: false,
       openLearnDialog: false,
       selectedFavour: undefined,
       selectedFavourOwner: undefined,
@@ -84,31 +86,52 @@ export class Home extends React.Component<
   };
 
   private learnDialogRequest = () => {
-    this.favourServicer.requestFavour(
-      this.state.selectedFavour,
-      this.userContext.user,
-      this.state.selectedFavourOwner,
+    const requiredSkills = this.state.selectedFavour.skills;
+    const userSkillList = this.userContext.user.skillList.map((s) =>
+      s.toLowerCase(),
     );
+
+    const metSkills = requiredSkills.filter((s) => {
+      if (userSkillList.includes(s.toLowerCase())) return s;
+    });
+
+    if (
+      this.userContext.user.uid != this.state.selectedFavourOwner.uid &&
+      metSkills.length === requiredSkills.length
+    ) {
+      this.favourServicer.requestFavour(
+        this.state.selectedFavour,
+        this.userContext.user,
+        this.state.selectedFavourOwner,
+      );
+      this.setState({ openSuccessAlert: true });
+    } else {
+      this.setState({ openFailAlert: true });
+    }
+
     this.learnDialogClose();
-    this.setState({ openSuccessAlert: true });
   };
 
   render() {
     return (
       <div className={styles.content}>
         <div className={styles.contentTitle}>
-          <Typography variant="h3">Service Barter</Typography>
-          <Typography variant="body1">
-            Welcome to the Barter Service website! We are currently working on
-            this website to provide the best experience for our clients.
-          </Typography>
+          <div>
+            {this.userContext.loggedIn ? (
+              <Typography variant="h3">
+                Welcome, {this.userContext.user.displayName}!
+              </Typography>
+            ) : (
+              <Typography variant="h3">Welcome to Help.Me!</Typography>
+            )}
+          </div>
           {!this.userContext.loggedIn && (
             <div className={styles.rootButton}>
               <Button
                 component={Link}
                 to="/signin"
                 variant="contained"
-                color="primary"
+                color="secondary"
               >
                 Sign in
               </Button>
@@ -136,6 +159,27 @@ export class Home extends React.Component<
             <strong>check out the message!</strong>
           </Alert>
         </Collapse>
+        <Collapse className={styles.alert} in={this.state.openFailAlert}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  this.setState({ openFailAlert: false });
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            <AlertTitle>Failed</AlertTitle>
+            The request message could not been sent —{" "}
+            <strong>Your skills does not meet the requirement</strong>
+          </Alert>
+        </Collapse>
         <div className={styles.contentBody}>
           <LearnMoreDialog
             open={this.state.openLearnDialog}
@@ -144,7 +188,8 @@ export class Home extends React.Component<
             onClose={this.learnDialogClose}
             showRequest={
               this.userContext.user != undefined &&
-              this.userContext.user.uid != ""
+              this.userContext.user.uid != "" &&
+              this.userContext.user.uid != this.state.selectedFavourOwner?.uid
             }
             onRequest={this.learnDialogRequest}
           />

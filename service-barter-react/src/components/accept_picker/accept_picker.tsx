@@ -12,6 +12,7 @@ import {
 import * as React from "react";
 
 import { User } from "../user/user_provider";
+import styles from "./accept_picker.scss";
 
 export const AcceptPicker = React.memo(
   ({
@@ -42,7 +43,11 @@ export const AcceptPicker = React.memo(
     });
 
     return (
-      <Dialog onClose={handleClose} open={open}>
+      <Dialog
+        classes={{ paper: styles.paper }}
+        onClose={handleClose}
+        open={open}
+      >
         <DialogTitle>Favour requests received from</DialogTitle>
         <List>
           {users.map((user) => (

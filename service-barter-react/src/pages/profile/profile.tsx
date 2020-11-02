@@ -28,7 +28,7 @@ export const Profile = React.memo(() => {
   return (
     <div className={styles.content}>
       {userContext.user && (
-        <>
+        <div>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={2000}
@@ -61,7 +61,7 @@ export const Profile = React.memo(() => {
             <div className={styles.settingButtons}>
               <Button
                 variant="contained"
-                color="primary"
+                color="secondary"
                 component={Link}
                 to="/editProfile"
                 style={{ marginRight: "10px" }}
@@ -70,7 +70,7 @@ export const Profile = React.memo(() => {
               </Button>
               <Button
                 variant="contained"
-                color="primary"
+                color="secondary"
                 onClick={resetPassword}
               >
                 Reset Password
@@ -78,19 +78,59 @@ export const Profile = React.memo(() => {
             </div>
             <div className={styles.profileBody}>
               <div>
-                <div style={{ display: "inline-block" }}>
-                  <Typography variant="h6">Email address</Typography>
-                  <Typography variant="h6">Favour points</Typography>
-                  <Typography variant="h6">Skills</Typography>
-                </div>
-                <div style={{ display: "inline-block", marginLeft: "30px" }}>
-                  <Typography variant="h6" style={{ color: "#0066ff" }}>
-                    {userContext.user.email}
+                <Typography
+                  variant="h6"
+                  style={{ display: "inline-block", position: "absolute" }}
+                >
+                  Email address
+                </Typography>
+                <Typography
+                  variant="h6"
+                  color="primary"
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "17%",
+                  }}
+                >
+                  {userContext.user.email}
+                </Typography>
+                <div>
+                  <Typography
+                    style={{ display: "inline-block", position: "absolute" }}
+                    variant="h6"
+                  >
+                    Favour points
                   </Typography>
-                  <Typography variant="h6" style={{ color: "#0066ff" }}>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    style={{
+                      display: "inline-block",
+                      marginLeft: "17%",
+                    }}
+                  >
                     {userContext.user.favourPoint}
                   </Typography>
-                  <Typography variant="h6" style={{ color: "#0066ff" }}>
+                </div>
+                <div>
+                  <Typography
+                    variant="h6"
+                    style={{
+                      display: "inline-block",
+                      float: "left",
+                      position: "absolute",
+                    }}
+                  >
+                    Skills
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    style={{
+                      display: "inline-block",
+                      marginLeft: "17%",
+                    }}
+                  >
                     {userContext.user.skillList.length > 0 ? (
                       userContext.user.skillList.join(", ")
                     ) : (
@@ -113,7 +153,7 @@ export const Profile = React.memo(() => {
               </Paper>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
