@@ -20,6 +20,19 @@ import { Link } from "react-router-dom";
 
 import { UserContext } from "../user/user_provider";
 import styles from "./header.scss";
+// import ArlonSemiBold from "../../assets/fonts";
+
+// var storage = firebase.storage();
+// var logoRef = storage.refFromURL('gs://service-barter-comp4050.appspot.com/ArlonSemiBold-DEMO.ttf');
+// var logoFont;
+
+// logoRef.child('ArlonSemiBold-DEMO.ttf').getDownloadURL().then(function(url) {
+//   // Or inserted into an <img> element:
+//   var img = document.getElementById('ArlonSemiBold-DEMO.ttf');
+//   img.src = url;
+// }).catch(function(error) {
+//   // Handle any errors
+// });
 
 export const Header = React.memo(
   ({ toggleSidebar: toggleDrawer }: { toggleSidebar: () => void }) => {
@@ -76,9 +89,8 @@ export const Header = React.memo(
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={styles.title}>
-            Service Barter
-          </Typography>
+          {/* <Button className={styles.title} color="primary" component={Link} to="/home"> */}
+          <Typography variant="h6">Help.Me</Typography>
           <div className={styles.search}>
             <div className={styles.searchIcon}>
               <SearchIcon />

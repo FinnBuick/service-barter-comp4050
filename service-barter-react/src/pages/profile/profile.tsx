@@ -78,19 +78,59 @@ export const Profile = React.memo(() => {
             </div>
             <div className={styles.profileBody}>
               <div>
-                <div style={{ display: "inline-block" }}>
-                  <Typography variant="h6">Email address</Typography>
-                  <Typography variant="h6">Favour points</Typography>
-                  <Typography variant="h6">Skills</Typography>
-                </div>
-                <div style={{ display: "inline-block", marginLeft: "30px" }}>
-                  <Typography variant="h6" color="primary">
-                    {userContext.user.email}
+                <Typography
+                  variant="h6"
+                  style={{ display: "inline-block", position: "absolute" }}
+                >
+                  Email address
+                </Typography>
+                <Typography
+                  variant="h6"
+color="primary"
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "17%",
+                  }}
+                >
+                  {userContext.user.email}
+                </Typography>
+                <div>
+                  <Typography
+                    style={{ display: "inline-block", position: "absolute" }}
+                    variant="h6"
+                  >
+                    Favour points
                   </Typography>
-                  <Typography variant="h6" color="primary">
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    style={{
+                      display: "inline-block",
+                      marginLeft: "17%",
+                    }}
+                  >
                     {userContext.user.favourPoint}
                   </Typography>
-                  <Typography variant="h6" color="primary">
+                </div>
+                <div>
+                  <Typography
+                    variant="h6"
+                    style={{
+                      display: "inline-block",
+                      float: "left",
+                      position: "absolute",
+                    }}
+                  >
+                    Skills
+                  </Typography>
+                  <Typography
+                    variant="h6"
+color="primary"
+                    style={{
+                      display: "inline-block",
+                      marginLeft: "17%",
+                    }}
+                  >
                     {userContext.user.skillList.length > 0 ? (
                       userContext.user.skillList.join(", ")
                     ) : (
@@ -111,7 +151,6 @@ export const Profile = React.memo(() => {
                   <Typography variant="subtitle1">Contents</Typography>
                 </div>
               </Paper>
-            </div>
           </div>
         </>
       )}

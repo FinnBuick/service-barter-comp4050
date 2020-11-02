@@ -41,6 +41,7 @@ export class Marketplace extends React.Component<
     openLearnDialog: boolean;
     openGroupDialog: boolean;
     openSuccessAlert: boolean;
+    openFailAlert: boolean;
     newFavour: NewFavour;
     newGroup: NewGroup;
     selectedFavour: Favour;
@@ -65,7 +66,7 @@ export class Marketplace extends React.Component<
         cost: 0,
         street: "",
         suburb: "",
-        skills: "",
+        skills: [],
         description: "",
         groupId: "",
         groupTitle: "",
@@ -77,6 +78,7 @@ export class Marketplace extends React.Component<
       openGroupDialog: false,
       openLearnDialog: false,
       openSuccessAlert: false,
+      openFailAlert: false,
       selectedGroup: sessionStorage.getItem("selectedGroup"),
     };
     this.userContext = context;
@@ -101,8 +103,6 @@ export class Marketplace extends React.Component<
     if (this.userContext != this.context) {
       this.userContext = this.context;
       this.favourServicer.getFavours().then((favours) => {
-        console.log(favours);
-        console.log(this.state.selectedGroup);
         const favourList = favours.filter(
           (favour) =>
             favour.state == FavourState.PENDING &&
@@ -133,6 +133,7 @@ export class Marketplace extends React.Component<
             <CreateFavourDialog
               open={this.state.openFavourDialog}
               newFavour={this.state.newFavour}
+              userInfo={this.userContext.user}
               onClose={this.favourDialogClose}
               onCreate={this.onFavourCreated}
             />
@@ -212,6 +213,27 @@ export class Marketplace extends React.Component<
               <strong>check out the message!</strong>
             </Alert>
           </Collapse>
+          <Collapse className={styles.alert} in={this.state.openFailAlert}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    this.setState({ openFailAlert: false });
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              <AlertTitle>Failed</AlertTitle>
+              The request message could not been sent —{" "}
+              <strong>Your skills does not meet the requirement</strong>
+            </Alert>
+          </Collapse>
           <Typography>Favours</Typography>
           <RSC noScrollX>
             <Grid className={styles.cardsWrapper} container spacing={2}>
@@ -266,15 +288,30 @@ export class Marketplace extends React.Component<
   };
 
   private learnDialogRequest = () => {
-    if (this.userContext.user.uid != this.state.selectedFavourOwner.uid) {
+    const requiredSkills = this.state.selectedFavour.skills;
+    const userSkillList = this.userContext.user.skillList.map((s) =>
+      s.toLowerCase(),
+    );
+
+    const metSkills = requiredSkills.filter((s) => {
+      if (userSkillList.includes(s.toLowerCase())) return s;
+    });
+
+    if (
+      this.userContext.user.uid != this.state.selectedFavourOwner.uid &&
+      metSkills.length === requiredSkills.length
+    ) {
       this.favourServicer.requestFavour(
         this.state.selectedFavour,
         this.userContext.user,
         this.state.selectedFavourOwner,
       );
-      this.learnDialogClose();
       this.setState({ openSuccessAlert: true });
+    } else {
+      this.setState({ openFailAlert: true });
     }
+
+    this.learnDialogClose();
   };
 
   private onFavourCreated = () => {

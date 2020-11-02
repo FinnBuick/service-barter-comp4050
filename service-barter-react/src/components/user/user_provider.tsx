@@ -9,6 +9,7 @@ export type User = {
   favourPoint: number;
   address: string;
   skillList: string[];
+  fcmTokens: string[];
 };
 
 export type UserContextProps = {
@@ -76,6 +77,43 @@ export const UserProvider = React.memo(
         }),
       [],
     );
+
+    React.useEffect(() => {
+      if (user.user?.uid) {
+        const messaging = firebase.messaging();
+        messaging
+          .getToken({
+            vapidKey:
+              "BIbZhbP4glGt3HBPZg1jDdPWQyMJoqXuziqiO0v82vMK1PnMyUgbp2o24rlvapQa7hUg-TuRUHndfxxSE5icxJU",
+          })
+          .then((currentToken) => {
+            if (currentToken) {
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(user.user.uid)
+                .update({
+                  fcmTokens: firebase.firestore.FieldValue.arrayUnion(
+                    currentToken,
+                  ),
+                });
+            } else {
+              // Show permission request.
+              console.log(
+                "No registration token available. Request permission to generate one.",
+              );
+              // Show permission UI.
+            }
+          })
+          .catch((err) => {
+            console.log("An error occurred while retrieving token. ", err);
+          });
+
+        messaging.onMessage((payload) => {
+          console.log("onMessage: ", payload);
+        });
+      }
+    }, [user]);
 
     return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
   },
