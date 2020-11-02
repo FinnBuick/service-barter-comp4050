@@ -13,9 +13,9 @@ import MailIcon from "@material-ui/icons/Mail";
 import * as React from "react";
 
 import { formatDate } from "../../pages/marketplace/marketplace";
+import styles from "./favour_card.scss";
 import { Favour, FavourService } from "../favour/favour_service";
 import { User } from "../user/user_provider";
-
 export const FavourCard = React.memo(
   ({
     favour,
@@ -42,7 +42,7 @@ export const FavourCard = React.memo(
 
     return (
       <Paper>
-        <Card>
+        <Card className={styles.favour_card}>
           <CardHeader
             avatar={
               <Avatar

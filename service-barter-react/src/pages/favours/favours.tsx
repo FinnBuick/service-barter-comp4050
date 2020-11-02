@@ -118,8 +118,9 @@ export const Favours = React.memo(() => {
         handleClose={acceptPickerClose}
         onUserClick={acceptPickerClick}
       />
-      <Paper>
+      <Paper background-color="secondary">
         <Tabs
+	  className={styles.tabs}
           value={tabValue}
           onChange={handleTabChange}
           indicatorColor="primary"

@@ -9,6 +9,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@material-ui/core";
+import styles from "./accept_picker.scss";
 import * as React from "react";
 
 import { User } from "../user/user_provider";
@@ -42,7 +43,7 @@ export const AcceptPicker = React.memo(
     });
 
     return (
-      <Dialog onClose={handleClose} open={open}>
+      <Dialog classes={{ paper: styles.paper }} onClose={handleClose} open={open}>
         <DialogTitle>Favour requests received from</DialogTitle>
         <List>
           {users.map((user) => (

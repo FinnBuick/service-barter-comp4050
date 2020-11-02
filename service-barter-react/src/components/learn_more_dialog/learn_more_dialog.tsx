@@ -13,7 +13,7 @@ import * as React from "react";
 import { User } from "../../components/user/user_provider";
 import { formatDate } from "../../pages/marketplace/marketplace";
 import { Favour } from "../favour/favour_service";
-
+import styles from "./learn_more_dialog.scss";
 export const LearnMoreDialog = React.memo(
   ({
     open,
@@ -33,7 +33,12 @@ export const LearnMoreDialog = React.memo(
     return (
       <>
         {favour ? (
-          <Dialog open={open} onClose={onClose} fullWidth>
+          <Dialog
+            classes={{ paper: styles.paper }}
+            open={open}
+            onClose={onClose}
+            fullWidth
+          >
             <DialogTitle>
               <Avatar
                 src={owner.photoURL || "invalid"}
@@ -61,22 +66,22 @@ export const LearnMoreDialog = React.memo(
                   <Typography variant="body1">Group</Typography>
                 </div>
                 <div style={{ display: "inline-block", marginLeft: "5%" }}>
-                  <Typography variant="body1" color="primary">
+                  <Typography variant="body1">
                     {favour.actualLocation}
                   </Typography>
-                  <Typography variant="body1" color="primary">
+                  <Typography variant="body1" color="secondary">
                     {favour.cost} Favour points
                   </Typography>
                   {/\S/.test(favour.skills) ? (
-                    <Typography variant="body1" color="primary">
+                    <Typography variant="body1" color="secondary">
                       {favour.skills}
                     </Typography>
                   ) : (
-                    <Typography variant="body1" color="primary">
+                    <Typography variant="body1" color="secondaryc">
                       None
                     </Typography>
                   )}
-                  <Typography variant="body1" color="primary">
+                  <Typography variant="body1" color="secondary">
                     {favour.groupTitle}
                   </Typography>
                 </div>
@@ -95,7 +100,7 @@ export const LearnMoreDialog = React.memo(
                 >
                   <Button
                     variant="outlined"
-                    color="primary"
+                    color="secondary"
                     onClick={onRequest}
                   >
                     Send a request message

@@ -108,7 +108,7 @@ export class Home extends React.Component<
                 component={Link}
                 to="/signin"
                 variant="contained"
-                color="primary"
+                color="secondary"
               >
                 Sign in
               </Button>

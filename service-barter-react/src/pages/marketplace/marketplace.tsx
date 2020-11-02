@@ -169,13 +169,18 @@ export class Marketplace extends React.Component<
             />
           </div>
           <div>
-            <Button className={styles.buttons} variant="contained">
+            <Button
+              color="primary"
+              className={styles.buttons}
+              variant="contained"
+            >
               All Groups
             </Button>
             {this.state.groupList.map((group) => (
               <Grid key={group.id} item xs={6} md={4} zeroMinWidth>
                 <Button
                   className={styles.buttons}
+                  color="primary"
                   variant="contained"
                   onClick={this.handleGroupSelect}
                 >

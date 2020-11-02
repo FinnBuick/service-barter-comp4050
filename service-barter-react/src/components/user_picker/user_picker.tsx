@@ -11,7 +11,7 @@ import * as firebase from "firebase";
 import * as React from "react";
 
 import { UserContext } from "../user/user_provider";
-
+import styles from "./user_picker.scss";
 export const UserPicker = React.memo(
   ({
     open,
@@ -54,7 +54,11 @@ export const UserPicker = React.memo(
     }, [userContext]);
 
     return (
-      <Dialog onClose={handleClose} open={open}>
+      <Dialog
+        classes={{ paper: styles.paper }}
+        onClose={handleClose}
+        open={open}
+      >
         <DialogTitle>Pick a user to a send a message to</DialogTitle>
         <List>
           {users.map((user) => (

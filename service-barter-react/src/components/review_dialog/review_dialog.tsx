@@ -16,7 +16,7 @@ import { FavourService } from "../../components/favour/favour_service";
 import { formatDate } from "../../pages/marketplace/marketplace";
 import { Favour } from "../favour/favour_service";
 import { User } from "../user/user_provider";
-
+import styles from "./review_dialog.scss";
 export const ReviewDialog = React.memo(
   ({
     open,
@@ -43,7 +43,12 @@ export const ReviewDialog = React.memo(
     return (
       <>
         {favour ? (
-          <Dialog open={open} onClose={onClose} fullWidth>
+          <Dialog
+            classes={{ paper: styles.paper }}
+            open={open}
+            onClose={onClose}
+            fullWidth
+          >
             <DialogContent>
               <Typography>Write a review!</Typography>
               <TextField

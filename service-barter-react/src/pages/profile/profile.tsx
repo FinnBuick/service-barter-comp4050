@@ -61,7 +61,7 @@ export const Profile = React.memo(() => {
             <div className={styles.settingButtons}>
               <Button
                 variant="contained"
-                color="primary"
+                color="secondary"
                 component={Link}
                 to="/editProfile"
                 style={{ marginRight: "10px" }}
@@ -70,7 +70,7 @@ export const Profile = React.memo(() => {
               </Button>
               <Button
                 variant="contained"
-                color="primary"
+                color="secondary"
                 onClick={resetPassword}
               >
                 Reset Password
@@ -84,13 +84,13 @@ export const Profile = React.memo(() => {
                   <Typography variant="h6">Skills</Typography>
                 </div>
                 <div style={{ display: "inline-block", marginLeft: "30px" }}>
-                  <Typography variant="h6" style={{ color: "#0066ff" }}>
+                  <Typography variant="h6" color="primary">
                     {userContext.user.email}
                   </Typography>
-                  <Typography variant="h6" style={{ color: "#0066ff" }}>
+                  <Typography variant="h6" color="primary">
                     {userContext.user.favourPoint}
                   </Typography>
-                  <Typography variant="h6" style={{ color: "#0066ff" }}>
+                  <Typography variant="h6" color="primary">
                     {userContext.user.skillList.length > 0 ? (
                       userContext.user.skillList.join(", ")
                     ) : (

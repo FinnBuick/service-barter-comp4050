@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
+import styles from "./create_favour_dialog.scss";
 
 import { NewFavour } from "../favour/favour_service";
 
@@ -39,7 +40,7 @@ export const CreateFavourDialog = React.memo(
     const [valid, setValid] = React.useState(false);
 
     return (
-      <Dialog open={open} onClose={onClose} disableBackdropClick={true}>
+      <Dialog classes={{ paper: styles.paper }} open={open} onClose={onClose} disableBackdropClick={true}>
         <DialogTitle>
           Add New Favour
           <CancelIcon style={{ float: "right" }} onClick={onClose} />

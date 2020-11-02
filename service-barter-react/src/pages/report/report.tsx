@@ -160,7 +160,7 @@ export const Report = React.memo(() => {
           <div style={{ marginTop: "9px", textAlign: "center" }}>
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               disabled={
                 !(
                   /\S/.test(reportData.name) &&
@@ -177,6 +177,7 @@ export const Report = React.memo(() => {
               variant="contained"
               style={{ marginLeft: "4%" }}
               component={Link}
+	      color="secondary"
               to="/home"
             >
               Cancel

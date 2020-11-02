@@ -1,4 +1,4 @@
-$headerColor: #3f51b5;
+$headerColor: #ff9c33;
 
 .menuButton {
     margin-right: 16px;
@@ -65,4 +65,12 @@ $headerColor: #3f51b5;
 
 .loggedOutBtn {
     white-space: nowrap;
+    background-color: #70cdff;
+}
+
+.loggedOutBtn:hover {
+    background-color: #0aa9ff;
+}
+.loggedOutBtn:click {
+    background-color: #00507a;
 }

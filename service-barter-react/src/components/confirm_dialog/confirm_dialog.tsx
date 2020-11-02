@@ -5,6 +5,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import React from "react";
 
+import styles from "./confirm_dialog.scss";
+
 export const ConfirmDialog = React.memo(
   ({
     title,
@@ -17,7 +19,12 @@ export const ConfirmDialog = React.memo(
     handleClose: () => void;
     onConfirm: () => void;
   }) => (
-    <Dialog open={open} onClose={handleClose} aria-labelledby="confirm-dialog">
+    <Dialog
+      classes={{ paper: styles.paper }}
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="confirm-dialog"
+    >
       <DialogTitle id="confirm-dialog">{title}</DialogTitle>
       {/* <DialogContent>{children}</DialogContent> */}
       <DialogActions>
