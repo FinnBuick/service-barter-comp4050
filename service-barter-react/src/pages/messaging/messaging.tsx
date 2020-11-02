@@ -22,6 +22,7 @@ import * as firebase from "firebase";
 import * as React from "react";
 import { Cookies, withCookies } from "react-cookie";
 import { Redirect } from "react-router-dom";
+import RSC from "react-scrollbars-custom";
 
 import { ConfirmDialog } from "../../components/confirm_dialog/confirm_dialog";
 import { UserPicker } from "../../components/user_picker/user_picker";
@@ -138,28 +139,32 @@ class MessagingImpl extends React.Component<
         />
         <div className={styles.roomsWrapper}>
           <Typography>Rooms</Typography>
-          {this.state.userRooms == null ? (
-            <>
-              <CircularProgress />
-              <br />
-            </>
-          ) : this.state.userRooms.length === 0 ? (
-            <Typography>There are no rooms, start by creating one!</Typography>
-          ) : (
-            <List>
-              {this.state.userRooms.map((room) => (
-                <this.RoomCard key={room.id} room={room} />
-              ))}
-            </List>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            className={styles.createRoomButton}
-            onClick={this.openUserDialog}
-          >
-            Create room
-          </Button>
+          <RSC noScrollX>
+            {this.state.userRooms == null ? (
+              <>
+                <CircularProgress />
+                <br />
+              </>
+            ) : this.state.userRooms.length === 0 ? (
+              <Typography>
+                There are no rooms, start by creating one!
+              </Typography>
+            ) : (
+              <List>
+                {this.state.userRooms.map((room) => (
+                  <this.RoomCard key={room.id} room={room} />
+                ))}
+              </List>
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              className={styles.createRoomButton}
+              onClick={this.openUserDialog}
+            >
+              Create room
+            </Button>
+          </RSC>
           <UserPicker
             open={this.state.userDialogOpen}
             handleClose={this.closeUserDialog}
@@ -168,26 +173,29 @@ class MessagingImpl extends React.Component<
         </div>
         <div className={styles.messagesWrapper}>
           <Typography>Messages</Typography>
-          <div className={styles.messages}>
-            {this.state.room == null ? (
-              <CircularProgress />
-            ) : this.state.room.id === "empty" ? (
-              <Typography>Please select a room</Typography>
-            ) : (
-              this.state.room.messages.map((message) => (
-                <Card
-                  key={message.timestamp}
-                  className={classnames(
-                    styles.message,
-                    message.userId === this.userContext.user.uid && styles.me,
-                    message.userId !== this.userContext.user.uid && styles.you,
-                  )}
-                >
-                  <Typography>{message.message}</Typography>
-                </Card>
-              ))
-            )}
-          </div>
+          <RSC noScrollX>
+            <div className={styles.messages}>
+              {this.state.room == null ? (
+                <CircularProgress />
+              ) : this.state.room.id === "empty" ? (
+                <Typography>Please select a room</Typography>
+              ) : (
+                this.state.room.messages.map((message) => (
+                  <Card
+                    key={message.timestamp}
+                    className={classnames(
+                      styles.message,
+                      message.userId === this.userContext.user.uid && styles.me,
+                      message.userId !== this.userContext.user.uid &&
+                        styles.you,
+                    )}
+                  >
+                    <Typography>{message.message}</Typography>
+                  </Card>
+                ))
+              )}
+            </div>
+          </RSC>
           <TextField
             className={styles.input}
             placeholder="Type a message..."
