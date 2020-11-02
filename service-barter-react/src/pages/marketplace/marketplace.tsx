@@ -9,6 +9,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import Alert from "@material-ui/lab/Alert";
 import AlertTitle from "@material-ui/lab/AlertTitle";
 import { format, formatDistanceToNow } from "date-fns";
+import Fuse from "fuse.js";
+import queryString from "query-string";
 import * as React from "react";
 import RSC from "react-scrollbars-custom";
 
@@ -103,24 +105,35 @@ export class Marketplace extends React.Component<
   }
 
   componentDidUpdate() {
+    const values = queryString.parse(location.search);
+    const searchTerm: any = values.q;
+    console.log(searchTerm);
+
     if (this.userContext != this.context) {
       this.userContext = this.context;
-      console.log("I AM HERE");
-      console.log(this.state.selectedGroup);
       this.favourServicer.getFavours().then((favours) => {
-        let favourList;
-    console.log(sessionStorage.getItem("selectedGroup"));
-        if (sessionStorage.getItem("selectedGroup") === "") {
-          favourList = favours.filter(
-            (favour) => favour.state == FavourState.PENDING,
-          );
-        } else {
-          favourList = favours.filter(
+        let filteredfavours;
+        if (sessionStorage.getItem("selectedGroup") !== "") {
+          filteredfavours = favours.filter(
             (favour) =>
               favour.state == FavourState.PENDING &&
               favour.groupTitle == sessionStorage.getItem("selectedGroup"),
           );
+        } else {
+          filteredfavours = favours.filter(
+            (favour) => favour.state == FavourState.PENDING,
+          );
         }
+
+        const options: Fuse.IFuseOptions<Favour & { owner: User }> = {
+          keys: ["title", "description", "actualLocation"],
+        };
+        const fuse = new Fuse(filteredfavours, options);
+        const result = fuse.search(searchTerm);
+        const favourList: (Favour & { owner: User })[] = result.map(
+          (favour) => favour.item,
+        );
+
         this.setState((state) => ({ ...state, favourList }));
       });
       this.groupServicer.getGroups().then((groupList) => {
