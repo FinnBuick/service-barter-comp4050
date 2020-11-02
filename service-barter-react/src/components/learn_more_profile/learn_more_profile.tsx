@@ -35,7 +35,7 @@ export const LearnMoreProfile = React.memo(
                 }}
               />
               <div style={{ marginLeft: "10%" }}>
-                <CancelIcon style={{ float: "right" }} />
+                <CancelIcon style={{ float: "right" }} onClick={onClose} />
                 {owner.displayName}
               </div>
             </DialogTitle>
