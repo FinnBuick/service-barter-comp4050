@@ -9,11 +9,7 @@ import {
 } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
-<<<<<<< HEAD
-import styles from "./create_favour_dialog.scss";
-=======
 import { WithContext as ReactTags } from "react-tag-input";
->>>>>>> master
 
 import { User } from "../../components/user/user_provider";
 import { NewFavour } from "../favour/favour_service";
@@ -83,7 +79,12 @@ export const CreateFavourDialog = React.memo(
     };
 
     return (
-      <Dialog classes={{ paper: styles.paper }} open={open} onClose={onClose} disableBackdropClick={true}>
+      <Dialog
+        classes={{ paper: styles.paper }}
+        open={open}
+        onClose={onClose}
+        disableBackdropClick={true}
+      >
         <DialogTitle>
           Add New Favour
           <CancelIcon
