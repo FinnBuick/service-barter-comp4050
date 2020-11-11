@@ -1,4 +1,4 @@
-$headerColor: #ff9c33;
+$headerColor: #3f51b5;
 
 .menuButton {
     margin-right: 16px;
@@ -6,10 +6,7 @@ $headerColor: #ff9c33;
 }
 
 .title {
-    color: white;
     flex-grow: 1;
-    font-size: x-large;
-    margin-left: 2%;
     white-space: nowrap;
 }
 
@@ -68,12 +65,4 @@ $headerColor: #ff9c33;
 
 .loggedOutBtn {
     white-space: nowrap;
-    background-color: #70cdff;
-}
-
-.loggedOutBtn:hover {
-    background-color: #0aa9ff;
-}
-.loggedOutBtn:click {
-    background-color: #00507a;
 }
